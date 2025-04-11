@@ -49,9 +49,7 @@ struct binary_trie{
     
     public:
     
-    binary_trie(int n){
-        //最大ケース
-        node.reserve(2*n+9);
+    binary_trie(){
         root = make_node(0);
         make_node(0);
         make_node(1);
@@ -247,5 +245,9 @@ struct binary_trie{
         int ord = order(v);
         if(ord == 0) return -1;
         else return get_smallest(ord-1);
+    }
+    
+    void reserve(int n){
+        node.reserve(2*n+9);
     }
 };
