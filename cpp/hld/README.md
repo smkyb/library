@@ -35,7 +35,7 @@ void add(int p, S x);
 HLDで使うグラフを標準入力から読み込むもの。
 有向と無向がある。
 ```cpp
-read_csr_ud_graph(vector<int>& g, vector<int>& start, int m, int num = -1);
-read_csr_d_graph(vector<int>& g, vector<int>& start, int m, int num = -1);
+void read_csr_ud_graph(vector<int>& g, vector<int>& start, int m, int num = -1);
+void read_csr_d_graph(vector<int>& g, vector<int>& start, int m, int num = -1);
 ```
 mは辺数、numは添え字調節用（入力が1idxだったら-1、0idxだったら0）
