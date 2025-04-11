@@ -82,7 +82,7 @@ void reserve(int n)
 <br>
 ## size
 ```cpp
-void insert(T x)
+void size()
 ```
 **・ 概要 :** 要素数の取得
 **・ 計算量 :** Θ(1)  
