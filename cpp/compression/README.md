@@ -5,6 +5,7 @@
 ```cpp
 vector<T> compression(T& v1, Args&... args)
 ```
+**・ 概要 :** 座標圧縮をし、要素一覧(unique, sorted)を返す  
 **・ 制約 :** 型が一致する  
 **・ 計算量 :** Θ(N log N)  
 <br><br>
