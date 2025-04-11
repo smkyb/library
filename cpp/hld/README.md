@@ -1,5 +1,8 @@
 # HLD
-木に対するパスクエリ、部分木クエリを解きます。（セグ木を使えるもののみ）  
+木に対するパスクエリ、部分木クエリなどを解きます。（セグ木を使えるもののみ）  
+hld_treev : 頂点  
+hld_treee : 辺  
+hld_treen : jumpをする  
 <br>
 ## 下準備
 ・上部の、「非可換か」「add使えるか」「区間作用あるか」のチェックリストを埋める  
@@ -22,6 +25,7 @@ void set(int p, S x);
 int lca(int l, int r);
 int dist(int l, int r);
 
+//
 void apply(int l, int r, F x);
 void add(int p, S x);
 ```
