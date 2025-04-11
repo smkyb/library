@@ -1,8 +1,8 @@
 # HLD
-木に対するパスクエリ、部分木クエリなどを解きます。（セグ木を使えるもののみ）  
-hld_treev : 頂点  
-hld_treee : 辺  
-hld_treen : jumpをする  
+木に対するパスクエリ、部分木クエリなどを解きます。（セグ木とかを使えるもののみ）  
+hld/hld_treev : 頂点  
+hld/hld_treee : 辺  
+hld/hld_treen : jumpをする  
 <br>
 ## 下準備
 ・上部の、「非可換か」「add使えるか」「区間作用あるか」のチェックリストを埋める  
@@ -18,10 +18,13 @@ gとstartに関しては、同じフォルダに入っているcsr.cppで読み�
 <br>
 ## 機能
 ```cpp
+//セグ木を用いた場合、Θ(log^2 N)
 S prod(int l, int r);
 S prod(int r);
+//同様に、Θ(log N)
 S get(int p);
 void set(int p, S x);
+//Θ(log N)
 int lca(int l, int r);
 int dist(int l, int r);
 
