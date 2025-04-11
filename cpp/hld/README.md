@@ -20,16 +20,18 @@ gとstartに関しては、同じフォルダに入っているcsr.cppで読み�
 ```cpp
 //セグ木を用いた場合、Θ(log^2 N)
 S prod(int l, int r);
-S prod(int r);
 //同様に、Θ(log N)
+S prod(int r);
 S get(int p);
 void set(int p, S x);
 //Θ(log N)
 int lca(int l, int r);
 int dist(int l, int r);
 
-//
+//同様に、Θ(log^2 N)
 void apply(int l, int r, F x);
+//同様に、Θ(log N)
+void apply(int r, F x);
 void add(int p, S x);
 ```
 <br>
