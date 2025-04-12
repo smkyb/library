@@ -28,7 +28,7 @@ void set(int p, S x);
 int lca(int l, int r);
 int dist(int l, int r);
 
-//同様に、Θ(log^2 N)
+//セグ木で、Θ(log^2 N)
 void apply(int l, int r, F x);
 //同様に、Θ(log N)
 void apply(int r, F x);
