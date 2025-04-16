@@ -96,3 +96,6 @@ void size()
 ```
 **・ 概要 :** 要素数の取得
 **・ 計算量 :** Θ(1)  
+<br>
+<br>
+verified? : https://judge.yosupo.jp/submission/279375
