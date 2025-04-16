@@ -1,7 +1,6 @@
 template <typename T>
 struct binary_trie{
     private:
-    public:
     
     struct node_t{
         T value;
