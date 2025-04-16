@@ -27,8 +27,8 @@ struct binary_trie{
     
     //[l, r)のマスクを返す
     T mask(int l, int r) const {
-        if(r == bit_width) return ~((one<<(l))-1);
-        return (((one<<(r))-1) & ~((one<<(l))-1));
+        if(r == bit_width) return ~((one<<l)-1);
+        return (((one<<r)-1) & ~((one<<l)-1));
     }
     
     //[l, r)bitを取り出す
@@ -229,6 +229,6 @@ struct binary_trie{
     }
     
     void reserve(int n){
-        node.reserve(2*n+5);
+        node.reserve(2*n+9);
     }
 };
