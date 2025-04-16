@@ -26,8 +26,8 @@ struct binary_trie{
     
     //[l, r)のマスクを返す
     T mask(int l, int r) const {
-        if(r == bit_width) return ~((one<<(l))-1);
-        return (((one<<(r))-1) & ~((one<<(l))-1));
+        if(r == bit_width) return ~((one<<l)-1);
+        return (((one<<r)-1) & ~((one<<l)-1));
     }
     
     //[l, r)bitを取り出す
@@ -40,7 +40,7 @@ struct binary_trie{
         return bit_width-1 - countl_zero(uT(x^y));
     }
     
-    //ノードを返す
+    //ノードを作って返す
     int make_node(T v){
         node.emplace_back();
         node.back().value = v;
@@ -81,7 +81,7 @@ struct binary_trie{
                 int inter = make_node(node[pos].value);
                 int leaf = make_node(v);
                 node[inter] = node[pos];
-                node[inter].width = node[inter].width - (bit - diff - 1);
+                node[inter].width -= (bit - diff - 1);
                 node[pos].child[b] = leaf;
                 node[pos].child[!b] = inter;
                 node[pos].count++;
