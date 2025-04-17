@@ -11,7 +11,7 @@ hld/hld_treen : jumpをする
 <br>
 ## コンストラクタ
 ```cpp
-hld_tree(int _n, vector<int>& g, const vector<int>& start, const vector<S>& v, int r = 0)
+hld_tree<int MAXN, /*ここから任意*/ typename S, auto op, auto e /*ここまで任意*/> AAA(int _n, vector<int>& g, const vector<int>& start, const vector<S>& v, int r = 0)
 ```
 **・ 概要 :** _nはサイズ、vは頂点に書かれている値、rは根。  
 gとstartに関しては、同じフォルダに入っているcsr.cppで読み込んだものを使う。（有向無向どちらでも）  
