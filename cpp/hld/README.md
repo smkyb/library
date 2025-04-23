@@ -1,9 +1,7 @@
-非常に使いにくい形式になっていると思われます  
+***頂点クエリのみに対応しています***  
+また、非常に使いにくい形式になっていると思われます  
 # HLD
 木に対するパスクエリ、部分木クエリなどを解きます。（セグ木とかを使えるもののみ）  
-hld/hld_treev : 頂点  
-hld/hld_treee : 辺  
-hld/hld_treen : jumpをする  
 <br>
 ## 下準備
 ・上部の、「非可換か」「add使えるか」「区間作用あるか」のチェックリストを埋める  
@@ -13,11 +11,21 @@ hld/hld_treen : jumpをする
 ## コンストラクタ
 ```cpp
 //デフォルトで、
-hld_tree<int MAXN, typename S, auto op, auto e> AAA(int _n, vector<int>& g, const vector<int>& start, const vector<S>& v, int r = 0)
+hld_tree<int MAXN, typename S, auto op, auto e> AAA(int _n, int r = random)
 ```
 **・ 概要 :** MAXNは最大の頂点数(コンパイル時定数)、  
-_nは頂点数、vは頂点に書かれている値、rは根。  
-・gとstartに関しては、同じフォルダに入っているcsr.cppで読み込んだものを使う。（有向無向どちらでも）  
+S, op, eはACLのsegtreeのようなもの  
+_nは頂点数  
+<br>
+## 構築
+```cpp
+void add_edge(int u, int v)
+```
+add_edgeで無向グラフを追加し、  
+```cpp
+void build(vector<S> v)
+```
+その後、引数に「頂点に書かれている値」を渡し、buildする  
 <br>
 ## 機能
 ```cpp
