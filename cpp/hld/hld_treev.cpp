@@ -1,7 +1,7 @@
 //非可換なら
 #define HLD_NON_COMMUTATIVE false
 //addが使えるなら
-#define HLD_HAS_OPERATION_ADD true
+#define HLD_HAS_OPERATION_ADD false
 //区間作用があるなら
 #define HLD_HAS_LAZY_APPLY false
 
