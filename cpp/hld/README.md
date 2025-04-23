@@ -49,6 +49,6 @@ void add(int p, S x);
 <br>
 <br>
 
-verify?  
+verified?  
 https://judge.yosupo.jp/submission/281120  
 https://judge.yosupo.jp/submission/281117
