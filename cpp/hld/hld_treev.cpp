@@ -9,7 +9,7 @@ template<int MAXN, typename S, auto op, auto e>
 //template<int MAXN, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id>
 
 struct hld_tree{
-    using node_type = fenwick_tree<S>;
+    using node_type = segtree<S, op, e>;
     //using node_type = lazy_segtree<S, op, e, F, mapping, composition, id>
     
     int n, r, edge_idx;
