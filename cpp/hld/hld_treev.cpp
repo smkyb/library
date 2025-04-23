@@ -1,7 +1,7 @@
 //非可換なら
 #define HLD_NON_COMMUTATIVE false
 //addが使えるなら
-#define HLD_HAS_OPERATION_ADD false
+#define HLD_HAS_OPERATION_ADD true
 //区間作用があるなら
 #define HLD_HAS_LAZY_APPLY false
 
@@ -9,11 +9,12 @@ template<int MAXN, typename S, auto op, auto e>
 //template<int MAXN, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id>
 
 struct hld_tree{
-    using node_type = segtree<S, op, e>;
+    using node_type = fenwick_tree<S>;
     //using node_type = lazy_segtree<S, op, e, F, mapping, composition, id>
     
-    int n;
+    int n, r, edge_idx;
     int dep[MAXN], in[MAXN], out[MAXN], head[MAXN], par[MAXN];
+    array<int, 2> E[MAXN-1];
     
     #if HLD_NON_COMMUTATIVE
     node_type node[2];
@@ -21,141 +22,104 @@ struct hld_tree{
     node_type node;
     #endif
     
-    hld_tree(int _n, vector<int>& g, const vector<int>& start, const vector<S>& v, int r = 0):
-        n(_n){
-            assert(0 <= r && r < n);
-            assert(n == ssize(v));
-            
-            if(ssize(g) == (n-1)*2){
-                int sub_siz[MAXN], idx[MAXN+1];
-                fill(sub_siz, sub_siz+n, 1);
-                memcpy(idx, start.data(), sizeof(int)*start.size());
-                
-                int cur = r;
-                par[r] = -1;
-                while(true){
-                    if(idx[cur] < start[cur+1]-(cur!=r)){
-                        int nex = g[idx[cur]++];
-                        if(nex == par[cur]){
-                            g[--idx[cur]] = g[start[cur+1]-1];
-                            continue;
-                        }
-                        par[nex] = cur;
-                        cur = nex;
-                    } else {
-                        if(cur == r) break;
-                        sub_siz[par[cur]] += sub_siz[cur];
-                        cur = par[cur];
-                    }
-                }
-                
-                memcpy(idx, start.data(), sizeof(int)*start.size());
-                int state[MAXN]{}, heavy[MAXN];
-                
-                int node_siz = 0;
-                cur = r;
-                head[cur] = r;
-                dep[cur] = 0;
-                while(1){
-                    if(state[cur] == 0){
-                        in[cur] = node_siz++;
-                        heavy[cur] = -1;
-                        for(int i = start[cur]; i < start[cur+1]-(cur!=r); i++){
-                            int nex = g[i];
-                            if(heavy[cur] == -1 || sub_siz[heavy[cur]] < sub_siz[nex]){
-                                heavy[cur] = nex;
-                            }
-                        }
-                        if(heavy[cur] != -1){
-                            int nex = heavy[cur];
-                            dep[nex] = dep[cur];
-                            head[nex] = head[cur];
-                            state[cur] = 2;
-                            cur = nex;
-                        } else state[cur] = 2;
-                    } else if(state[cur] == 2){
-                        if(idx[cur] < start[cur+1]-(cur!=r)){
-                            int nex = g[idx[cur]++];
-                            if(nex == heavy[cur]) continue;
-                            dep[nex] = dep[cur]+1;
-                            head[nex] = nex;
-                            cur = nex;
-                        } else state[cur] = 3;
-                    } else {
-                        out[cur] = node_siz;
-                        if(cur == r) break;
-                        cur = par[cur];
-                    }
-                }
-            } else if(ssize(g) == (n-1)){
-                int sub_siz[MAXN], idx[MAXN];
-                fill(sub_siz, sub_siz+n, 1);
-                memcpy(idx, start.data(), sizeof(int)*start.size());
-                
-                int cur = r;
-                par[r] = -1;
-                while(true){
-                    if(idx[cur] < start[cur+1]){
-                        int nex = g[idx[cur]++];
-                        par[nex] = cur;
-                        cur = nex;
-                    } else {
-                        if(cur == r) break;
-                        sub_siz[par[cur]] += sub_siz[cur];
-                        cur = par[cur];
-                    }
-                }
-                
-                memcpy(idx, start.data(), sizeof(int)*start.size());
-                int state[MAXN]{}, heavy[MAXN];
-                
-                int node_siz = 0;
-                cur = r;
-                head[cur] = r;
-                dep[cur] = 0;
-                while(1){
-                    if(state[cur] == 0){
-                        in[cur] = node_siz++;
-                        heavy[cur] = -1;
-                        for(int i = start[cur]; i < start[cur+1]; i++){
-                            int nex = g[i];
-                            if(heavy[cur] == -1 || sub_siz[heavy[cur]] < sub_siz[nex]){
-                                heavy[cur] = nex;
-                            }
-                        }
-                        if(heavy[cur] != -1){
-                            int nex = heavy[cur];
-                            dep[nex] = dep[cur];
-                            head[nex] = head[cur];
-                            state[cur] = 2;
-                            cur = nex;
-                        } else state[cur] = 2;
-                    } else if(state[cur] == 2){
-                        if(idx[cur] < start[cur+1]){
-                            int nex = g[idx[cur]++];
-                            if(nex == heavy[cur]) continue;
-                            dep[nex] = dep[cur]+1;
-                            head[nex] = nex;
-                            cur = nex;
-                        } else state[cur] = 3;
-                    } else {
-                        out[cur] = node_siz;
-                        if(cur == r) break;
-                        cur = par[cur];
-                    }
-                }
-            } else assert(0);
-            vector<S> node_v(n);
-            for(int i = 0; i < n; i++) node_v[in[i]] = v[i];
-            
-            #if HLD_NON_COMMUTATIVE
-            node[0] = node_type(node_v);
-            reverse(node_v.begin(), node_v.end());
-            node[1] = node_type(node_v);
-            #else
-            node = node_type(node_v);
-            #endif
+    hld_tree(int _n, int _r = -1):
+        n(_n), r(_r), edge_idx(0){
+            if(r == -1) r = random_device()()%n;
         }
+    
+    void add_edge(int u, int v){
+        E[edge_idx][0] = u;
+        E[edge_idx][1] = v;
+        edge_idx++;
+    }
+    
+    void build(const vector<S>& v){
+        int g[(MAXN-1)*2], start[MAXN+1], C[MAXN+1];
+        for(int i = 0; i < n-1; i++){
+            auto [u, v] = E[i];
+            start[u+1]++;
+            start[v+1]++;
+        }
+        for(int i = 1; i <= n; i++) start[i] += start[i-1];
+        memcpy(C, start, sizeof(int)*(n+1));
+        for(int i = 0; i < n-1; i++){
+            auto [u, v] = E[i];
+            g[C[u]++] = v;
+            g[C[v]++] = u;
+        }
+        
+        int sub_siz[MAXN], idx[MAXN+1];
+        fill(sub_siz, sub_siz+n, 1);
+        memcpy(idx, start, sizeof(int)*(n+1));
+        
+        int cur = r;
+        par[r] = -1;
+        while(true){
+            if(idx[cur] < start[cur+1]-(cur!=r)){
+                int nex = g[idx[cur]++];
+                if(nex == par[cur]){
+                    g[--idx[cur]] = g[start[cur+1]-1];
+                    continue;
+                }
+                par[nex] = cur;
+                cur = nex;
+            } else {
+                if(cur == r) break;
+                sub_siz[par[cur]] += sub_siz[cur];
+                cur = par[cur];
+            }
+        }
+        
+        memcpy(idx, start, sizeof(int)*(n+1));
+        int state[MAXN]{}, heavy[MAXN];
+        
+        int node_siz = 0;
+        cur = r;
+        head[cur] = r;
+        dep[cur] = 0;
+        while(1){
+            if(state[cur] == 0){
+                in[cur] = node_siz++;
+                heavy[cur] = -1;
+                for(int i = start[cur]; i < start[cur+1]-(cur!=r); i++){
+                    int nex = g[i];
+                    if(heavy[cur] == -1 || sub_siz[heavy[cur]] < sub_siz[nex]){
+                        heavy[cur] = nex;
+                    }
+                }
+                if(heavy[cur] != -1){
+                    int nex = heavy[cur];
+                    dep[nex] = dep[cur];
+                    head[nex] = head[cur];
+                    state[cur] = 2;
+                    cur = nex;
+                } else state[cur] = 2;
+            } else if(state[cur] == 2){
+                if(idx[cur] < start[cur+1]-(cur!=r)){
+                    int nex = g[idx[cur]++];
+                    if(nex == heavy[cur]) continue;
+                    dep[nex] = dep[cur]+1;
+                    head[nex] = nex;
+                    cur = nex;
+                } else state[cur] = 3;
+            } else {
+                out[cur] = node_siz;
+                if(cur == r) break;
+                cur = par[cur];
+            }
+        }
+        
+        vector<S> node_v(n);
+        for(int i = 0; i < n; i++) node_v[in[i]] = v[i];
+        
+        #if HLD_NON_COMMUTATIVE
+        node[0] = node_type(node_v);
+        reverse(node_v.begin(), node_v.end());
+        node[1] = node_type(node_v);
+        #else
+        node = node_type(node_v);
+        #endif
+    }
     
     #if HLD_HAS_OPERATION_ADD
     
