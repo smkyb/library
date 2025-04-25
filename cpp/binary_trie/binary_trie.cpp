@@ -229,6 +229,6 @@ struct binary_trie{
     }
     
     void reserve(int n){
-        node.reserve(2*n+9);
+        node.reserve(2*n+1);
     }
 };
