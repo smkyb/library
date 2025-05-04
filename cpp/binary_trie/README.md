@@ -88,7 +88,7 @@ void reserve(int n)
 ```
 **・ 概要 :** n回insertした場合にvectorの再確保が行われないようにreserveする  
 **・ 制約 :** 0 <= n < 常識  
-**・ 計算量 :** Θ(n)  
+**・ (空間)計算量 :** Θ(n)  
 <br>
 ## size
 ```cpp
