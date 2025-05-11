@@ -17,32 +17,37 @@ struct binary_trie{
         }
     };
     
-    using uT = typename make_unsigned<T>::type;
     static constexpr T one = 1;
-    static constexpr int bit_width = sizeof(T) * 8;
+    static constexpr int bit_width = sizeof(T) * 8 - 1;
     vector<node_t> node;
     T xor_val = 0;
     int root = -1;
     int siz = 0;
     
+    //__builtin_clz
+    template<typename _Tp>
+    inline int clz(_Tp x) const {
+        if constexpr(sizeof(_Tp) == 8ull) return __builtin_clzll(x);
+        else return __builtin_clz(x);
+    }
+    
     //[l, r)のマスクを返す
-    T mask(int l, int r) const {
-        if(r == bit_width) return ~((one<<l)-1);
-        return (((one<<r)-1) & ~((one<<l)-1));
+    inline T mask(int l, int r) const {
+        return (one<<r) - (one<<l);
     }
     
     //[l, r)bitを取り出す
-    T masked(T v, int l, int r) const {
+    inline T masked(T v, int l, int r) const {
         return mask(l, r) & v;
     }
     
-    //上位から数えて初めて異なるbitを返す。無ければ-1
-    int diff_bit(T x, T y) const {
-        return bit_width-1 - countl_zero(uT(x^y));
+    //上位から数えて初めて異なるbitを返す。
+    inline int diff_bit(T x, T y) const {
+        return bit_width - clz(x^y);
     }
     
     //ノードを返す
-    int make_node(T v){
+    inline int make_node(T v){
         node.emplace_back();
         node.back().value = v;
         return ssize(node)-1;
@@ -67,7 +72,7 @@ struct binary_trie{
         *this = move(o);
     }
     
-    void insert(T v){
+    void insert(T v) {
         int pos = root;
         int bit = bit_width;
         siz++;
@@ -130,7 +135,7 @@ struct binary_trie{
         else return node[pos].count;
     }
     
-    void erase(T v, int n = -1){
+    void erase(T v, int n = -1) {
         if(n == -1) n = count(v);
         if(n == 0) return;
         int pos = root;
@@ -143,22 +148,6 @@ struct binary_trie{
             pos = node[pos].child[(v>>(bit-1))&1];
         }
         node[pos].count -= n;
-    }
-    
-    T xor_min(T v) {
-        assert(siz != 0);
-        apply_xor(v);
-        T res = get_smallest(0);
-        apply_xor(v);
-        return res^v;
-    }
-    
-    T xor_max(T v) {
-        assert(siz != 0);
-        apply_xor(v);
-        T res = get_largest(0);
-        apply_xor(v);
-        return res^v;
     }
     
     T get_largest(int k) const {
@@ -183,12 +172,10 @@ struct binary_trie{
         return get_largest(siz - k - 1);
     }
     
-    int size() const {
-        return siz;
-    }
-    
     //以下の要素の個数
     int order(T v) const {
+        if(v == 0) return 0;
+        v--;
         int res = 0;
         int pos = root;
         int bit = bit_width;
@@ -203,7 +190,7 @@ struct binary_trie{
                 bit -= node[pos].width;
                 bool b = ((v>>(bit-1))&1);
                 if(b){
-                    res += node[node[pos].child[((xor_val)>>(bit-1))&1]].count;
+                    res += node[node[pos].child[(xor_val>>(bit-1))&1]].count;
                 }
                 pos = node[pos].child[b^((xor_val>>(bit-1))&1)];
             }
@@ -213,22 +200,42 @@ struct binary_trie{
     }
     
     T lower_bound(T v) const {
-        int ord = v ? order(v-1) : 0;
+        int ord = order(v);
         if(siz == ord) return -1;
         else return get_smallest(ord);
     }
     
     T less_bound(T v) const {
-        int ord = order(v);
+        int ord = v!=numeric_limits<T>::max() ? order(v+1) : siz;
         if(ord == 0) return -1;
         else return get_smallest(ord-1);
+    }
+    
+    void reserve(int n) {
+        node.reserve(2*n+1);
+    }
+    
+    int size() const {
+        return siz;
     }
     
     void apply_xor(T x) {
         xor_val ^= x;
     }
     
-    void reserve(int n){
-        node.reserve(2*n+1);
+    T xor_min(T v) {
+        assert(siz != 0);
+        apply_xor(v);
+        T res = get_smallest(0);
+        apply_xor(v);
+        return res^v;
+    }
+    
+    T xor_max(T v) {
+        assert(siz != 0);
+        apply_xor(v);
+        T res = get_largest(0);
+        apply_xor(v);
+        return res^v;
     }
 };
