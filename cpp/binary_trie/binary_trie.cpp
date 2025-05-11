@@ -1,5 +1,7 @@
 template <typename T>
 struct binary_trie{
+    static_assert(is_signed_v<T>);
+    
     private:
     
     struct node_t{
