@@ -98,4 +98,6 @@ void size()
 **・ 計算量 :** Θ(1)  
 <br>
 <br>
-verified? : https://judge.yosupo.jp/submission/279375
+verified? :  
+[https://judge.yosupo.jp/submission/279375](https://judge.yosupo.jp/submission/284655)  
+[https://judge.yosupo.jp/submission/284654](https://judge.yosupo.jp/submission/284654)
