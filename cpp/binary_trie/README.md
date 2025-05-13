@@ -39,30 +39,29 @@ int count(T x)
 **・ 制約 :** 0 <= x  
 **・ 計算量 :** Θ(bit)  
 <br>
+## operator[]
+```cpp
+ref_type operator[int x]
+```
+**・ 概要 :** k番目(0-indexed)の値の取得(負の数を引数にとると大きい方からk番目(1-indexed)を取得)  
+**・ 制約 :** 0 <= k < size()  
+**・ 計算量 :** Θ(bit)  
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
+<br>
 ## xor_min / xor_max
 ```cpp
-T xor_min(T x)
-T xor_max(T x)
+ref_type xor_min(T x)
+ref_type xor_max(T x)
 ```
 **・ 概要 :** xor最小、最大値の取得（xorされていない要素が返ってくる）  
 **・ 制約 :** 0 <= x  
 **・ 計算量 :** Θ(bit)  
 **・ 戻り値 :** .existで値の有無、.valで値の取得  
 <br>
-## get_smallest / get_largest
-```cpp
-T get_smallest(int k)
-T get_largest(int k)
-```
-**・ 概要 :** k番目の値の取得  
-**・ 制約 :** 0 <= k < size()  
-**・ 計算量 :** Θ(bit)  
-**・ 戻り値 :** .existで値の有無、.valで値の取得  
-<br>
 ## lower_bound / less_bound
 ```cpp
-T lower_bound(T x)
-T less_bound(T x)
+ref_type lower_bound(T x)
+ref_type less_bound(T x)
 ```
 **・ 概要 :** x以上で最小、x以下で最大の値の取得。なければ-1を返す  
 **・ 制約 :** 0 <= x  
