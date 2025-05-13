@@ -1,26 +1,22 @@
 template <typename T>
 struct binary_trie{
-    static_assert(is_signed_v<T>);
-    
     private:
     
     struct node_t{
         T value;
         int count = 0;
-        int child[2] = {-1, -1};
+        array<int, 4> child = {};
         int width = 0;
-        node_t& operator=(const node_t& o){
-            value = o.value;
-            count = o.count;
-            child[0] = o.child[0];
-            child[1] = o.child[1];
-            width = o.width;
-            return *this;
-        }
+    };
+    
+    struct ref_node_t{
+        T val;
+        bool exist;
+        ref_node_t(T x, bool e) : val{x}, exist{e} {}
     };
     
     static constexpr T one = 1;
-    static constexpr int bit_width = sizeof(T) * 8 - 1;
+    static constexpr int bit_width = sizeof(T) * 8;
     vector<node_t> node;
     T xor_val = 0;
     int root = -1;
@@ -35,6 +31,7 @@ struct binary_trie{
     
     //[l, r)のマスクを返す
     inline T mask(int l, int r) const {
+        if(r >= bit_width) return -(one<<l);
         return (one<<r) - (one<<l);
     }
     
@@ -43,9 +40,9 @@ struct binary_trie{
         return mask(l, r) & v;
     }
     
-    //上位から数えて初めて異なるbitを返す。
+    //上位から見て初めて異なるbit以降の個数を返す(例えば、一致していたら0)
     inline int diff_bit(T x, T y) const {
-        return bit_width - clz(x^y);
+        return ((bit_width-1 - clz(x^y))|1) + 1;
     }
     
     //ノードを返す
@@ -58,83 +55,70 @@ struct binary_trie{
     public:
     
     binary_trie(){
+        make_node(0);
         root = make_node(0);
-        node[0].width = bit_width;
-        node[0].child[0] = -1;
-        node[0].child[1] = -1;
+        node[root].width = bit_width;
     }
     
-    binary_trie<T>& operator=(binary_trie<T>&& o) noexcept {
-        node = move(o.node);
-        root = o.root;
-        siz = o.siz;
-    }
+    binary_trie<T>& operator=(binary_trie<T>&& o) noexcept = default;
     
-    binary_trie(binary_trie&& o) noexcept {
-        *this = move(o);
-    }
+    binary_trie(binary_trie&& o) noexcept = default;
     
     void insert(T v) {
         int pos = root;
         int bit = bit_width;
         siz++;
         v ^= xor_val;
-        while(node[pos].child[0] != -1){
+        while(pos != 0){
             T mv = masked(v, bit-node[pos].width, bit);
             T mnv = masked(node[pos].value, bit-node[pos].width, bit);
             if(mv != mnv){
                 int diff = diff_bit(mv, mnv);
-                bool b = (mv>>diff)&1;
+                int b = (mv>>(diff-2))&3;
+                int nb = (mnv>>(diff-2))&3;
                 int inter = make_node(node[pos].value);
                 int leaf = make_node(v);
                 node[inter] = node[pos];
-                node[inter].width = node[inter].width - (bit - diff - 1);
+                node[inter].width -= bit - diff;
+                memset(node[pos].child.data(), 0, sizeof(int)*4);
                 node[pos].child[b] = leaf;
-                node[pos].child[!b] = inter;
+                node[pos].child[nb] = inter;
                 node[pos].count++;
-                node[pos].width = bit - diff - 1;
-                bit -= node[pos].width;
+                node[pos].width = bit - diff;
+                bit = diff;
                 node[leaf].width = bit;
+                node[leaf].count = 1;
                 pos = leaf;
+                return;
             } else {
                 node[pos].count++;
                 bit -= node[pos].width;
-                pos = node[pos].child[(v>>(bit-1))&1];
+                if(bit == 0) return;
+                int nex = node[pos].child[(v>>(bit-2))&3];
+                if(nex == 0){
+                    nex = node[pos].child[(v>>(bit-2))&3] = make_node(v);
+                    node[nex].count = 1;
+                    node[nex].width = bit;
+                    return;
+                }
+                pos = nex;
             }
         }
-        
-        if(node[pos].value == v){
-            node[pos].count++;
-            return;
-        }
-        
-        int diff = diff_bit(v, node[pos].value);
-        bool b = (v>>diff)&1;
-        int leafv = make_node(v);
-        int leafn = make_node(node[pos].value);
-        node[pos].child[b] = leafv;
-        node[pos].child[!b] = leafn;
-        node[leafn].count = node[pos].count;
-        node[pos].count += 1;
-        node[leafv].width = node[leafn].width = node[pos].width - (bit - diff - 1);
-        node[pos].width = bit - diff - 1;
-        node[leafv].count = 1;
     }
     
     int count(T v) const {
         int pos = root;
         int bit = bit_width;
         v ^= xor_val;
-        while(node[pos].child[0] != -1){
+        while(pos != 0){
             T mv = masked(v, bit-node[pos].width, bit);
             T mnv = masked(node[pos].value, bit-node[pos].width, bit);
             if(mv != mnv) return 0;
             bit -= node[pos].width;
-            pos = node[pos].child[(v>>(bit-1))&1];
+            if(bit == 0) return node[pos].count;
+            pos = node[pos].child[(v>>(bit-2))&3];
         }
-        
-        if(node[pos].value != v) return 0;
-        else return node[pos].count;
+        return 0;
     }
     
     void erase(T v, int n = -1) {
@@ -144,77 +128,99 @@ struct binary_trie{
         int bit = bit_width;
         siz -= n;
         v ^= xor_val;
-        while(node[pos].child[0] != -1){
+        while(true){
             node[pos].count -= n;
             bit -= node[pos].width;
-            pos = node[pos].child[(v>>(bit-1))&1];
+            if(bit == 0) return;
+            pos = node[pos].child[(v>>(bit-2))&3];
         }
-        node[pos].count -= n;
     }
     
-    T get_largest(int k) const {
-        assert(0 <= k && k < siz);
+    const ref_node_t operator[](int k) const {
+        if(k >= 0) k = siz-k-1;
+        else k += siz;
+        if(k < 0 || siz <= k) return ref_node_t{0, false};
+        
         k++;
         int pos = root;
-        int bit = bit_width-1;
-        while(node[pos].child[0] != -1){
-            bool b = (xor_val>>(bit-node[pos].width))&1;
+        int bit = bit_width;
+        while(true){
             bit -= node[pos].width;
-            if(k <= node[node[pos].child[!b]].count){
-                pos = node[pos].child[!b];
+            if(bit == 0) return ref_node_t{node[pos].value^xor_val, true};
+            int b = (xor_val>>(bit-2))&3;
+            auto &child = node[pos].child;
+            if(k <= node[child[b^3]].count){
+                pos = child[b^3];
             } else {
-                k -= node[node[pos].child[!b]].count;
-                pos = node[pos].child[b];
+                k -= node[child[b^3]].count;
+                if(k <= node[child[b^2]].count){
+                    pos = child[b^2];
+                } else {
+                    k -= node[child[b^2]].count;
+                    if(k <= node[child[b^1]].count){
+                        pos = child[b^1];
+                    } else {
+                        k -= node[child[b^1]].count;
+                        pos = child[b];
+                    }
+                }
             }
         }
-        return node[pos].value^xor_val;
     }
     
-    T get_smallest(int k) const {
-        return get_largest(siz - k - 1);
-    }
-    
-    //以下の要素の個数
+    //未満の要素の個数
     int order(T v) const {
         if(v == 0) return 0;
         v--;
         int res = 0;
         int pos = root;
         int bit = bit_width;
-        while(node[pos].child[0] != -1){
+        while(pos != 0){
             T mv = masked(v, bit-node[pos].width, bit);
             T mnv = masked(node[pos].value^xor_val, bit-node[pos].width, bit);
             if(mv < mnv){
                 return res;
-            } else if(mv > mnv){
-                return res + node[pos].count;
             } else {
-                bit -= node[pos].width;
-                bool b = ((v>>(bit-1))&1);
-                if(b){
-                    res += node[node[pos].child[(xor_val>>(bit-1))&1]].count;
+                if(mv > mnv){
+                    res += node[pos].count;
+                    return res;
+                } else {
+                    bit -= node[pos].width;
+                    if(bit == 0) return res + node[pos].count;
+                    int b = (v>>(bit-2))&3;
+                    auto &child = node[pos].child;
+                    T mxv = (xor_val>>(bit-2))&3;
+                    
+                    if(b >= 1){
+                        res += node[child[mxv]].count;
+                        if(b >= 2){
+                            res += node[child[mxv^1]].count;
+                            if(b >= 3){
+                                res += node[child[mxv^2]].count;
+                            }
+                        }
+                    }
+                    pos = node[pos].child[b^((xor_val>>(bit-2))&3)];
                 }
-                pos = node[pos].child[b^((xor_val>>(bit-1))&1)];
             }
         }
-        if((node[pos].value^xor_val) <= v) res += node[pos].count;
         return res;
     }
     
-    T lower_bound(T v) const {
+    const ref_node_t lower_bound(T v) const {
         int ord = order(v);
-        if(siz == ord) return -1;
-        else return get_smallest(ord);
+        if(siz == ord) return ref_node_t{0, false};
+        else return ref_node_t{(*this)[ord].val, true};
     }
     
-    T less_bound(T v) const {
+    const ref_node_t less_bound(T v) const {
         int ord = v!=numeric_limits<T>::max() ? order(v+1) : siz;
-        if(ord == 0) return -1;
-        else return get_smallest(ord-1);
+        if(ord == 0) return ref_node_t{0, false};
+        else return ref_node_t{(*this)[ord-1].val, true};
     }
     
     void reserve(int n) {
-        node.reserve(2*n+1);
+        node.reserve(2*n+2);
     }
     
     int size() const {
@@ -225,19 +231,19 @@ struct binary_trie{
         xor_val ^= x;
     }
     
-    T xor_min(T v) {
-        assert(siz != 0);
+    const ref_node_t xor_min(T v) {
+        if(siz == 0) return ref_node_t{0, false};
         apply_xor(v);
-        T res = get_smallest(0);
+        ref_node_t res{(*this)[0].val^v, true};
         apply_xor(v);
-        return res^v;
+        return res;
     }
     
-    T xor_max(T v) {
-        assert(siz != 0);
+    const ref_node_t xor_max(T v) {
+        if(siz == 0) return ref_node_t{0, false};
         apply_xor(v);
-        T res = get_largest(0);
+        ref_node_t res{(*this)[-1].val^v, true};
         apply_xor(v);
-        return res^v;
+        return res;
     }
 };
