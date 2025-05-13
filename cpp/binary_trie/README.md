@@ -102,5 +102,5 @@ void size()
 <br>
 <br>
 verified? :  
-[https://judge.yosupo.jp/submission/279375](https://judge.yosupo.jp/submission/284655)  
-[https://judge.yosupo.jp/submission/284654](https://judge.yosupo.jp/submission/284654)
+[Library Checker Set Xor-Min](https://judge.yosupo.jp/submission/285007)  
+[Library Checker Ordered Set](https://judge.yosupo.jp/submission/285011)
