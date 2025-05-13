@@ -47,6 +47,7 @@ T xor_max(T x)
 **・ 概要 :** xor最小、最大値の取得（xorされていない要素が返ってくる）  
 **・ 制約 :** 0 <= x  
 **・ 計算量 :** Θ(bit)  
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
 <br>
 ## get_smallest / get_largest
 ```cpp
@@ -56,6 +57,7 @@ T get_largest(int k)
 **・ 概要 :** k番目の値の取得  
 **・ 制約 :** 0 <= k < size()  
 **・ 計算量 :** Θ(bit)  
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
 <br>
 ## lower_bound / less_bound
 ```cpp
@@ -65,6 +67,7 @@ T less_bound(T x)
 **・ 概要 :** x以上で最小、x以下で最大の値の取得。なければ-1を返す  
 **・ 制約 :** 0 <= x  
 **・ 計算量 :** Θ(bit) 
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
 <br>
 ## order
 ```cpp
