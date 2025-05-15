@@ -13,7 +13,7 @@
 ```cpp
 binary_trie<T> bin
 ```
-Tは符号付き（範囲外で-1を返すため）。   
+Tは整数  
 <br>
 ## insert
 ```cpp
