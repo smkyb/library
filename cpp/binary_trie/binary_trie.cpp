@@ -29,23 +29,19 @@ struct binary_trie{
         else return __builtin_clz(x);
     }
     
-    //[l, r)のマスクを返す
     inline T mask(int l, int r) const {
         if(r >= bit_width) return -(one<<l);
         return (one<<r) - (one<<l);
     }
     
-    //[l, r)bitを取り出す
     inline T masked(T v, int l, int r) const {
         return mask(l, r) & v;
     }
     
-    //上位から見て初めて異なるbit以降の個数を返す(例えば、一致していたら0)
     inline int diff_bit(T x, T y) const {
         return ((bit_width-1 - clz(x^y))|1) + 1;
     }
     
-    //ノードを返す
     inline int make_node(T v){
         node.emplace_back();
         node.back().value = v;
@@ -168,7 +164,6 @@ struct binary_trie{
         }
     }
     
-    //未満の要素の個数
     int order(T v) const {
         if(v == 0) return 0;
         v--;
