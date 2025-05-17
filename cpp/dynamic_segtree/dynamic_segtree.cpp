@@ -44,15 +44,15 @@ struct dynamic_segtree{
     
     public:
     
-    binary_trie(){
+    dynamic_segtree(){
         make_node(0, e());
         root = make_node(0, e());
         node[root].width = bit_width;
     }
     
-    binary_trie<T, S, op, e>& operator=(binary_trie<T, S, op, e>&& o) noexcept = default;
+    dynamic_segtree<T, S, op, e>& operator=(dynamic_segtree<T, S, op, e>&& o) noexcept = default;
     
-    binary_trie(binary_trie&& o) noexcept = default;
+    dynamic_segtree(dynamic_segtree&& o) noexcept = default;
     
     void set(T v, const S &x) {
         int pos = root;
@@ -115,6 +115,10 @@ struct dynamic_segtree{
         }
         auto &child = node[pos].child;
         return op(op(op(_prod(l, r, child[0], bit), _prod(l, r, child[1], bit)), _prod(l, r, child[2], bit)), _prod(l, r, child[3], bit));
+    }
+    
+    S all_prod() const {
+        return node[root].sum;
     }
     
     void reserve(int n) {
