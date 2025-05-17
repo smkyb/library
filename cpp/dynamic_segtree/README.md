@@ -15,10 +15,13 @@ T は添え字の型
 S・op・eはACLと同じ  
 <br>
 
-## set
+## set(T p, S x)
 はい  
 
-## prod
+## prod(T l, T r)
+はい  
+
+## all_prod()
 はい  
 
 ## reserve
