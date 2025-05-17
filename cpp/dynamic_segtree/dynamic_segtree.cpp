@@ -14,7 +14,6 @@ struct dynamic_segtree{
     static constexpr int bit_width = sizeof(T) * 8;
     vector<node_t> node;
     int root = -1;
-    int siz = 0;
     
     //__builtin_clz
     template<typename _Tp>
@@ -58,7 +57,6 @@ struct dynamic_segtree{
     void set(T v, const S &x) {
         int pos = root;
         int bit = bit_width;
-        siz++;
         int route[65], route_cnt = 0;
         while(true){
             T mv = masked(v, bit-node[pos].width, bit);
@@ -103,14 +101,6 @@ struct dynamic_segtree{
         }
     }
     
-    void reserve(int n) {
-        node.reserve(2*n+2);
-    }
-    
-    int size() const {
-        return siz;
-    }
-    
     S prod(T l, T r) const {
         return _prod(l, r, root, bit_width);
     }
@@ -125,5 +115,9 @@ struct dynamic_segtree{
         }
         auto &child = node[pos].child;
         return op(op(op(_prod(l, r, child[0], bit), _prod(l, r, child[1], bit)), _prod(l, r, child[2], bit)), _prod(l, r, child[3], bit));
+    }
+    
+    void reserve(int n) {
+        node.reserve(2*n+2);
     }
 };
