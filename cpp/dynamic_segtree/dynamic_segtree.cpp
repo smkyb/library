@@ -8,6 +8,10 @@ struct dynamic_segtree{
         array<int, 4> child = {};
         int width = 0;
         node_t() : sum{e()} {}
+        node_t(const node_t &o) noexcept = default;
+        node_t(node_t &&o) noexcept = default;
+        node_t &operator=(const node_t &o) noexcept = default;
+        node_t &operator=(node_t &&o) noexcept = default;
     };
     
     static constexpr T one = 1;
@@ -35,10 +39,10 @@ struct dynamic_segtree{
         return ((bit_width-1 - clz(x^y))|1) + 1;
     }
     
-    inline int make_node(T v, const S &x){
+    inline int make_node(T v, S x){
         node.emplace_back();
         node.back().value = v;
-        node.back().sum = x;
+        node.back().sum = move(x);
         return ssize(node)-1;
     }
     
@@ -79,6 +83,7 @@ struct dynamic_segtree{
                 pos = leaf;
                 break;
             } else {
+                
                 bit -= node[pos].width;
                 if(bit == 0){
                     node[pos].sum = x;
