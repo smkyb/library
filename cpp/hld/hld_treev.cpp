@@ -1,7 +1,5 @@
-//非可換なら
-#define HLD_NON_COMMUTATIVE false
 //addが使えるなら
-#define HLD_HAS_OPERATION_ADD false
+#define HLD_HAS_OPERATION_ADD true
 //区間作用があるなら
 #define HLD_HAS_LAZY_APPLY false
 
@@ -10,17 +8,13 @@ template<int MAXN, typename S, auto op, auto e>
 
 struct hld_tree{
     using node_type = segtree<S, op, e>;
-    //using node_type = lazy_segtree<S, op, e, F, mapping, composition, id>
+    //using node_type = segtree<S, op, e, F, mapping, composition, id>
     
     int n, r, edge_idx;
     int dep[MAXN], in[MAXN], out[MAXN], head[MAXN], par[MAXN];
     array<int, 2> E[MAXN-1];
     
-    #if HLD_NON_COMMUTATIVE
     node_type node[2];
-    #else
-    node_type node;
-    #endif
     
     hld_tree(int _n, int _r = -1):
         n(_n), r(_r), edge_idx(0){
@@ -112,18 +106,12 @@ struct hld_tree{
         vector<S> node_v(n);
         for(int i = 0; i < n; i++) node_v[in[i]] = v[i];
         
-        #if HLD_NON_COMMUTATIVE
         node[0] = node_type(node_v);
         reverse(node_v.begin(), node_v.end());
         node[1] = node_type(node_v);
-        #else
-        node = node_type(node_v);
-        #endif
     }
     
     #if HLD_HAS_OPERATION_ADD
-    
-    #if HLD_NON_COMMUTATIVE
     
     void add(int p, const S& x){
         assert(0 <= p && p < n);
@@ -131,17 +119,7 @@ struct hld_tree{
         node[1].add(n-in[p]-1, x);
     }
     
-    #else
-    
-    void add(int p, const S& x){
-        assert(0 <= p && p < n);
-        node.add(in[p], x);
-    }
-    
     #endif
-    #endif
-    
-    #if HLD_NON_COMMUTATIVE
     
     S prod(int l, int r){
         assert(0 <= l && 0 <= r && l < n && r < n);
@@ -179,41 +157,6 @@ struct hld_tree{
         node[1].set(n-in[p]-1, x);
     }
     
-    #else
-    
-    S prod(int l, int r){
-        assert(0 <= l && 0 <= r && l < n && r < n);
-        S ans = e();
-        while(true){
-            if(dep[l] < dep[r]) swap(l, r);
-            if(dep[l] != dep[r] || head[l] != head[r]){
-                ans = op(ans, node.prod(in[head[l]], in[l]+1));
-                l = par[head[l]];
-            } else {
-                if(in[l] > in[r]) swap(l, r);
-                ans = op(ans, node.prod(in[l], in[r]+1));
-                return ans;
-            }
-        }
-    }
-    
-    S prod(int r){
-        assert(0 <= r && r < n);
-        return node.prod(in[r], out[r]);
-    }
-    
-    S get(int p){
-        assert(0 <= p && p < n);
-        return node.get(in[p]);
-    }
-    
-    void set(int p, const S& x){
-        assert(0 <= p && p < n);
-        node.set(in[p], x);
-    }
-    
-    #endif
-    
     int lca(int l, int r){
         assert(0 <= l && 0 <= r && l < n && r < n);
         while(true){
@@ -245,8 +188,6 @@ struct hld_tree{
     
     #if HLD_HAS_LAZY_APPLY
     
-    #if HLD_NON_COMMUTATIVE
-    
     void apply(int l, int r, const F& x){
         while(true){
             if(dep[l] < dep[r]) swap(l, r);
@@ -268,26 +209,5 @@ struct hld_tree{
         node[1].apply(n-out[r], n-in[r], x);
     }
     
-    #else
-    
-    void apply(int l, int r, const F& x){
-        while(true){
-            if(dep[l] < dep[r]) swap(l, r);
-            if(dep[l] != dep[r] || head[l] != head[r]){
-                node.apply(in[head[l]], in[l]+1, x);
-                l = par[head[l]];
-            } else {
-                if(in[l] > in[r]) swap(l, r);
-                node.apply(in[l], in[r]+1, x);
-                break;
-            }
-        }
-    }
-    
-    void apply(int r, const F& x){
-        node.apply(in[r], out[r], x);
-    }
-    
-    #endif
     #endif
 };
