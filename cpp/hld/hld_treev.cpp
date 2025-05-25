@@ -6,8 +6,8 @@
 template<int MAXN, typename S, auto op, auto e>
 //template<int MAXN, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id>
 
-struct hld_tree{
-    using node_type = segtree<S, op, e>;
+struct hld{
+    using node_type = fenwick_tree<S>;
     //using node_type = segtree<S, op, e, F, mapping, composition, id>
     
     int n, r, edge_idx;
@@ -16,7 +16,7 @@ struct hld_tree{
     
     node_type node[2];
     
-    hld_tree(int _n, int _r = -1):
+    hld(int _n, int _r = -1):
         n(_n), r(_r), edge_idx(0){
             if(r == -1) r = random_device()()%n;
         }
