@@ -1,48 +1,53 @@
-//addが使えるなら
-#define HLD_HAS_OPERATION_ADD true
-//区間作用があるなら
-#define HLD_HAS_LAZY_APPLY false
-
-template<int MAXN, typename S, auto op, auto e>
-//template<int MAXN, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id>
-
+template<typename S, auto op, auto e = []{return S();}, typename F = int, auto mapping = []{}, auto composition = []{}, auto id = []{}>
 struct hld{
-    using node_type = fenwick_tree<S>;
-    //using node_type = segtree<S, op, e, F, mapping, composition, id>
+    using node_type = segtree<S, op, e>;
+    //using node_type = lazy_segtree<S, op, e, F, mapping, composition, id>
     
+    int *dum0, *dum1;
     int n, r, edge_idx;
-    int dep[MAXN], in[MAXN], out[MAXN], head[MAXN], par[MAXN];
-    array<int, 2> E[MAXN-1];
+    int *dep, *in, *out, *head, *par;
+    int *E;
     
     node_type node[2];
     
     hld(int _n, int _r = -1):
         n(_n), r(_r), edge_idx(0){
             if(r == -1) r = random_device()()%n;
+            dum0 = new int[n*7-2];
+            dep = dum0;
+            in = dum0+n;
+            out = dum0+n*2;
+            head = dum0+n*3;
+            par = dum0+n*4;
+            E = dum0+n*5;
         }
     
     void add_edge(int u, int v){
-        E[edge_idx][0] = u;
-        E[edge_idx][1] = v;
-        edge_idx++;
+        E[edge_idx++] = u;
+        E[edge_idx++] = v;
     }
     
     void build(const vector<S>& v){
-        int g[(MAXN-1)*2], start[MAXN+1], C[MAXN+1];
-        for(int i = 0; i < n-1; i++){
-            auto [u, v] = E[i];
-            start[u+1]++;
-            start[v+1]++;
+        dum1 = new int[n*8+1];
+        int *g = dum1;
+        int *start = dum1+n*2-2;
+        int *C = dum1+n*3-1;
+        memset(start, 0, sizeof(int)*(n+1));
+        
+        for(int i = 0; i < 2*n-2; i+=2){
+            start[E[i]+1]++;
+            start[E[i+1]+1]++;
         }
         for(int i = 1; i <= n; i++) start[i] += start[i-1];
         memcpy(C, start, sizeof(int)*(n+1));
-        for(int i = 0; i < n-1; i++){
-            auto [u, v] = E[i];
-            g[C[u]++] = v;
-            g[C[v]++] = u;
+        
+        for(int i = 0; i < 2*n-2; i+=2){
+            g[C[E[i]]++] = E[i+1];
+            g[C[E[i+1]]++] = E[i];
         }
         
-        int sub_siz[MAXN], idx[MAXN+1];
+        int *sub_siz = dum1+n*4;
+        int *idx = dum1+n*5;
         fill(sub_siz, sub_siz+n, 1);
         memcpy(idx, start, sizeof(int)*(n+1));
         
@@ -65,7 +70,9 @@ struct hld{
         }
         
         memcpy(idx, start, sizeof(int)*(n+1));
-        int state[MAXN]{}, heavy[MAXN];
+        int *state = dum1+n*6+1;
+        int *heavy = dum1+n*7+1;
+        memset(state, 0, sizeof(int)*n);
         
         int node_siz = 0;
         cur = r;
@@ -109,17 +116,9 @@ struct hld{
         node[0] = node_type(node_v);
         reverse(node_v.begin(), node_v.end());
         node[1] = node_type(node_v);
+        
+        delete[] dum1;
     }
-    
-    #if HLD_HAS_OPERATION_ADD
-    
-    void add(int p, const S& x){
-        assert(0 <= p && p < n);
-        node[0].add(in[p], x);
-        node[1].add(n-in[p]-1, x);
-    }
-    
-    #endif
     
     S prod(int l, int r){
         assert(0 <= l && 0 <= r && l < n && r < n);
@@ -157,6 +156,12 @@ struct hld{
         node[1].set(n-in[p]-1, x);
     }
     
+    void add(int p, const S& x){
+        assert(0 <= p && p < n);
+        node[0].add(in[p], x);
+        node[1].add(n-in[p]-1, x);
+    }
+    
     int lca(int l, int r){
         assert(0 <= l && 0 <= r && l < n && r < n);
         while(true){
@@ -186,7 +191,6 @@ struct hld{
         }
     }
     
-    #if HLD_HAS_LAZY_APPLY
     
     void apply(int l, int r, const F& x){
         while(true){
@@ -208,6 +212,4 @@ struct hld{
         node[0].apply(in[r], out[r], x);
         node[1].apply(n-out[r], n-in[r], x);
     }
-    
-    #endif
 };
