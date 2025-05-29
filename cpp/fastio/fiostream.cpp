@@ -9,7 +9,7 @@ struct FIstream{
     inline char _getchar(){
         if(p1 == p2){
             p2 = (p1 = buf) + fread(buf, 1, SIZ, stdin);
-            if(p1 == p2) return EOF;
+            if(p1 == p2) [[unlikely]] assert(0&&"EOF");
         }
         return *p1++;
     }
@@ -39,8 +39,8 @@ struct FIstream{
     inline FIstream& operator>>(T& x){_read(x); return *this;}
     inline FIstream& operator>>(char& x){x = ignore_space(); return *this;}
     #ifdef _GLIBCXX_STRING
-    inline FIstream& operator>>(std::string& x){
-        std::string().swap(x);
+    inline FIstream& operator>>(string& x){
+        string().swap(x);
         char c = ignore_space();
         while(c > 0x20){
             x.push_back(c);
@@ -83,21 +83,21 @@ struct FOstream{
     }
     
     inline void _putchar(char c){
-        if(p1 == p2){
-            fwrite(buf, 1, p1 - buf, stdout);
-            p1 = buf;
+        if(p1 == p2) [[unlikely]] {
+            _write();
         }
         *p1++ = c;
     }
     
     template<typename T>
     void _write_i(T x){
-        char num[100], *idxp = num+100;
+        constexpr int DIGIT_SIZ = 40;
+        char num[DIGIT_SIZ], *idxp = num+DIGIT_SIZ;
         if(x < 0){
             _putchar('-');
             x = -x;
         }
-        if(p1 - buf < 100) _write();
+        if(p2 - p1 < DIGIT_SIZ) _write();
         while(x >= 10000){
             idxp -= 4;
             memcpy(idxp, _FOstream_pre.num[x%10000], 4);
@@ -113,31 +113,32 @@ struct FOstream{
             memcpy(p1, _FOstream_pre.num[x]+2, 2);
             p1 += 2;
         } else *p1++ = x+'0';
-        memcpy(p1, idxp, num+100 - idxp);
-        p1 += num+100 - idxp;
+        memcpy(p1, idxp, num+DIGIT_SIZ - idxp);
+        p1 += num+DIGIT_SIZ - idxp;
     }
     
     template<typename T>
-    FOstream& operator<<(T x){
-        if constexpr(is_same_v<T, char>){
-            _putchar(x);
-        } else if constexpr(is_same_v<decay_t<T>, const char*> || is_same_v<decay_t<T>, char*>){
-            while(*x) _putchar(*x++);
-        } else if constexpr(is_integral_v<T> || is_same_v<T, __int128>){
-            _write_i(x);
-        } else if constexpr(is_same_v<T, float> || is_same_v<T, double>){
-            char _b[100];
-            snprintf(_b, sizeof(_b), "%.*f", 15, x);
-            *this << _b;
-        } else if constexpr(is_same_v<T, long double>){
-            char _b[100];
-            snprintf(_b, sizeof(_b), "%.*Lf", 15, x);
-            *this << _b;
-        } else assert(0);
+    FOstream &operator<<(const T &x) {_write_i(x); return *this;}
+    FOstream &operator<<(char x) {_putchar(x); return *this;}
+    FOstream &operator<<(const char *x) {
+        while(*x) _putchar(*x++);
         return *this;
     }
+    FOstream &operator<<(char *x) {return *this << const_cast<const char*>(x);}
+    FOstream &operator<<(double x) {
+        if(isnan(x)) [[unlikely]] return *this << "nan";
+        char _b[70];
+        snprintf(_b, sizeof(_b), "%.*f", 15, x);
+        return *this << const_cast<const char*>(_b);
+    }
+    FOstream &operator<<(long double x) {
+        if(isnan(x)) [[unlikely]] return *this << "nan";
+        char _b[330];
+        snprintf(_b, sizeof(_b), "%.*Lf", 15, x);
+        return *this << const_cast<const char*>(_b);
+    }
     #ifdef _GLIBCXX_STRING
-    FOstream& operator<<(const std::string& x){
+    FOstream& operator<<(const string& x){
         for(char i : x) _putchar(i);
         return *this;
     }
