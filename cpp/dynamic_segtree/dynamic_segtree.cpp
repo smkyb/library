@@ -106,6 +106,17 @@ struct dynamic_segtree{
         }
     }
     
+    S get(T p) const {
+        int pos = root;
+        int bit = bit_width;
+        while(pos != 0){
+            bit -= node[pos].width;
+            if(bit == 0) return node[pos].value==p ? node[pos].sum : e();
+            pos = node[pos].child[(p>>(bit-2))&3];
+        }
+        return e();
+    }
+    
     S prod(T l, T r) const {
         return _prod(l, r, root, bit_width);
     }
