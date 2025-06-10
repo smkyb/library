@@ -11,8 +11,7 @@
 //デフォルトで、
 hld<typename S, auto op /*以下省略可能*/ , auto e = []{return S();}, typename F = int, auto mapping = []{}, auto composition = []{}, auto id = []{}> AAA(int _n, int _r = random)
 ```
-**・ 概要 :** MAXNは最大の頂点数(コンパイル時定数)、  
-S, op, eはACLのsegtreeのようなもの  
+**・ 概要 :** S, op, eはACLのsegtreeのようなもの  
 _nは頂点数  
 _rは根（部分木クエリを使うときは指定する）
 <br>
