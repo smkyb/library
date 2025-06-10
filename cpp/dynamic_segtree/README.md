@@ -5,7 +5,7 @@
 ・区間積  
 だけ行えます。  
   
-空間O(n)です
+空間 $O(n)$ です
 <br>
 
 ## コンストラクタ
@@ -18,16 +18,16 @@ S・op・eはACLと同じ
 <br>
 
 ## set(T p, S x)
-はい  
+$O(log N)$  
 
 ## get(T p)
-はい  
+$O(log N)$  
 
 ## prod(T l, T r)
-はい  
+$O(log N)$  
 
 ## all_prod()
-はい  
+$O(log N)$  
 
 ## reserve
 
@@ -37,7 +37,7 @@ void reserve(int n)
 
 **・ 概要 :** 合計n回setしたときに、内部のvectorで再配置が起こらないようにする  
 **・ 制約 :** 0 ≤ n < 常識  
-**・ (空間)計算量 :** Θ(n)  
+**・ (空間)計算量 :** $O(n)$  
 <br>
 
 verified? : [Library Checker Point Set Range Composite (Large Array)](https://judge.yosupo.jp/submission/286197)
