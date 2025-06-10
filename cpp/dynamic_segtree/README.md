@@ -20,6 +20,9 @@ S・op・eはACLと同じ
 ## set(T p, S x)
 はい  
 
+## get(T p)
+はい  
+
 ## prod(T l, T r)
 はい  
 
