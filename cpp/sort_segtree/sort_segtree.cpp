@@ -179,7 +179,6 @@ struct sort_segtree {
                         reuse.pop_back();
                         return ptr;
                     }
-                    CNT++;
                     ptr = new node_t[SIZ];
                     en = ptr + SIZ;
                 }
@@ -459,8 +458,9 @@ struct sort_segtree {
         for(int i = 0; i < n; i++) trie[i] = binary_trie(v[i].first, v[i].second);
         for(int i = 0; i < n; i++) seg.set(i, v[i].second);
     }
+    sort_segtree(sort_segtree<T, S, op, e> &&o) = default;
     
-    void set(int i, T p, S x){
+    void set(int i, T k, S x){
         int l = fset.less_bound(i);
         int r = fset.lower_bound(i+1);
         if(l < i){
@@ -475,7 +475,7 @@ struct sort_segtree {
             fset.insert(i+1);
             seg.set(i+1, trie[i+1].rev ? trie[i+1].all_prod().rtol : trie[i+1].all_prod().ltor);
         }
-        trie[i].init(p, x);
+        trie[i].init(k, x);
         seg.set(i, trie[i].rev ? trie[i].all_prod().rtol : trie[i].all_prod().ltor);
     }
     
