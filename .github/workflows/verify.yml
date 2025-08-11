@@ -30,6 +30,13 @@ jobs:
         git config --global user.name "${{ github.actor }}"
         git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
+    - name: Fetch and update gh-pages branch
+      run: |
+        git fetch origin gh-pages
+        git checkout gh-pages
+        git merge origin/gh-pages
+        git checkout main
+
     - name: Run tests (C/C++)
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
