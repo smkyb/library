@@ -1,11 +1,6 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_sort_range_composite"
 
-#include <bits/stdc++.h>
-#include "../../../atcoder/modint"
-using namespace std;
-using mint9 = atcoder::modint998244353;
-
-#include "../sort_segtree.cpp"
+#include "../../../_initialize.cpp"
 
 struct S{
     mint9 first, second;
