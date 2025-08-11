@@ -7,6 +7,8 @@ using ld = long double;
 #define all(x) begin(x), end(x)
 #define elif else if
 
+#include "cpp/fastio/fastio.cpp"
+
 constexpr long long LLINF = (1ll << 62) - 1;
 constexpr int INF = (1 << 30) - 1;
 constexpr char el = '\n';
