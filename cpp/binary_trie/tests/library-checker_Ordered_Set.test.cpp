@@ -18,7 +18,7 @@ int main(){
         int t, x;
         cin >> t >> x;
         if(t == 0){
-            S.insert(x);
+            if(S.count(x) == 0) S.insert(x);
         } elif(t == 1){
             S.erase_all(x);
         } elif(t == 2){
