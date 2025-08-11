@@ -21,7 +21,7 @@ struct binary_trie{
     
     struct Pool {
         constexpr static int SIZ = 1<<16;
-        node_t* ptr, *en;
+        node_t* ptr = nullptr, *en = nullptr;
         node_t* get() {
             if(ptr == en) [[unlikely]] {
                 ptr = new node_t[SIZ];
@@ -45,7 +45,10 @@ struct binary_trie{
     }
     
     inline T mask(int l, int r) const {
-        if(r >= bit_width) return -(one<<l);
+        if(r >= bit_width){
+            if(l >= bit_width) return 0;
+            else return -(one<<l);
+        }
         return (one<<r) - (one<<l);
     }
     
