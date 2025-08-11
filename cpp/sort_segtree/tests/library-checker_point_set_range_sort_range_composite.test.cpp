@@ -1,6 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_sort_range_composite"
 
 #include "../../../_initialize.cpp"
+#include "../sort_segtree.cpp"
 
 struct S{
     mint9 first, second;
