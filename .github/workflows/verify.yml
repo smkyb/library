@@ -6,8 +6,9 @@ on:
       - main
   pull_request:
 
+# ワークフロー内でリポジトリに push する場合、明示的に write 権限を要求できます。
 permissions:
-  contents: write   # GitHub Token がリポジトリに書き込む必要がある場合に便利
+  contents: write
 
 jobs:
   verify:
@@ -24,17 +25,13 @@ jobs:
     - name: Install verification-helper
       run: pip3 install -U online-judge-verify-helper
 
-    # Optional: Configure git to push using GH_PAT (if you set secrets.GH_PAT)
-    - name: Configure git for pushing (optional)
-      if: ${{ secrets.GH_PAT != '' }}
+    - name: Configure Git (no secrets)
       run: |
-        git config --global user.email "actions@github.com"
-        git config --global user.name "github-actions"
-        git remote set-url origin https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
     - name: Run tests (C/C++)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        GH_PAT: ${{ secrets.GH_PAT }}
       run: oj-verify all --languages c,c++
