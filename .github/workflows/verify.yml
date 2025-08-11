@@ -32,6 +32,7 @@ jobs:
 
     - name: Run tests (C/C++)
       env:
+        GH_PAT: ${{ secrets.GH_PAT }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: oj-verify all
