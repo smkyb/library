@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_composite_large_array"
 
-#include "../dynamic_segtree.cpp"
 #include "../../../_initialize.cpp"
+#include "../dynamic_segtree.cpp"
 
 struct S{
     mint9 first, second;
