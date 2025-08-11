@@ -6,7 +6,7 @@ using namespace std;
 
 using mint9 = atcoder::modint998244353;
 
-#include "../cpp/dynamic_segtree/dynamic_segtree.cpp"
+#include "../dynamic_segtree.cpp"
 
 struct S{
     mint9 first, second;
