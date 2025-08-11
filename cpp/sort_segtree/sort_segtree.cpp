@@ -57,6 +57,8 @@ struct sort_segtree {
     };
     
     struct fastset{
+        using ull = unsigned long long;
+        
         int siz;
         vector<ull> node;
         
