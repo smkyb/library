@@ -1,0 +1,35 @@
+#define PROBLEM "https://judge.yosupo.jp/problem/predecessor_problem"
+
+#include "../../../_initialize.cpp"
+#include "../binary_trie.cpp"
+
+signed main(){
+    
+    int n, q;
+    cin >> n >> q;
+    string s;
+    s.reserve(n+1);
+    cin >> s;
+    binary_trie<uint> S;
+    for(int i = 0; i < n; i++) if(s[i]=='1') S.insert(i);
+    
+    while(q--){
+        int c, k;
+        cin >> c >> k;
+        if(c == 0){
+            S.insert(k);
+        } else if(c == 1){
+            S.erase_all(k);
+        } else if(c == 2){
+            cout << (S.count(k)?1:0) << el;
+        } else if(c == 3){
+            auto ans = S.lower_bound(k);
+            if(ans.exist) cout << ans.val << el;
+            else cout << "-1" << el;
+        } else {
+            auto ans = S.less_bound(k);
+            if(ans.exist) cout << ans.val << el;
+            else cout << "-1" << el;
+        }
+    }
+}

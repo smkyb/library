@@ -1,0 +1,38 @@
+#define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_frequency"
+
+#include "../../../_initialize.cpp"
+#include "../binary_trie.cpp"
+
+signed main(){
+    
+    int n, q;
+    cin >> n >> q;
+    vector<int> A(n);
+    cin >> A;
+    vector<array<int, 4>> Q(q);
+    for(auto &i : Q){
+        cin >> i[0] >> i[1] >> i[2];
+        if(i[0] == 1) cin >> i[3]; 
+    }
+    
+    vector<int> C; C.reserve(n+q);
+    for(int i = 0; i < n; i++) C.push_back(A[i]);
+    for(int i = 0; i < q; i++) C.push_back(Q[i][2+(Q[i][0])]);
+    sort(all(C));
+    C.erase(unique(all(C)), C.end());
+    
+    for(int i = 0; i < n; i++) A[i] = lower_bound(all(C), A[i]) - C.begin();
+    for(int i = 0; i < q; i++) Q[i][2+Q[i][0]] = lower_bound(all(C), Q[i][2+Q[i][0]]) - C.begin();
+    
+    vector<binary_trie<uint>> S(C.size());
+    for(int i = 0; i < n; i++) S[A[i]].insert(i);
+    
+    for(auto [t, l, r, x] : Q){
+        if(t == 0){
+            S[A[l]].erase(l);
+            S[A[l]=r].insert(l);
+        } else {
+            cout << S[x].order(r) - S[x].order(l) << el;
+        }
+    }
+}
