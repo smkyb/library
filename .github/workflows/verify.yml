@@ -69,12 +69,12 @@ jobs:
         rustup install nightly
         rustup default nightly
 
-    - name: Install cargo-udeps for Rust
-      uses: baptiste0928/cargo-install@v2
-      with:
-        crate: cargo-udeps
-        version: '0.1.44'
-        args: --debug
+#    - name: Install cargo-udeps for Rust
+#      uses: baptiste0928/cargo-install@v2
+#      with:
+#        crate: cargo-udeps
+#        version: '0.1.44'
+#        args: --debug
 
     - name: Run tests (all)
       env:
