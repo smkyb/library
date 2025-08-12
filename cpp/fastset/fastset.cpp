@@ -1,0 +1,85 @@
+struct fastset{
+    using ull = unsigned long long;
+    using uint = unsigned;
+    
+    int siz;
+    vector<ull> node;
+    
+    fastset(int _n){
+        int n = 1;
+        while((n<<6) < _n) n <<= 6;
+        siz = (n+1)/63;
+        node.resize((n+1)/63 + (_n+63)/64);
+    }
+    
+    void insert(int x){
+        uint idx = siz + (x/64);
+        x &= 63;
+        while(true){
+            if((node[idx]>>x) & 1ull) return;
+            node[idx] |= (1ull<<x);
+            if(idx == 0) return;
+            idx--;
+            x = idx & 63;
+            idx /= 64;
+        }
+    }
+    
+    void erase(int x){
+        int idx = siz + (x/64);
+        x &= 63;
+        while(true){
+            node[idx] &= ~(1ull<<x);
+            if(idx == 0 || node[idx]) return;
+            idx--;
+            x = idx & 63;
+            idx /= 64;
+        }
+    }
+    
+    bool count(int x) const {
+        return (node[siz+x/64]>>(x&63u))&1;
+    }
+    
+    int lower_bound(int x){
+        if(count(x)) return x;
+        int idx = siz + (x/64);
+        x &= 63;
+        while(true){
+            if(node[idx] & ~(((1ull<<x)<<1) - 1ull)){
+                x = __builtin_ctzll(node[idx] & ~(((1ull<<x)<<1) - 1ull));
+                if(idx >= siz) return (idx-siz)*64+x;
+                break;
+            }
+            if(idx == 0) return -1;
+            idx--;
+            x = idx & 63;
+            idx /= 64;
+        }
+        
+        idx = idx*64 + x+1;
+        while(idx < siz) idx = idx*64 + __builtin_ctzll(node[idx])+1;
+        return (idx-siz)*64 + __builtin_ctzll(node[idx]);
+    }
+    
+    int less_bound(int x){
+        if(count(x)) return x;
+        int idx = siz + (x/64);
+        x &= 63;
+        while(true){
+            if(node[idx] & ((1ull<<x) - 1ull)){
+                x = 63 - __builtin_clzll(node[idx] & ((1ull<<x) - 1ull));
+                if(idx >= siz) return (idx-siz)*64+x;
+                break;
+            }
+            if(idx == 0) return -1;
+            idx--;
+            x = idx & 63;
+            idx /= 64;
+        }
+        
+        idx = idx*64 + x+1;
+        while(idx < siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]);
+        return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]);
+    }
+};
