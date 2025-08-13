@@ -5,40 +5,84 @@
 <tytle>smkyb's library</title>
 </head>
 <body>
-<pre>#define PROBLEM &quot;https://judge.yosupo.jp/problem/predecessor_problem&quot;
+<pre>#include &lt;iostream&gt;
+#include &lt;filesystem&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 
-#include &quot;../../../_initialize.cpp&quot;
-#include &quot;../binary_trie.cpp&quot;
+namespace fs = std::filesystem;
 
-signed main(){
-    
-    int n, q;
-    cin &gt;&gt; n &gt;&gt; q;
-    string s;
-    s.reserve(n+1);
-    cin &gt;&gt; s;
-    binary_trie&lt;uint&gt; S;
-    for(int i = 0; i &lt; n; i++) if(s[i]==&#x27;1&#x27;) S.insert(i);
-    
-    while(q--){
-        int c, k;
-        cin &gt;&gt; c &gt;&gt; k;
-        if(c == 0){
-            S.insert(k);
-        } else if(c == 1){
-            S.erase_all(k);
-        } else if(c == 2){
-            cout &lt;&lt; (S.count(k)?1:0) &lt;&lt; el;
-        } else if(c == 3){
-            auto ans = S.lower_bound(k);
-            if(ans.exist) cout &lt;&lt; ans.val &lt;&lt; el;
-            else cout &lt;&lt; &quot;-1&quot; &lt;&lt; el;
-        } else {
-            auto ans = S.less_bound(k);
-            if(ans.exist) cout &lt;&lt; ans.val &lt;&lt; el;
-            else cout &lt;&lt; &quot;-1&quot; &lt;&lt; el;
+std::string escapeJsonString(const std::string&amp; input) {
+    std::string output;
+    for (char c : input) {
+        switch(c) {
+            case &#x27;\&quot;&#x27;: output += &quot;\\\&quot;&quot;; break;
+            case &#x27;\\&#x27;: output += &quot;\\\\&quot;; break;
+            default: output += c; break;
         }
     }
+    return output;
+}
+
+void generateSnippetJson(const std::string&amp; directory, const std::string&amp; outputFile) {
+    std::ofstream outFile(outputFile);
+    if (!outFile) {
+        std::cerr &lt;&lt; &quot;Failed to open output file: &quot; &lt;&lt; outputFile &lt;&lt; std::endl;
+        return;
+    }
+    
+    outFile &lt;&lt; &quot;{\n&quot;;
+    
+    bool firstEntry = true;
+    for (const auto&amp; entry : fs::recursive_directory_iterator(directory)) {
+        if (entry.path().extension() == &quot;.cpp&quot; || entry.path().extension() == &quot;.hpp&quot;) {
+            if (!firstEntry) {
+                outFile &lt;&lt; &quot;,\n\t\n&quot;;
+            }
+            firstEntry = false;
+            
+            std::ifstream inFile(entry.path());
+            if (!inFile) continue;
+            
+            std::cout &lt;&lt; entry &lt;&lt; std::endl;
+            
+            std::vector&lt;std::string&gt; lines;
+            std::string line;
+            while (std::getline(inFile, line)) {
+                std::string escapedLine = escapeJsonString(line);
+                lines.push_back(&quot;\&quot;&quot; + escapedLine + &quot;\&quot;&quot;);
+            }
+            
+            std::string key = entry.path().stem().string();
+            outFile &lt;&lt; &quot;\t\&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;: {\n&quot;;
+            outFile &lt;&lt; &quot;\t\t\&quot;prefix\&quot;: \&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;,\n&quot;;
+            outFile &lt;&lt; &quot;\t\t\&quot;body\&quot;: [\n&quot;;
+            for (size_t i = 0; i &lt; lines.size(); ++i) {
+                outFile &lt;&lt; &quot;\t\t\t&quot; &lt;&lt; lines[i];
+                if (i != lines.size() - 1) {
+                    outFile &lt;&lt; &quot;,&quot;;
+                }
+                outFile &lt;&lt; &quot;\n&quot;;
+            }
+            outFile &lt;&lt; &quot;\t\t]\n&quot;;
+            outFile &lt;&lt; &quot;\t}&quot;;
+        }
+    }
+    
+    outFile &lt;&lt; &quot;\n}&quot;;
+    outFile.close();
+    std::cout &lt;&lt; std::endl;
+    std::cout &lt;&lt; &quot;cpp.json has been generated successfully.&quot; &lt;&lt; std::endl;
+}
+
+int main(){
+    //.cppや.hppが入っているフォルダを指定する
+    std::string directory = &quot;C:\\vscode programs\\Libraries&quot;;
+    //出力に使用するファイルを指定する（無い場合は新たに作られる？）
+    std::string outputfile = &quot;0_output.txt&quot;;
+    
+    generateSnippetJson(directory, outputfile);
 }
 </pre></body>
 </html>
