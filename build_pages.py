@@ -5,6 +5,19 @@ if os.path.exists("gh_pages"):
 os.makedirs("gh_pages")
 cnt_pages = 0
 
+def WriteTagU(f):
+    f.write("<!DOCTYPE html>\n" \
+    "<html lang=\"ja\">\n" \
+    "<head>\n" \
+    "<meta charset=\"UTF-8\">\n" \
+    "<tytle>smkyb's library</title>\n" \
+    "</head>\n" \
+    "<body>\n")
+
+def WriteTagD(f):
+    f.write("</body>\n" \
+    "</html>\n")
+
 def FindCppFiles(path:str) -> str:
     global cnt_pages
     
@@ -20,7 +33,9 @@ def FindCppFiles(path:str) -> str:
                 page_name = f"page{cnt_pages}.html"
                 page_path = os.path.join("gh_pages", page_name)
                 with open(page_path, "w", encoding="utf-8") as f:
+                    WriteTagU(f)
                     f.write(res)
+                    WriteTagD(f)
                 
                 if len(res_str) == 0:
                     res_str += "<ul>\n"
@@ -31,7 +46,9 @@ def FindCppFiles(path:str) -> str:
             page_path = os.path.join("gh_pages", page_name)
             with open(page_path, "w", encoding="utf-8") as f:
                 with open(now, "r", encoding="utf-8") as code_f:
+                    WriteTagU(f)
                     f.write(f"<pre>{html.escape(code_f.read(), quote=True)}</pre>")
+                    WriteTagD(f)
             
             if len(res_str) == 0:
                 res_str += "<ul>\n"
@@ -45,4 +62,6 @@ def FindCppFiles(path:str) -> str:
 with open("index.html", "w", encoding="utf-8") as f:
     res_str = FindCppFiles("cpp")
     if len(res_str) != 0:
+        WriteTagU(f)
         f.write(res_str)
+        WriteTagD(f)
