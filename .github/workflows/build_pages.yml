@@ -16,7 +16,7 @@ jobs:
         -   name: building
             run: |
                 git fetch origin main
-                git reset --hard main
+                git reset --hard origin/main
                 
                 echo "<h1>Library</h1>" > index.html
                 
@@ -25,4 +25,4 @@ jobs:
                 git fetch origin
                 git add .
                 git commit -m "Update gh-pages"
-                git --force push origin gh-pages
+                git push --force origin gh-pages
