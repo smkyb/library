@@ -1,4 +1,4 @@
-import shutil, os
+import shutil, os, html
 
 if os.path.exists("gh_pages"):
     shutil.rmtree("gh_pages")
@@ -31,7 +31,7 @@ def FindCppFiles(path:str) -> str:
             page_path = os.path.join("gh_pages", page_name)
             with open(page_path, "w", encoding="utf-8") as f:
                 with open(now, "r", encoding="utf-8") as code_f:
-                    f.write(f"<pre>{code_f.read()}</pre>")
+                    f.write(f"<pre>{html.escape(code_f.read(), quote=True)}</pre>")
             
             if len(res_str) == 0:
                 res_str += "<ul>\n"
