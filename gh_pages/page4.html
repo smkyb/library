@@ -5,43 +5,8 @@
 <tytle>smkyb's library</title>
 </head>
 <body>
-<pre>#define PROBLEM &quot;https://judge.yosupo.jp/problem/point_set_range_frequency&quot;
-
-#include &quot;../../../_initialize.cpp&quot;
-#include &quot;../binary_trie.cpp&quot;
-
-signed main(){
-    
-    int n, q;
-    cin &gt;&gt; n &gt;&gt; q;
-    vector&lt;int&gt; A(n);
-    cin &gt;&gt; A;
-    vector&lt;array&lt;int, 4&gt;&gt; Q(q);
-    for(auto &amp;i : Q){
-        cin &gt;&gt; i[0] &gt;&gt; i[1] &gt;&gt; i[2];
-        if(i[0] == 1) cin &gt;&gt; i[3]; 
-    }
-    
-    vector&lt;int&gt; C; C.reserve(n+q);
-    for(int i = 0; i &lt; n; i++) C.push_back(A[i]);
-    for(int i = 0; i &lt; q; i++) C.push_back(Q[i][2+(Q[i][0])]);
-    sort(all(C));
-    C.erase(unique(all(C)), C.end());
-    
-    for(int i = 0; i &lt; n; i++) A[i] = lower_bound(all(C), A[i]) - C.begin();
-    for(int i = 0; i &lt; q; i++) Q[i][2+Q[i][0]] = lower_bound(all(C), Q[i][2+Q[i][0]]) - C.begin();
-    
-    vector&lt;binary_trie&lt;uint&gt;&gt; S(C.size());
-    for(int i = 0; i &lt; n; i++) S[A[i]].insert(i);
-    
-    for(auto [t, l, r, x] : Q){
-        if(t == 0){
-            S[A[l]].erase(l);
-            S[A[l]=r].insert(l);
-        } else {
-            cout &lt;&lt; S[x].order(r) - S[x].order(l) &lt;&lt; el;
-        }
-    }
-}
-</pre></body>
+<ul>
+<li><a href=/library/gh_pages/page3.html>compression.cpp</a></li>
+</ul>
+</body>
 </html>
