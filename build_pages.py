@@ -24,7 +24,7 @@ def FindCppFiles(path:str) -> str:
                 
                 if len(res_str) == 0:
                     res_str += "<ul>\n"
-                res_str += f"<li><a href=/library/\"{page_path}\">{item}</a></li>\n"
+                res_str += f"<li><a href=/library/{page_path}>{item}</a></li>\n"
         elif item.endswith(".cpp"):
             cnt_pages += 1
             page_name = f"page{cnt_pages}.html"
@@ -35,7 +35,7 @@ def FindCppFiles(path:str) -> str:
             
             if len(res_str) == 0:
                 res_str += "<ul>\n"
-            res_str += f"<li><a href=/library/\"{page_path}\">{item}</a></li>\n"
+            res_str += f"<li><a href=/library/{page_path}>{item}</a></li>\n"
     
     if len(res_str) != 0:
         res_str += "</ul>\n"
