@@ -1,12 +1,8 @@
 name: verify
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
 
-# ワークフロー内でリポジトリに push する場合、明示的に write 権限を要求できます。
 permissions:
   contents: write
 
