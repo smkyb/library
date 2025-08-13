@@ -11,6 +11,14 @@ def WriteTagU(f):
     "<head>\n" \
     "<meta charset=\"UTF-8\">\n" \
     "<tytle>smkyb's library</title>\n" \
+    "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap\">\n" \
+    "<style>\n" \
+    "body {\n" \
+    "    margin: 60px;\n" \
+    "    font-family:'Noto Sans JP', Arial, sans-serif;\n" \
+    "    font-size:large;\n" \
+    "}\n" \
+    "</style>\n" \
     "</head>\n" \
     "<body>\n")
 
