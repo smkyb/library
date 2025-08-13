@@ -1,25 +1,25 @@
-<pre>#define PROBLEM "https://judge.yosupo.jp/problem/set_xor_min"
+<pre>#define PROBLEM &quot;https://judge.yosupo.jp/problem/set_xor_min&quot;
 
-#include "../../../_initialize.cpp"
-#include "../binary_trie.cpp"
+#include &quot;../../../_initialize.cpp&quot;
+#include &quot;../binary_trie.cpp&quot;
 
 int main(){
     uint q, x; char t;
-    cin >> q;
+    cin &gt;&gt; q;
     
-    binary_trie<uint> S;
+    binary_trie&lt;uint&gt; S;
     
     while(q--){
-        cin >> t >> x;
+        cin &gt;&gt; t &gt;&gt; x;
         switch(t){
-            case '0':
+            case &#x27;0&#x27;:
                 S.insert(x);
                 break;
-            case '1':
+            case &#x27;1&#x27;:
                 S.erase_all(x);
                 break;
-            case '2':
-                cout << (x^S.xor_min(x)) << '\n';
+            case &#x27;2&#x27;:
+                cout &lt;&lt; (x^S.xor_min(x)) &lt;&lt; &#x27;\n&#x27;;
                 break;
         }
     }

@@ -1,38 +1,38 @@
-<pre>#define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_frequency"
+<pre>#define PROBLEM &quot;https://judge.yosupo.jp/problem/point_set_range_frequency&quot;
 
-#include "../../../_initialize.cpp"
-#include "../binary_trie.cpp"
+#include &quot;../../../_initialize.cpp&quot;
+#include &quot;../binary_trie.cpp&quot;
 
 signed main(){
     
     int n, q;
-    cin >> n >> q;
-    vector<int> A(n);
-    cin >> A;
-    vector<array<int, 4>> Q(q);
-    for(auto &i : Q){
-        cin >> i[0] >> i[1] >> i[2];
-        if(i[0] == 1) cin >> i[3]; 
+    cin &gt;&gt; n &gt;&gt; q;
+    vector&lt;int&gt; A(n);
+    cin &gt;&gt; A;
+    vector&lt;array&lt;int, 4&gt;&gt; Q(q);
+    for(auto &amp;i : Q){
+        cin &gt;&gt; i[0] &gt;&gt; i[1] &gt;&gt; i[2];
+        if(i[0] == 1) cin &gt;&gt; i[3]; 
     }
     
-    vector<int> C; C.reserve(n+q);
-    for(int i = 0; i < n; i++) C.push_back(A[i]);
-    for(int i = 0; i < q; i++) C.push_back(Q[i][2+(Q[i][0])]);
+    vector&lt;int&gt; C; C.reserve(n+q);
+    for(int i = 0; i &lt; n; i++) C.push_back(A[i]);
+    for(int i = 0; i &lt; q; i++) C.push_back(Q[i][2+(Q[i][0])]);
     sort(all(C));
     C.erase(unique(all(C)), C.end());
     
-    for(int i = 0; i < n; i++) A[i] = lower_bound(all(C), A[i]) - C.begin();
-    for(int i = 0; i < q; i++) Q[i][2+Q[i][0]] = lower_bound(all(C), Q[i][2+Q[i][0]]) - C.begin();
+    for(int i = 0; i &lt; n; i++) A[i] = lower_bound(all(C), A[i]) - C.begin();
+    for(int i = 0; i &lt; q; i++) Q[i][2+Q[i][0]] = lower_bound(all(C), Q[i][2+Q[i][0]]) - C.begin();
     
-    vector<binary_trie<uint>> S(C.size());
-    for(int i = 0; i < n; i++) S[A[i]].insert(i);
+    vector&lt;binary_trie&lt;uint&gt;&gt; S(C.size());
+    for(int i = 0; i &lt; n; i++) S[A[i]].insert(i);
     
     for(auto [t, l, r, x] : Q){
         if(t == 0){
             S[A[l]].erase(l);
             S[A[l]=r].insert(l);
         } else {
-            cout << S[x].order(r) - S[x].order(l) << el;
+            cout &lt;&lt; S[x].order(r) - S[x].order(l) &lt;&lt; el;
         }
     }
 }

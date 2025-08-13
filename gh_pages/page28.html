@@ -1,49 +1,49 @@
-<pre>#define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_sort_range_composite"
+<pre>#define PROBLEM &quot;https://judge.yosupo.jp/problem/point_set_range_sort_range_composite&quot;
 
-#include "../../../_initialize.cpp"
-#include "../sort_segtree.cpp"
+#include &quot;../../../_initialize.cpp&quot;
+#include &quot;../sort_segtree.cpp&quot;
 
 struct S{
     mint9 first, second;
     S() : first(mint9::raw(1)), second(mint9::raw(0)) {}
-    S(const S &o) = default;
-    S(const mint9 &l, const mint9 &r) : first(l), second(r) {}
+    S(const S &amp;o) = default;
+    S(const mint9 &amp;l, const mint9 &amp;r) : first(l), second(r) {}
     static S e() {return {1, 0};}
-    static S op(const S &l, const S &r) {return {r.first*l.first, r.first*l.second + r.second};}
+    static S op(const S &amp;l, const S &amp;r) {return {r.first*l.first, r.first*l.second + r.second};}
 };
 
 int main(){
     uint n, q;
-    cin >> n >> q;
-    vector<pair<uint, S>> A(n);
-    for(uint i = 0; i < n; i++){
+    cin &gt;&gt; n &gt;&gt; q;
+    vector&lt;pair&lt;uint, S&gt;&gt; A(n);
+    for(uint i = 0; i &lt; n; i++){
         uint a, b;
-        cin >> A[i].first >> a >> b;
+        cin &gt;&gt; A[i].first &gt;&gt; a &gt;&gt; b;
         A[i].second = {a, b};
     }
-    sort_segtree<uint, S, S::op, S::e> trie(A);
+    sort_segtree&lt;uint, S, S::op, S::e&gt; trie(A);
     
     uint i{}, p{}, a{}, b{}, l{}, r{}, x{};
     S res{};
     while(q--){
         uint t;
-        cin >> t;
+        cin &gt;&gt; t;
         switch(t){
             case 0:
-                cin >> i >> p >> a >> b;
+                cin &gt;&gt; i &gt;&gt; p &gt;&gt; a &gt;&gt; b;
                 trie.set(i, p, {a, b});
                 break;
             case 1:
-                cin >> l >> r >> x;
+                cin &gt;&gt; l &gt;&gt; r &gt;&gt; x;
                 res = trie.prod(l, r);
-                cout << (res.first*x + res.second).val() << '\n';
+                cout &lt;&lt; (res.first*x + res.second).val() &lt;&lt; &#x27;\n&#x27;;
                 break;
             case 2:
-                cin >> l >> r;
+                cin &gt;&gt; l &gt;&gt; r;
                 trie.sort(l, r);
                 break;
             case 3:
-                cin >> l >> r;
+                cin &gt;&gt; l &gt;&gt; r;
                 trie.sort_rev(l, r);
                 break;
         }

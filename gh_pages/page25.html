@@ -1,41 +1,41 @@
-<pre>template<typename S, auto op, auto e>
+<pre>template&lt;typename S, auto op, auto e&gt;
 struct segtree{
     int siz;
-    vector<S> node;
+    vector&lt;S&gt; node;
     
     segtree() = default;
     segtree(unsigned n) : siz(std::bit_ceil(n)), node(siz*2, e()){}
-    segtree(const vector<S>& v){init(v);}
-    void init(const vector<S>& v){
+    segtree(const vector&lt;S&gt;&amp; v){init(v);}
+    void init(const vector&lt;S&gt;&amp; v){
         siz = bit_ceil(v.size()); node.resize(siz*2, e());
-        for(int i = 0; i < (int)v.size(); i++) node[i+siz] = v[i];
-        for(int i = siz-1; i >= 1; i--) node[i] = op(node[i*2], node[i*2+1]);
+        for(int i = 0; i &lt; (int)v.size(); i++) node[i+siz] = v[i];
+        for(int i = siz-1; i &gt;= 1; i--) node[i] = op(node[i*2], node[i*2+1]);
     }
     
-    const S &operator[](int pos) const {return node[pos+siz];}
+    const S &amp;operator[](int pos) const {return node[pos+siz];}
     
-    const S &get(int pos) const {return node[pos+siz];}
+    const S &amp;get(int pos) const {return node[pos+siz];}
     
-    void set(int pos, const S &x){
-        assert(0 <= pos && pos < siz);
+    void set(int pos, const S &amp;x){
+        assert(0 &lt;= pos &amp;&amp; pos &lt; siz);
         pos += siz;
         node[pos] = x;
-        while(pos>>=1) node[pos] = op(node[pos<<1], node[(pos<<1)+1]);
+        while(pos&gt;&gt;=1) node[pos] = op(node[pos&lt;&lt;1], node[(pos&lt;&lt;1)+1]);
     }
     
-    void add(int pos, const S &x){
-        assert(0 <= pos && pos < siz);
+    void add(int pos, const S &amp;x){
+        assert(0 &lt;= pos &amp;&amp; pos &lt; siz);
         pos += siz;
         node[pos] = op(node[pos], x);
-        while(pos>>=1) node[pos] = op(node[pos], x);
+        while(pos&gt;&gt;=1) node[pos] = op(node[pos], x);
     }
     
     S prod(int left, int right){
         left = max(0, left); right = min(right, siz);
         S l_ans = e(), r_ans = e();
-        for(left+=siz, right+=siz; left < right; left>>=1, right>>=1){
-            if(left&1) l_ans = op(l_ans, node[left++]);
-            if(right&1) r_ans = op(node[--right], r_ans);
+        for(left+=siz, right+=siz; left &lt; right; left&gt;&gt;=1, right&gt;&gt;=1){
+            if(left&amp;1) l_ans = op(l_ans, node[left++]);
+            if(right&amp;1) r_ans = op(node[--right], r_ans);
         }
         return op(l_ans, r_ans);
     }

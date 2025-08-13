@@ -1,6 +1,6 @@
-<pre>template<typename T, typename S, auto op, auto e>
+<pre>template&lt;typename T, typename S, auto op, auto e&gt;
 struct meldable_binary_trie{
-    static_assert(is_unsigned_v<T>);
+    static_assert(is_unsigned_v&lt;T&gt;);
     
     static constexpr T one = 1;
     static constexpr int bit_width = sizeof(T) * 8;
@@ -10,9 +10,9 @@ struct meldable_binary_trie{
         S sum;
         int width;
         int count;
-        array<node_t*, 4> child;
+        array&lt;node_t*, 4&gt; child;
         node_t() = default;
-        node_t(T v, S s, int w, int c) : value(v), sum(s), width(w), count(c), child{&nil, &nil, &nil, &nil} {}
+        node_t(T v, S s, int w, int c) : value(v), sum(s), width(w), count(c), child{&amp;nil, &amp;nil, &amp;nil, &amp;nil} {}
         node_t(T v, S s, int w, int c, node_t* c0, node_t* c1, node_t* c2, node_t* c3) : value(v), sum(s), width(w), count(c), child{c0, c1, c2, c3} {}
         static node_t nil;
     };
@@ -25,9 +25,9 @@ struct meldable_binary_trie{
     
     struct Pool {
         int cnt = 0;
-        constexpr static int SIZ = 1<<17;
+        constexpr static int SIZ = 1&lt;&lt;17;
         node_t *ptr = nullptr, *en = nullptr;
-        vector<node_t*> reuse;
+        vector&lt;node_t*&gt; reuse;
         Pool() {
             ptr = new node_t[SIZ];
             en = ptr + SIZ;
@@ -51,19 +51,19 @@ struct meldable_binary_trie{
     node_t* root;
     bool rev = false;
     
-    template<typename _Tp>
+    template&lt;typename _Tp&gt;
     inline static int clz(_Tp x) {
         if constexpr(sizeof(_Tp) == 8ull) return __builtin_clzll(x);
         else return __builtin_clz(x);
     }
     
     inline static T mask(int l, int r) {
-        if(r >= bit_width) return -(one<<l);
-        return (one<<r) - (one<<l);
+        if(r &gt;= bit_width) return -(one&lt;&lt;l);
+        return (one&lt;&lt;r) - (one&lt;&lt;l);
     }
     
     inline static T masked(T v, int l, int r) {
-        return mask(l, r) & v;
+        return mask(l, r) &amp; v;
     }
     
     inline static int diff_bit(T x, T y) {
@@ -71,9 +71,9 @@ struct meldable_binary_trie{
     }
     
     //value, sum, width, count, child
-    template<typename... Args>
+    template&lt;typename... Args&gt;
     static inline node_t* make_node(Args ...args) {
-        return &((*pool.get()) = node_t(forward<Args>(args)...));
+        return &amp;((*pool.get()) = node_t(forward&lt;Args&gt;(args)...));
     }
     
     public:
@@ -81,78 +81,78 @@ struct meldable_binary_trie{
     meldable_binary_trie(){
         root = make_node(0, e(), bit_width, 0);
     }
-    meldable_binary_trie(T p, const S &x){
+    meldable_binary_trie(T p, const S &amp;x){
         root = make_node(p, x, bit_width, 1);
     }
     meldable_binary_trie(node_t *x){
         root = x;
     }
     
-    meldable_binary_trie& operator=(meldable_binary_trie&& o) noexcept = default;
+    meldable_binary_trie&amp; operator=(meldable_binary_trie&amp;&amp; o) noexcept = default;
     
-    meldable_binary_trie(meldable_binary_trie&& o) noexcept = default;
+    meldable_binary_trie(meldable_binary_trie&amp;&amp; o) noexcept = default;
     
-    void insert(T v, const S &x) {
+    void insert(T v, const S &amp;x) {
         node_t* pos = root;
         int bit = bit_width;
         node_t *route[65]; int route_cnt = 0;
         while(true){
-            T mv = masked(v, bit-pos->width, bit);
-            T mnv = masked(pos->value, bit-pos->width, bit);
+            T mv = masked(v, bit-pos-&gt;width, bit);
+            T mnv = masked(pos-&gt;value, bit-pos-&gt;width, bit);
             if(mv != mnv){
                 route[route_cnt++] = pos;
                 int diff = diff_bit(mv, mnv);
-                int b = (mv>>(diff-2))&3;
-                int nb = (mnv>>(diff-2))&3;
-                node_t* inter = make_node(pos->value, pos->sum, pos->width-bit+diff, pos->count, pos->child[0], pos->child[1], pos->child[2], pos->child[3]);
+                int b = (mv&gt;&gt;(diff-2))&amp;3;
+                int nb = (mnv&gt;&gt;(diff-2))&amp;3;
+                node_t* inter = make_node(pos-&gt;value, pos-&gt;sum, pos-&gt;width-bit+diff, pos-&gt;count, pos-&gt;child[0], pos-&gt;child[1], pos-&gt;child[2], pos-&gt;child[3]);
                 node_t* leaf = make_node(v, x, diff, 1);
-                pos->width = bit-diff;
-                pos->count++;
-                pos->child = {&node_t::nil, &node_t::nil, &node_t::nil, &node_t::nil};
-                pos->child[b] = leaf;
-                pos->child[nb] = inter;
+                pos-&gt;width = bit-diff;
+                pos-&gt;count++;
+                pos-&gt;child = {&amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil};
+                pos-&gt;child[b] = leaf;
+                pos-&gt;child[nb] = inter;
                 break;
             } else {
-                pos->count++;
-                bit -= pos->width;
+                pos-&gt;count++;
+                bit -= pos-&gt;width;
                 if(bit == 0) {
-                    pos->sum = x;
+                    pos-&gt;sum = x;
                     break;
                 }
                 route[route_cnt++] = pos;
-                int b = (v>>(bit-2))&3;
-                if(pos->child[b] == &node_t::nil){
-                    pos->child[b] = make_node(v, x, bit, 1);
+                int b = (v&gt;&gt;(bit-2))&amp;3;
+                if(pos-&gt;child[b] == &amp;node_t::nil){
+                    pos-&gt;child[b] = make_node(v, x, bit, 1);
                     break;
                 }
-                pos = pos->child[b];
+                pos = pos-&gt;child[b];
             }
         }
-        for(int i = route_cnt-1; i >= 0; i--){
+        for(int i = route_cnt-1; i &gt;= 0; i--){
             node_t *ptr = route[i];
-            ptr->sum = op(op(op(ptr->child[0]->sum, ptr->child[1]->sum), ptr->child[2]->sum), ptr->child[3]->sum);
+            ptr-&gt;sum = op(op(op(ptr-&gt;child[0]-&gt;sum, ptr-&gt;child[1]-&gt;sum), ptr-&gt;child[2]-&gt;sum), ptr-&gt;child[3]-&gt;sum);
         }
     }
     
     int count(T v) const {
         node_t* pos = root;
         int bit = bit_width;
-        while(pos != &node_t::nil){
-            T mv = masked(v, bit-pos->width, bit);
-            T mnv = masked(pos->value, bit-pos->width, bit);
+        while(pos != &amp;node_t::nil){
+            T mv = masked(v, bit-pos-&gt;width, bit);
+            T mnv = masked(pos-&gt;value, bit-pos-&gt;width, bit);
             if(mv != mnv) return 0;
-            bit -= pos->width;
-            if(bit == 0) return pos->count;
-            pos = pos->child[(v>>(bit-2))&3];
+            bit -= pos-&gt;width;
+            if(bit == 0) return pos-&gt;count;
+            pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3];
         }
         return 0;
     }
     
     int size() const {
-        return root->count;
+        return root-&gt;count;
     }
     
-    static node_t *meld(meldable_binary_trie &l, meldable_binary_trie &r){
+    static node_t *meld(meldable_binary_trie &amp;l, meldable_binary_trie &amp;r){
         return meld(l.root, r.root);
     }
     static node_t *meld(node_t *l, node_t *r){
@@ -160,57 +160,57 @@ struct meldable_binary_trie{
         return res;
     }
     static node_t *meld(node_t *l, node_t *r, int bit){
-        if(l->count == 0){
+        if(l-&gt;count == 0){
             return r;
         }
-        if(r->count == 0){
+        if(r-&gt;count == 0){
             return l;
         }
-        T mlv = masked(l->value, min(bit-l->width, bit-r->width), bit);
-        T mrv = masked(r->value, min(bit-l->width, bit-r->width), bit);
+        T mlv = masked(l-&gt;value, min(bit-l-&gt;width, bit-r-&gt;width), bit);
+        T mrv = masked(r-&gt;value, min(bit-l-&gt;width, bit-r-&gt;width), bit);
         if(mlv == mrv){
-            if(l->width == r->width){
-                l->count += r->count;
-                if(bit == l->width){
-                    l->sum = op(l->sum, r->sum);
+            if(l-&gt;width == r-&gt;width){
+                l-&gt;count += r-&gt;count;
+                if(bit == l-&gt;width){
+                    l-&gt;sum = op(l-&gt;sum, r-&gt;sum);
                     return l;
                 } else {
-                    for(int i = 0; i < 4; i++) l->child[i] = meld(l->child[i], r->child[i], bit - l->width);
+                    for(int i = 0; i &lt; 4; i++) l-&gt;child[i] = meld(l-&gt;child[i], r-&gt;child[i], bit - l-&gt;width);
                     pool.push(r);
                 }
             } else {
-                if(l->width > r->width) swap(l, r);
-                l->count += r->count;
-                bit -= l->width;
-                r->width -= l->width;
-                int b = (r->value>>(bit-2))&3;
-                l->child[b] = meld(l->child[b], r, bit);
+                if(l-&gt;width &gt; r-&gt;width) swap(l, r);
+                l-&gt;count += r-&gt;count;
+                bit -= l-&gt;width;
+                r-&gt;width -= l-&gt;width;
+                int b = (r-&gt;value&gt;&gt;(bit-2))&amp;3;
+                l-&gt;child[b] = meld(l-&gt;child[b], r, bit);
             }
         } else {
-            if(l->width > r->width) swap(l, r);
+            if(l-&gt;width &gt; r-&gt;width) swap(l, r);
             int diff = diff_bit(mlv, mrv);
-            if(l->width <= bit - diff){
-                l->count += r->count;
-                r->width -= l->width;
-                bit -= l->width;
-                int b = (r->value>>(bit-2))&3;
-                l->child[b] = meld(l->child[b], r, bit);
+            if(l-&gt;width &lt;= bit - diff){
+                l-&gt;count += r-&gt;count;
+                r-&gt;width -= l-&gt;width;
+                bit -= l-&gt;width;
+                int b = (r-&gt;value&gt;&gt;(bit-2))&amp;3;
+                l-&gt;child[b] = meld(l-&gt;child[b], r, bit);
             } else {
-                node_t *ptr = make_node(l->value, l->sum, l->width-bit+diff, l->count, l->child[0], l->child[1], l->child[2], l->child[3]);
-                memcpy(l->child.data(), node_t::nil.child.data(), sizeof(node_t*) * 4);
-                r->width -= bit - diff;
-                l->width = bit - diff;
-                l->count += r->count;
-                l->child[l->value>>(diff-2)&3] = ptr;
-                l->child[r->value>>(diff-2)&3] = r;
+                node_t *ptr = make_node(l-&gt;value, l-&gt;sum, l-&gt;width-bit+diff, l-&gt;count, l-&gt;child[0], l-&gt;child[1], l-&gt;child[2], l-&gt;child[3]);
+                memcpy(l-&gt;child.data(), node_t::nil.child.data(), sizeof(node_t*) * 4);
+                r-&gt;width -= bit - diff;
+                l-&gt;width = bit - diff;
+                l-&gt;count += r-&gt;count;
+                l-&gt;child[l-&gt;value&gt;&gt;(diff-2)&amp;3] = ptr;
+                l-&gt;child[r-&gt;value&gt;&gt;(diff-2)&amp;3] = r;
             }
         }
-        l->sum = op(op(op(l->child[0]->sum, l->child[1]->sum), l->child[2]->sum), l->child[3]->sum);
+        l-&gt;sum = op(op(op(l-&gt;child[0]-&gt;sum, l-&gt;child[1]-&gt;sum), l-&gt;child[2]-&gt;sum), l-&gt;child[3]-&gt;sum);
         return l;
     }
     
-    pair<meldable_binary_trie, meldable_binary_trie> split(int p){
-        if(rev) p = root->count-p;
+    pair&lt;meldable_binary_trie, meldable_binary_trie&gt; split(int p){
+        if(rev) p = root-&gt;count-p;
         auto res = split(root, p);
         if(rev){
             meldable_binary_trie f(res.second), s(res.first);
@@ -219,30 +219,30 @@ struct meldable_binary_trie{
         } else return {meldable_binary_trie(res.first), meldable_binary_trie(res.second)};
     }
     
-    static pair<node_t*, node_t*> split(node_t *l, int p){
-        if(p == 0) return {&node_t::nil, l};
-        if(p == l->count) return {l, &node_t::nil};
+    static pair&lt;node_t*, node_t*&gt; split(node_t *l, int p){
+        if(p == 0) return {&amp;node_t::nil, l};
+        if(p == l-&gt;count) return {l, &amp;node_t::nil};
         int acc = 0;
         
-        for (int i = 0; i < 4; i++) {
-            int c = l->child[i]->count;
-            if (p < acc + c) {
-                auto sub = split(l->child[i], p - acc);
+        for (int i = 0; i &lt; 4; i++) {
+            int c = l-&gt;child[i]-&gt;count;
+            if (p &lt; acc + c) {
+                auto sub = split(l-&gt;child[i], p - acc);
                 
-                node_t *ptr = make_node(l->value, e(), l->width, 0);
+                node_t *ptr = make_node(l-&gt;value, e(), l-&gt;width, 0);
                 
-                l->child[i] = sub.first;
-                ptr->child[i] = sub.second;
-                for(int j = i+1; j < 4; j++) ptr->child[j] = l->child[j];
-                for(int j = i+1; j < 4; j++) l->child[j] = &node_t::nil;
+                l-&gt;child[i] = sub.first;
+                ptr-&gt;child[i] = sub.second;
+                for(int j = i+1; j &lt; 4; j++) ptr-&gt;child[j] = l-&gt;child[j];
+                for(int j = i+1; j &lt; 4; j++) l-&gt;child[j] = &amp;node_t::nil;
                 
-                l->count = 0;
-                for(int j = 0; j <= i; j++) l->count += l->child[j]->count;
-                for(int j = i; j < 4; j++) ptr->count += ptr->child[j]->count;
+                l-&gt;count = 0;
+                for(int j = 0; j &lt;= i; j++) l-&gt;count += l-&gt;child[j]-&gt;count;
+                for(int j = i; j &lt; 4; j++) ptr-&gt;count += ptr-&gt;child[j]-&gt;count;
                 
-                l->sum = e();
-                for(int j = 0; j <= i; j++) l->sum = op(l->sum, l->child[j]->sum);
-                for(int j = i; j < 4; j++) ptr->sum = op(ptr->sum, ptr->child[j]->sum);
+                l-&gt;sum = e();
+                for(int j = 0; j &lt;= i; j++) l-&gt;sum = op(l-&gt;sum, l-&gt;child[j]-&gt;sum);
+                for(int j = i; j &lt; 4; j++) ptr-&gt;sum = op(ptr-&gt;sum, ptr-&gt;child[j]-&gt;sum);
                 
                 return {l, ptr};
             }
@@ -261,172 +261,172 @@ struct meldable_binary_trie{
         }
     }
     node_t *split_one(node_t *l){
-        if(l->count == 1) return &node_t::nil;
+        if(l-&gt;count == 1) return &amp;node_t::nil;
         
-        l->count--;
-        for(int i = 0; i < 4; i++){
-            int c = l->child[i]->count;
+        l-&gt;count--;
+        for(int i = 0; i &lt; 4; i++){
+            int c = l-&gt;child[i]-&gt;count;
             if(c == 0) continue;
-            l->child[i] = split_one(l->child[i]);
-            l->sum = e();
-            for(int j = i; j < 4; j++) l->sum = op(l->sum, l->child[j]->sum);
+            l-&gt;child[i] = split_one(l-&gt;child[i]);
+            l-&gt;sum = e();
+            for(int j = i; j &lt; 4; j++) l-&gt;sum = op(l-&gt;sum, l-&gt;child[j]-&gt;sum);
             return l;
         }
         assert(false);
     }
     node_t *split_one_rev(node_t *l){
-        if(l->count == 1) return &node_t::nil;
+        if(l-&gt;count == 1) return &amp;node_t::nil;
         
-        l->count--;
-        for(int i = 3; i >= 0; i--){
-            int c = l->child[i]->count;
+        l-&gt;count--;
+        for(int i = 3; i &gt;= 0; i--){
+            int c = l-&gt;child[i]-&gt;count;
             if(c == 0) continue;
-            l->child[i] = split_one_rev(l->child[i]);
-            l->sum = e();
-            for(int j = 0; j <= i; j++) l->sum = op(l->sum, l->child[j]->sum);
+            l-&gt;child[i] = split_one_rev(l-&gt;child[i]);
+            l-&gt;sum = e();
+            for(int j = 0; j &lt;= i; j++) l-&gt;sum = op(l-&gt;sum, l-&gt;child[j]-&gt;sum);
             return l;
         }
         assert(false);
     }
     
-    S all_prod() const {return root->sum;}
+    S all_prod() const {return root-&gt;sum;}
     
-    void init(T p, const S &x){
+    void init(T p, const S &amp;x){
         root = make_node(p, x, bit_width, 1);
     }
     
     static int get_size(node_t *ptr){
-        if(ptr == &node_t::nil) return 0;
+        if(ptr == &amp;node_t::nil) return 0;
         int res = 1;
-        for(int i = 0; i < 4; i++) res += get_size(ptr->child[i]);
+        for(int i = 0; i &lt; 4; i++) res += get_size(ptr-&gt;child[i]);
         return res;
     }
 };
-template<typename T, typename S, auto op, auto e> typename meldable_binary_trie<T, S, op, e>::node_t meldable_binary_trie<T, S, op, e>::node_t::nil = meldable_binary_trie<T, S, op, e>::node_t(0, e(), bit_width, 0);
-template<typename T, typename S, auto op, auto e> typename meldable_binary_trie<T, S, op, e>::Pool meldable_binary_trie<T, S, op, e>::pool = meldable_binary_trie<T, S, op, e>::Pool();
+template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::node_t meldable_binary_trie&lt;T, S, op, e&gt;::node_t::nil = meldable_binary_trie&lt;T, S, op, e&gt;::node_t(0, e(), bit_width, 0);
+template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::Pool meldable_binary_trie&lt;T, S, op, e&gt;::pool = meldable_binary_trie&lt;T, S, op, e&gt;::Pool();
 struct fastset{
     using ull = unsigned long long;
     using uint = unsigned;
     
     int siz;
-    vector<ull> node;
+    vector&lt;ull&gt; node;
     
     fastset(int _n){
         int n = 1;
-        while((n<<6) < _n) n <<= 6;
+        while((n&lt;&lt;6) &lt; _n) n &lt;&lt;= 6;
         siz = (n+1)/63;
         node.resize((n+1)/63 + (_n+63)/64);
     }
     
     void insert(int x){
         uint idx = siz + (x/64);
-        x &= 63;
+        x &amp;= 63;
         while(true){
-            if((node[idx]>>x) & 1ull) return;
-            node[idx] |= (1ull<<x);
+            if((node[idx]&gt;&gt;x) &amp; 1ull) return;
+            node[idx] |= (1ull&lt;&lt;x);
             if(idx == 0) return;
             idx--;
-            x = idx & 63;
+            x = idx &amp; 63;
             idx /= 64;
         }
     }
     
     void erase(int x){
         int idx = siz + (x/64);
-        x &= 63;
+        x &amp;= 63;
         while(true){
-            node[idx] &= ~(1ull<<x);
+            node[idx] &amp;= ~(1ull&lt;&lt;x);
             if(idx == 0 || node[idx]) return;
             idx--;
-            x = idx & 63;
+            x = idx &amp; 63;
             idx /= 64;
         }
     }
     
     bool count(int x) const {
-        return (node[siz+x/64]>>(x&63u))&1;
+        return (node[siz+x/64]&gt;&gt;(x&amp;63u))&amp;1;
     }
     
     int lower_bound(int x){
         if(count(x)) return x;
         int idx = siz + (x/64);
-        x &= 63;
+        x &amp;= 63;
         while(true){
-            if(node[idx] & ~(((1ull<<x)<<1) - 1ull)){
-                x = __builtin_ctzll(node[idx] & ~(((1ull<<x)<<1) - 1ull));
-                if(idx >= siz) return (idx-siz)*64+x;
+            if(node[idx] &amp; ~(((1ull&lt;&lt;x)&lt;&lt;1) - 1ull)){
+                x = __builtin_ctzll(node[idx] &amp; ~(((1ull&lt;&lt;x)&lt;&lt;1) - 1ull));
+                if(idx &gt;= siz) return (idx-siz)*64+x;
                 break;
             }
             if(idx == 0) return -1;
             idx--;
-            x = idx & 63;
+            x = idx &amp; 63;
             idx /= 64;
         }
         
         idx = idx*64 + x+1;
-        while(idx < siz) idx = idx*64 + __builtin_ctzll(node[idx])+1;
+        while(idx &lt; siz) idx = idx*64 + __builtin_ctzll(node[idx])+1;
         return (idx-siz)*64 + __builtin_ctzll(node[idx]);
     }
     
     int less_bound(int x){
         if(count(x)) return x;
         int idx = siz + (x/64);
-        x &= 63;
+        x &amp;= 63;
         while(true){
-            if(node[idx] & ((1ull<<x) - 1ull)){
-                x = 63 - __builtin_clzll(node[idx] & ((1ull<<x) - 1ull));
-                if(idx >= siz) return (idx-siz)*64+x;
+            if(node[idx] &amp; ((1ull&lt;&lt;x) - 1ull)){
+                x = 63 - __builtin_clzll(node[idx] &amp; ((1ull&lt;&lt;x) - 1ull));
+                if(idx &gt;= siz) return (idx-siz)*64+x;
                 break;
             }
             if(idx == 0) return -1;
             idx--;
-            x = idx & 63;
+            x = idx &amp; 63;
             idx /= 64;
         }
         
         idx = idx*64 + x+1;
-        while(idx < siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]);
+        while(idx &lt; siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]);
         return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]);
     }
 };
-template<typename S, auto op, auto e>
+template&lt;typename S, auto op, auto e&gt;
 struct segtree{
     int siz;
-    vector<S> node;
+    vector&lt;S&gt; node;
     
     segtree() = default;
     segtree(unsigned n) : siz(std::bit_ceil(n)), node(siz*2, e()){}
-    segtree(const vector<S>& v){init(v);}
-    void init(const vector<S>& v){
+    segtree(const vector&lt;S&gt;&amp; v){init(v);}
+    void init(const vector&lt;S&gt;&amp; v){
         siz = bit_ceil(v.size()); node.resize(siz*2, e());
-        for(int i = 0; i < (int)v.size(); i++) node[i+siz] = v[i];
-        for(int i = siz-1; i >= 1; i--) node[i] = op(node[i*2], node[i*2+1]);
+        for(int i = 0; i &lt; (int)v.size(); i++) node[i+siz] = v[i];
+        for(int i = siz-1; i &gt;= 1; i--) node[i] = op(node[i*2], node[i*2+1]);
     }
     
-    const S &operator[](int pos) const {return node[pos+siz];}
+    const S &amp;operator[](int pos) const {return node[pos+siz];}
     
-    const S &get(int pos) const {return node[pos+siz];}
+    const S &amp;get(int pos) const {return node[pos+siz];}
     
-    void set(int pos, const S &x){
-        assert(0 <= pos && pos < siz);
+    void set(int pos, const S &amp;x){
+        assert(0 &lt;= pos &amp;&amp; pos &lt; siz);
         pos += siz;
         node[pos] = x;
-        while(pos>>=1) node[pos] = op(node[pos<<1], node[(pos<<1)+1]);
+        while(pos&gt;&gt;=1) node[pos] = op(node[pos&lt;&lt;1], node[(pos&lt;&lt;1)+1]);
     }
     
-    void add(int pos, const S &x){
-        assert(0 <= pos && pos < siz);
+    void add(int pos, const S &amp;x){
+        assert(0 &lt;= pos &amp;&amp; pos &lt; siz);
         pos += siz;
         node[pos] = op(node[pos], x);
-        while(pos>>=1) node[pos] = op(node[pos], x);
+        while(pos&gt;&gt;=1) node[pos] = op(node[pos], x);
     }
     
     S prod(int left, int right){
         left = max(0, left); right = min(right, siz);
         S l_ans = e(), r_ans = e();
-        for(left+=siz, right+=siz; left < right; left>>=1, right>>=1){
-            if(left&1) l_ans = op(l_ans, node[left++]);
-            if(right&1) r_ans = op(node[--right], r_ans);
+        for(left+=siz, right+=siz; left &lt; right; left&gt;&gt;=1, right&gt;&gt;=1){
+            if(left&amp;1) l_ans = op(l_ans, node[left++]);
+            if(right&amp;1) r_ans = op(node[--right], r_ans);
         }
         return op(l_ans, r_ans);
     }
@@ -435,44 +435,44 @@ struct segtree{
         return node[1];
     }
 };
-template<typename T, typename S, auto op, auto e>
+template&lt;typename T, typename S, auto op, auto e&gt;
 struct sort_segtree {
     struct SS {
         S ltor, rtol;
         SS() = default;
-        SS(const S &o) : ltor(o), rtol(o) {}
-        SS(const S &l, const S &r) : ltor(l), rtol(r) {}
-        static SS SS_op(const SS &l, const SS &r) {return SS{op(l.ltor, r.ltor), op(r.rtol, l.rtol)};}
+        SS(const S &amp;o) : ltor(o), rtol(o) {}
+        SS(const S &amp;l, const S &amp;r) : ltor(l), rtol(r) {}
+        static SS SS_op(const SS &amp;l, const SS &amp;r) {return SS{op(l.ltor, r.ltor), op(r.rtol, l.rtol)};}
         static SS SS_e() {return SS{e()};}
     };
     
     int n;
-    meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e> *trie;
+    meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt; *trie;
     fastset fset;
-    segtree<S, op, e> seg;
+    segtree&lt;S, op, e&gt; seg;
     
     sort_segtree(int _n) : n(_n), fset(n+1), seg(n) {
-        trie = new meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n]{};
-        for(int i = 0; i <= n; i++) fset.insert(i);
+        trie = new meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;[n]{};
+        for(int i = 0; i &lt;= n; i++) fset.insert(i);
     }
-    sort_segtree(const vector<pair<T, S>> &v) : n(v.size()), fset(n+1), seg(n) {
-        trie = new meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n];
-        for(int i = 0; i <= n; i++) fset.insert(i);
-        for(int i = 0; i < n; i++) trie[i] = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(v[i].first, v[i].second);
-        for(int i = 0; i < n; i++) seg.set(i, v[i].second);
+    sort_segtree(const vector&lt;pair&lt;T, S&gt;&gt; &amp;v) : n(v.size()), fset(n+1), seg(n) {
+        trie = new meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;[n];
+        for(int i = 0; i &lt;= n; i++) fset.insert(i);
+        for(int i = 0; i &lt; n; i++) trie[i] = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(v[i].first, v[i].second);
+        for(int i = 0; i &lt; n; i++) seg.set(i, v[i].second);
     }
-    sort_segtree(sort_segtree<T, S, op, e> &&o) = default;
+    sort_segtree(sort_segtree&lt;T, S, op, e&gt; &amp;&amp;o) = default;
     
     void set(int i, T k, S x){
         int l = fset.less_bound(i);
         int r = fset.lower_bound(i+1);
-        if(l < i){
+        if(l &lt; i){
             auto res = trie[l].split(i-l);
             trie[l] = move(res.first); trie[i] = move(res.second);
             fset.insert(i);
             seg.set(l, trie[l].rev ? trie[l].all_prod().rtol : trie[l].all_prod().ltor);
         }
-        if(i+1 < r){
+        if(i+1 &lt; r){
             auto res = trie[i].split_one();
             trie[i+1] = move(res);
             fset.insert(i+1);
@@ -484,7 +484,7 @@ struct sort_segtree {
     
     S prod(int l, int r) {
         int lb = fset.less_bound(l);
-        if(lb < l){
+        if(lb &lt; l){
             auto res = trie[lb].split(l-lb);
             trie[lb] = move(res.first); trie[l] = move(res.second);
             fset.insert(l);
@@ -492,7 +492,7 @@ struct sort_segtree {
             seg.set(l, trie[l].rev ? trie[l].all_prod().rtol : trie[l].all_prod().ltor);
         }
         int rb = fset.less_bound(r);
-        if(rb < r){
+        if(rb &lt; r){
             auto res = trie[rb].split(r-rb);
             trie[rb] = move(res.first); trie[r] = move(res.second);
             fset.insert(r);
@@ -504,23 +504,23 @@ struct sort_segtree {
     
     void sort(int l, int r) {
         int lb = fset.less_bound(l);
-        if(lb < l){
+        if(lb &lt; l){
             auto res = trie[lb].split(l-lb);
             trie[lb] = move(res.first); trie[l] = move(res.second);
             fset.insert(l);
             seg.set(lb, trie[lb].rev ? trie[lb].all_prod().rtol : trie[lb].all_prod().ltor);
         }
         int rb = fset.less_bound(r);
-        if(rb < r){
+        if(rb &lt; r){
             auto res = trie[rb].split(r-rb);
             trie[rb] = move(res.first); trie[r] = move(res.second);
             fset.insert(r);
             seg.set(r, trie[r].rev ? trie[r].all_prod().rtol : trie[r].all_prod().ltor);
         }
         lb = fset.lower_bound(l+1);
-        while(lb < r){
-            auto res = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>::meld(trie[l], trie[lb]);
-            trie[l] = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(res);
+        while(lb &lt; r){
+            auto res = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;::meld(trie[l], trie[lb]);
+            trie[l] = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(res);
             fset.erase(lb);
             seg.set(lb, e());
             lb = fset.lower_bound(lb);
@@ -531,23 +531,23 @@ struct sort_segtree {
     
     void sort_rev(int l, int r) {
         int lb = fset.less_bound(l);
-        if(lb < l){
+        if(lb &lt; l){
             auto res = trie[lb].split(l-lb);
             trie[lb] = move(res.first); trie[l] = move(res.second);
             fset.insert(l);
             seg.set(lb, trie[lb].rev ? trie[lb].all_prod().rtol : trie[lb].all_prod().ltor);
         }
         int rb = fset.less_bound(r);
-        if(rb < r){
+        if(rb &lt; r){
             auto res = trie[rb].split(r-rb);
             trie[rb] = move(res.first); trie[r] = move(res.second);
             fset.insert(r);
             seg.set(r, trie[r].rev ? trie[r].all_prod().rtol : trie[r].all_prod().ltor);
         }
         lb = fset.lower_bound(l+1);
-        while(lb < r){
-            auto res = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>::meld(trie[l], trie[lb]);
-            trie[l] = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(res);
+        while(lb &lt; r){
+            auto res = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;::meld(trie[l], trie[lb]);
+            trie[l] = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(res);
             fset.erase(lb);
             seg.set(lb, e());
             lb = fset.lower_bound(lb);
