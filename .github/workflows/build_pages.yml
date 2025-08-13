@@ -11,67 +11,23 @@ jobs:
         -   uses: actions/checkout@v3
             with:
                 fetch-depth: 0
-                ref: gh-pages
         
-        -   name: building
+        -   name: Setup Python
+            uses: actions/setup-python@v2
+            with:
+                python-version: 3.12
+        
+        -   name: build
             run: |
-                git fetch origin main
-                git reset --hard origin/main
+                python build_pages.py
                 
-                git checkout origin/gh-pages -- cpp
-                python3 << 'EOF'
-
-import os
-
-os.makedirs("_pages")
-cnt_pages = 0
-
-def FindCppFiles(path:str) -> str:
-    global cnt_pages
-    
-    res_str: str = ""
-    items = sorted(os.listdir(path))
-    
-    for item in items:
-        now = os.path.join(path, item)
-        if os.path.isdir(now):
-            res = FindCppFiles(now)
-            if len(res) != 0:
-                cnt_pages += 1
-                page_name = f"page{cnt_pages}.html"
-                page_path = os.path.join("_pages", page_name)
-                with open(page_path, "w", encoding="utf-8") as f:
-                    f.write(res)
-                
-                if len(res_str) == 0:
-                    res_str += "<ul>\n"
-                res_str += f"<li><a href=\"{page_path}\">{item}</a></li>\n"
-        elif item.endswith(".cpp"):
-            cnt_pages += 1
-            page_name = f"page{cnt_pages}.html"
-            page_path = os.path.join("_pages", page_name)
-            with open(page_path, "w", encoding="utf-8") as f:
-                with open(now, "r", encoding="utf-8") as code_f:
-                    f.write(f"<pre>{code_f.read()}</pre>")
-            
-            if len(res_str) == 0:
-                res_str += "<ul>\n"
-            res_str += f"<li><a href=\"{page_path}\">{item}</a></li>\n"
-    
-    if len(res_str) != 0:
-        res_str += "</ul>\n"
-    
-    return res_str
-
-with open("index.html", "w", encoding="utf-8") as f:
-    res_str = FindCppFiles()
-    if len(res_str) != 0:
-        f.write(res_str)
-EOF
-
                 git config --global user.name "${{ github.actor }}"
                 git config --global user.email "${{ github.actor }}@users.noreply.github.com"
                 git fetch origin
                 git add .
-                git commit -m "Update gh-pages"
-                git push --force origin gh-pages
+                if [ -n "$(git status --porcelain)" ]; then
+                    git commit -m "build pages"
+                    git push origin main
+                else
+                    echo "No changes to commit"
+                fi
