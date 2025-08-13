@@ -1,8 +1,8 @@
 import shutil, os
 
-if os.path.exists("gh_pages"):
-    shutil.rmtree("gh_pages")
-os.makedirs("gh_pages")
+if os.path.exists("/library/gh_pages"):
+    shutil.rmtree("/library/gh_pages")
+os.makedirs("/library/gh_pages")
 cnt_pages = 0
 
 def FindCppFiles(path:str) -> str:
@@ -18,7 +18,7 @@ def FindCppFiles(path:str) -> str:
             if len(res) != 0:
                 cnt_pages += 1
                 page_name = f"page{cnt_pages}.html"
-                page_path = os.path.join("gh_pages", page_name)
+                page_path = os.path.join("/library/gh_pages", page_name)
                 with open(page_path, "w", encoding="utf-8") as f:
                     f.write(res)
                 
@@ -28,7 +28,7 @@ def FindCppFiles(path:str) -> str:
         elif item.endswith(".cpp"):
             cnt_pages += 1
             page_name = f"page{cnt_pages}.html"
-            page_path = os.path.join("gh_pages", page_name)
+            page_path = os.path.join("/library/gh_pages", page_name)
             with open(page_path, "w", encoding="utf-8") as f:
                 with open(now, "r", encoding="utf-8") as code_f:
                     f.write(f"<pre>{code_f.read()}</pre>")
