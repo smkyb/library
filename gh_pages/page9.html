@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<tytle>smkyb's library</title>
+</head>
+<body>
 <pre>void _compression_merge(...){}
 template&lt;typename T, typename... Args&gt;
 void _compression_merge(vector&lt;T&gt;&amp; C, vector&lt;T&gt;&amp; v, Args&amp;... args){
@@ -18,4 +25,5 @@ vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){
     C.erase(unique(C.begin(), C.end()), C.end());
     _compression_apply(C, v, args...);
     return C;
-}</pre>
+}</pre></body>
+</html>
