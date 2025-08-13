@@ -1,5 +1,7 @@
-import os
+import shutil, os
 
+if os.path.exists("_pages"):
+    shutil.rmtree("_pages")
 os.makedirs("_pages")
 cnt_pages = 0
 
