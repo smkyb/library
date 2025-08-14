@@ -45,7 +45,7 @@ def WriteTagD(f):
             navigator.clipboard.writeText(text);
         })
     }
-    const copyButtonOneline = document.getElementById("button_copy")
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
     if(copyButtonOneline){
         copyButtonOneline.addEventListener("click", () => {
             const text = copyButtonOneline.dataset.copy;
@@ -233,11 +233,12 @@ def FindCppFiles(path:str) -> str:
             page_path = os.path.join("gh_pages", page_name)
             with open(page_path, "w", encoding="utf-8") as f:
                 with open(now, "r", encoding="utf-8") as code_f:
+                    code_text = code_f.read()
                     with open(os.path.join(path, "README.md"), "r") as readme_f:
                         WriteTagU(f)
                         f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n")
-                        f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_f.read(), quote=True)}\">copy</button>\n")
-                        f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_f.read()), quote=True)}\">copy_oneline</button>\n")
+                        f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
+                        f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
                         WriteTagD(f)
             if len(res_str) == 0:
                 res_str += "<div class=\"button_sq\">\n"
