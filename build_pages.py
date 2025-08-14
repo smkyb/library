@@ -12,7 +12,7 @@ def WriteTagU(f):
     "<meta charset=\"UTF-8\">\n" \
     "<title>smkyb's library</title>\n" \
     "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap\">\n" \
-    "<link rel=\"https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css\"></script>\n" \
+    "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css\"></script>\n" \
     "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css\">\n" \
     "<style>\n" \
     "body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }\n" \
