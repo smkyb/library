@@ -99,8 +99,3 @@ void size()
 ```
 **・ 概要 :** 要素数の取得
 **・ 計算量 :** Θ(1)  
-<br>
-<br>
-verified? :  
-[Library Checker Set Xor-Min](https://judge.yosupo.jp/submission/285007)  
-[Library Checker Ordered Set](https://judge.yosupo.jp/submission/285011)

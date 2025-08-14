@@ -62,6 +62,3 @@ void sort_rev(int l, int r)
 ### 計算量
 `T`の最大値を`m`とすると，  
 ・償却O(log(m))  
-<br>
-verified? :  
-[Library Checker Point Set Range Sort Range Composite](https://judge.yosupo.jp/submission/305486)

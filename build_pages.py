@@ -21,6 +21,7 @@ def WriteTagU(f):
     body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
     .markdown-body pre { padding: 16px; overflow: auto; }
+    .button_sq { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; background-color: rgb(89, 158, 157); color: white; border: none; padding-left: 20px; padding-right: 20px; cursor: pointer; text-align: center; }
 </style>
 </head>
 <body>
@@ -83,9 +84,7 @@ def FindCppFiles(path:str) -> str:
                     f.write(res)
                     WriteTagD(f)
                 
-                if len(res_str) == 0:
-                    res_str += "<ul>\n"
-                res_str += f"<li><a href=/library/{page_path}>{item}</a></li>\n"
+                res_str += f"<button class=\"button_sq\" onclick=\"location.href=\'/library/{page_path}\'\">{item}</button>\n"
         elif item.endswith(".cpp") and not item.endswith(".test.cpp"):
             cnt_pages += 1
             page_name = f"page{cnt_pages}.html"
@@ -97,13 +96,7 @@ def FindCppFiles(path:str) -> str:
                         f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n")
                         f.write(f"<pre>\n{html.escape(code_f.read(), quote=True)}</pre>\n")
                         WriteTagD(f)
-            
-            if len(res_str) == 0:
-                res_str += "<ul>\n"
-            res_str += f"<li><a href=/library/{page_path}>{item}</a></li>\n"
-    
-    if len(res_str) != 0:
-        res_str += "</ul>\n"
+            res_str += f"<button class=\"button_sq\" onclick=\"location.href=\'/library/{page_path}\'\">{item}</button>\n"
     
     return res_str
 

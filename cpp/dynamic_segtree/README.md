@@ -38,6 +38,3 @@ void reserve(int n)
 **・ 概要 :** 合計n回setしたときに、内部のvectorで再配置が起こらないようにする  
 **・ 制約 :** 0 ≤ n < 常識  
 **・ (空間)計算量 :** $O(n)$  
-<br>
-
-verified? : [Library Checker Point Set Range Composite (Large Array)](https://judge.yosupo.jp/submission/286197)

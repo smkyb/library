@@ -44,10 +44,3 @@ void apply(int l, int r, F x);
 void apply(int r, F x);
 void add(int p, S x);
 ```
-
-<br>
-<br>
-
-verified?  
-https://judge.yosupo.jp/submission/289580  
-https://judge.yosupo.jp/submission/289570
