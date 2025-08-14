@@ -12,13 +12,13 @@
     .markdown-body pre { padding: 16px; overflow: auto; }
     .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
     .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    #button_copy { display: flex; font-size: 14px; }
 </style>
 </head>
 <body>
 <article id="md_content" class="markdown-body">
 fset</article>
-<pre>
-struct fastset{
+<button id="button_copy" data-copy=struct fastset{
     using ull = unsigned long long;
     using uint = unsigned;
     
@@ -102,13 +102,20 @@ struct fastset{
         while(idx &lt; siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]);
         return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]);
     }
-};</pre>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+};>copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
-    const el = document.getElementById("md_content");
-    el.innerHTML = marked.parse(el.textContent);
+    const mdContent = document.getElementById("md_content");
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
+    
+    const copyButton = document.getElementById("button_copy")
+    if(copyButton){
+        copyButton.addEventListener("click", () => {
+            const text = copyButton.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
 </script>
 </body>
 </html>
