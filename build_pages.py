@@ -45,7 +45,7 @@ def EscapedMarkdown(s:str):
             res += "`" + html.escape(token.content, quote=True) + "`"
         elif token.type == "fence" and token.info.strip() == "cpp":
             res += "\n```cpp\n" + html.escape(token.content, quote=True) + "```\n"
-        else:
+        elif token.map:
             begin, end = token.map
             res += s[begin : end]
     return res
