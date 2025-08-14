@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>smkyb's library</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<style>
+    body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
+    .markdown-body pre { padding: 16px; overflow: auto; }
+    .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    #button_copy { display: flex; font-size: 14px; }
+    #button_copy_oneline { display: flex; font-size: 14px; }
+</style>
+</head>
+<body>
+<article id="md_content" class="markdown-body">
+# .cpp、.hppをvscodeのcpp.jsonに変換するやつ
+ChatGPT作です
+<br>
+## 使い方
+⓪コードを書く  
+①ファイル名をトリガーワード(?)にする  
+②スニペットを一つのフォルダにまとめて.cppとかで保存しておく  
+③main関数内にあるやつを書き換える（詳細？はコード内に）  
+④実行
+</article>
+<button id="button_copy" data-copy="#include &lt;iostream&gt;
+#include &lt;filesystem&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+namespace fs = std::filesystem;
+
+std::string escapeJsonString(const std::string&amp; input) {
+    std::string output;
+    for (char c : input) {
+        switch(c) {
+            case &#x27;\&quot;&#x27;: output += &quot;\\\&quot;&quot;; break;
+            case &#x27;\\&#x27;: output += &quot;\\\\&quot;; break;
+            default: output += c; break;
+        }
+    }
+    return output;
+}
+
+void generateSnippetJson(const std::string&amp; directory, const std::string&amp; outputFile) {
+    std::ofstream outFile(outputFile);
+    if (!outFile) {
+        std::cerr &lt;&lt; &quot;Failed to open output file: &quot; &lt;&lt; outputFile &lt;&lt; std::endl;
+        return;
+    }
+    
+    outFile &lt;&lt; &quot;{\n&quot;;
+    
+    bool firstEntry = true;
+    for (const auto&amp; entry : fs::recursive_directory_iterator(directory)) {
+        if (entry.path().extension() == &quot;.cpp&quot; || entry.path().extension() == &quot;.hpp&quot;) {
+            if (!firstEntry) {
+                outFile &lt;&lt; &quot;,\n\t\n&quot;;
+            }
+            firstEntry = false;
+            
+            std::ifstream inFile(entry.path());
+            if (!inFile) continue;
+            
+            std::cout &lt;&lt; entry &lt;&lt; std::endl;
+            
+            std::vector&lt;std::string&gt; lines;
+            std::string line;
+            while (std::getline(inFile, line)) {
+                std::string escapedLine = escapeJsonString(line);
+                lines.push_back(&quot;\&quot;&quot; + escapedLine + &quot;\&quot;&quot;);
+            }
+            
+            std::string key = entry.path().stem().string();
+            outFile &lt;&lt; &quot;\t\&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;: {\n&quot;;
+            outFile &lt;&lt; &quot;\t\t\&quot;prefix\&quot;: \&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;,\n&quot;;
+            outFile &lt;&lt; &quot;\t\t\&quot;body\&quot;: [\n&quot;;
+            for (size_t i = 0; i &lt; lines.size(); ++i) {
+                outFile &lt;&lt; &quot;\t\t\t&quot; &lt;&lt; lines[i];
+                if (i != lines.size() - 1) {
+                    outFile &lt;&lt; &quot;,&quot;;
+                }
+                outFile &lt;&lt; &quot;\n&quot;;
+            }
+            outFile &lt;&lt; &quot;\t\t]\n&quot;;
+            outFile &lt;&lt; &quot;\t}&quot;;
+        }
+    }
+    
+    outFile &lt;&lt; &quot;\n}&quot;;
+    outFile.close();
+    std::cout &lt;&lt; std::endl;
+    std::cout &lt;&lt; &quot;cpp.json has been generated successfully.&quot; &lt;&lt; std::endl;
+}
+
+int main(){
+    //.cppや.hppが入っているフォルダを指定する
+    std::string directory = &quot;C:\\vscode programs\\Libraries&quot;;
+    //出力に使用するファイルを指定する（無い場合は新たに作られる？）
+    std::string outputfile = &quot;0_output.txt&quot;;
+    
+    generateSnippetJson(directory, outputfile);
+}
+">copy</button>
+<button id="button_copy_oneline" data-copy="#include &lt;iostream&gt;
+#include &lt;filesystem&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+namespace fs = std::filesystem; std::string escapeJsonString(const std::string&amp; input) { std::string output; for (char c : input) { switch(c) { case &#x27;\&quot;&#x27;: output += &quot;\\\&quot;&quot;; break; case &#x27;\\&#x27;: output += &quot;\\\\&quot;; break; default: output += c; break; } } return output; } void generateSnippetJson(const std::string&amp; directory, const std::string&amp; outputFile) { std::ofstream outFile(outputFile); if (!outFile) { std::cerr &lt;&lt; &quot;Failed to open output file: &quot; &lt;&lt; outputFile &lt;&lt; std::endl; return; } outFile &lt;&lt; &quot;{\n&quot;; bool firstEntry = true; for (const auto&amp; entry : fs::recursive_directory_iterator(directory)) { if (entry.path().extension() == &quot;.cpp&quot; || entry.path().extension() == &quot;.hpp&quot;) { if (!firstEntry) { outFile &lt;&lt; &quot;,\n\t\n&quot;; } firstEntry = false; std::ifstream inFile(entry.path()); if (!inFile) continue; std::cout &lt;&lt; entry &lt;&lt; std::endl; std::vector&lt;std::string&gt; lines; std::string line; while (std::getline(inFile, line)) { std::string escapedLine = escapeJsonString(line); lines.push_back(&quot;\&quot;&quot; + escapedLine + &quot;\&quot;&quot;); } std::string key = entry.path().stem().string(); outFile &lt;&lt; &quot;\t\&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;: {\n&quot;; outFile &lt;&lt; &quot;\t\t\&quot;prefix\&quot;: \&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;,\n&quot;; outFile &lt;&lt; &quot;\t\t\&quot;body\&quot;: [\n&quot;; for (size_t i = 0; i &lt; lines.size(); ++i) { outFile &lt;&lt; &quot;\t\t\t&quot; &lt;&lt; lines[i]; if (i != lines.size() - 1) { outFile &lt;&lt; &quot;,&quot;; } outFile &lt;&lt; &quot;\n&quot;; } outFile &lt;&lt; &quot;\t\t]\n&quot;; outFile &lt;&lt; &quot;\t}&quot;; } } outFile &lt;&lt; &quot;\n}&quot;; outFile.close(); std::cout &lt;&lt; std::endl; std::cout &lt;&lt; &quot;cpp.json has been generated successfully.&quot; &lt;&lt; std::endl; } int main(){ std::string directory = &quot;C:\\vscode programs\\Libraries&quot;; std::string outputfile = &quot;0_output.txt&quot;; generateSnippetJson(directory, outputfile); }">copy_oneline</button>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
+    const mdContent = document.getElementById("md_content");
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
+    
+    const copyButton = document.getElementById("button_copy")
+    if(copyButton){
+        copyButton.addEventListener("click", () => {
+            const text = copyButton.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
+    if(copyButtonOneline){
+        copyButtonOneline.addEventListener("click", () => {
+            const text = copyButtonOneline.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+</script>
+</body>
+</html>
