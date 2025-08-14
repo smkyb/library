@@ -10,30 +10,26 @@ def WriteTagU(f):
     "<html lang=\"ja\">\n" \
     "<head>\n" \
     "<meta charset=\"UTF-8\">\n" \
-    "<tytle>smkyb's library</title>\n" \
+    "<title>smkyb's library</title>\n" \
     "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap\">\n" \
-    "<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>\n" \
-    "<script>\n" \
-    "    marked.setOptions({\n" \
-    "    gfm: true,\n" \
-    "    breaks: true\n" \
-    "});\n" \
-    "</script>\n" \
+    "<link rel=\"https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css\"></script>\n" \
+    "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css\">\n" \
     "<style>\n" \
-    "body {\n" \
-    "    margin: 60px;\n" \
-    "    font-family:'Noto Sans JP', Arial, sans-serif;\n" \
-    "    font-size:large;\n" \
-    "}\n" \
+    "body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }\n" \
+    ".markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }\n" \
+    ".markdown-body pre { padding: 16px; overflow: auto; }\n" \
     "</style>\n" \
     "</head>\n" \
     "<body>\n")
 
 def WriteTagD(f):
-    f.write("<script>\n" \
-    "    const content = document.getElementById(\"md_content\")\n" \
-    "    content.innerHTML = marked.parse(content.textContent)\n" \
-    "</script>\n" \
+    f.write("<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>" \
+    "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js\"></script>\n" \
+    "<script>\n" \
+    "    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });\n" \
+    "    const el = document.getElementById('md_content');\n" \
+    "    el.innerHTML = marked.parse(el.textContent);\n"
+    "</script>\n"
     "</body>\n" \
     "</html>\n")
 
@@ -67,7 +63,7 @@ def FindCppFiles(path:str) -> str:
                 with open(now, "r", encoding="utf-8") as code_f:
                     with open(os.path.join(path, "README.md"), "r") as readme_f:
                         WriteTagU(f)
-                        f.write(f"<div id=\"md_content\">\n{readme_f.read()}</div>\n")
+                        f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{readme_f.read()}</article>\n")
                         f.write(f"<pre>\n{html.escape(code_f.read(), quote=True)}</pre>\n")
                         WriteTagD(f)
             
