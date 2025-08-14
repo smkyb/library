@@ -1,3 +1,5 @@
+namespace smkyb {
+
 template<typename T, typename S, auto op, auto e>
 struct meldable_binary_trie{
     static_assert(is_unsigned_v<T>);
@@ -435,6 +437,9 @@ struct segtree{
         return node[1];
     }
 };
+
+} //namespace smkyb
+
 template<typename T, typename S, auto op, auto e>
 struct sort_segtree {
     struct SS {
@@ -447,18 +452,18 @@ struct sort_segtree {
     };
     
     int n;
-    meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e> *trie;
-    fastset fset;
-    segtree<S, op, e> seg;
+    smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e> *trie;
+    smkyb::fastset fset;
+    smkyb::segtree<S, op, e> seg;
     
     sort_segtree(int _n) : n(_n), fset(n+1), seg(n) {
-        trie = new meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n]{};
+        trie = new smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n]{};
         for(int i = 0; i <= n; i++) fset.insert(i);
     }
     sort_segtree(const vector<pair<T, S>> &v) : n(v.size()), fset(n+1), seg(n) {
-        trie = new meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n];
+        trie = new smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n];
         for(int i = 0; i <= n; i++) fset.insert(i);
-        for(int i = 0; i < n; i++) trie[i] = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(v[i].first, v[i].second);
+        for(int i = 0; i < n; i++) trie[i] = smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(v[i].first, v[i].second);
         for(int i = 0; i < n; i++) seg.set(i, v[i].second);
     }
     sort_segtree(sort_segtree<T, S, op, e> &&o) = default;
@@ -519,8 +524,8 @@ struct sort_segtree {
         }
         lb = fset.lower_bound(l+1);
         while(lb < r){
-            auto res = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>::meld(trie[l], trie[lb]);
-            trie[l] = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(res);
+            auto res = smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>::meld(trie[l], trie[lb]);
+            trie[l] = smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(res);
             fset.erase(lb);
             seg.set(lb, e());
             lb = fset.lower_bound(lb);
@@ -546,8 +551,8 @@ struct sort_segtree {
         }
         lb = fset.lower_bound(l+1);
         while(lb < r){
-            auto res = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>::meld(trie[l], trie[lb]);
-            trie[l] = meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(res);
+            auto res = smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>::meld(trie[l], trie[lb]);
+            trie[l] = smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(res);
             fset.erase(lb);
             seg.set(lb, e());
             lb = fset.lower_bound(lb);
