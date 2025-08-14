@@ -100,7 +100,7 @@ def FindCppFiles(path:str) -> str:
                         f.write(f"<pre>\n{html.escape(code_f.read(), quote=True)}</pre>\n")
                         WriteTagD(f)
             if len(res_str) == 0:
-                res_str += "<div class\"button_sq\">\n"
+                res_str += "<div class=\"button_sq\">\n"
             res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item}</button>\n"
     
     if len(res_str) != 0:
