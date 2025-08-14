@@ -24,12 +24,12 @@ def WriteTagU(f):
     "<body>\n")
 
 def WriteTagD(f):
-    f.write("</body>\n" \
-    "</html>\n")
-    "<script>\n" \
+    f.write("<script>\n" \
     "    const content = document.getElementById(\"md_content\")\n" \
     "    content.innerHTML = marked.parse(content.textContent)\n" \
-    "</script>\n"
+    "</script>\n" \
+    "</body>\n" \
+    "</html>\n")
 
 def FindCppFiles(path:str) -> str:
     global cnt_pages
