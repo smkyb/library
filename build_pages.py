@@ -205,30 +205,40 @@ def MakeOneLine(src: str) -> str:
         out.pop()
     return "".join(out)
 
+def ListCppFile(path:str) -> list[tuple[str, str]]:
+    res:list[tuple[str, str]] = []
+    for item in os.listdir(path):
+        now = os.path.join(path, item)
+        if os.path.isdir(now):
+            res.extend(ListCppFile(now))
+        elif now.endswith(".cpp") and not now.endswith(".test.cpp"):
+            res.append([item, now])
+    return res
+
 def FindCppFiles(path:str) -> str:
     global cnt_pages
     
     res_str: str = ""
-    items = sorted(os.listdir(path))
+    items = sorted(ListCppFile(path))
     
-    for item in items:
-        now = os.path.join(path, item)
-        if item.endswith(".cpp") and not item.endswith(".test.cpp"):
-            cnt_pages += 1
-            page_name = f"page{cnt_pages}.html"
-            page_path = os.path.join("gh_pages", page_name)
-            with open(page_path, "w", encoding="utf-8") as f:
-                with open(now, "r", encoding="utf-8") as code_f:
-                    code_text = code_f.read()
-                    with open(os.path.join(path, "README.md"), "r") as readme_f:
-                        WriteTagU(f)
-                        f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n")
-                        f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
-                        f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
-                        WriteTagD(f)
-            if len(res_str) == 0:
-                res_str += "<div class=\"button_sq\">\n"
-            res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item[:-4]}</button>\n"
+    if len(items) == 0:
+        return ""
+    
+    res_str += "<div class=\"button_sq\">\n"
+    for item, item_path in items:
+        cnt_pages += 1
+        page_name = f"page{cnt_pages}.html"
+        page_path = os.path.join("gh_pages", page_name)
+        with open(page_path, "w", encoding="utf-8") as f:
+            with open(item_path, "r", encoding="utf-8") as code_f:
+                code_text = code_f.read()
+                with open(os.path.join(path, "README.md"), "r") as readme_f:
+                    WriteTagU(f)
+                    f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n")
+                    f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
+                    f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
+                    WriteTagD(f)
+        res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item[:-4]}</button>\n"
     
     if len(res_str) != 0:
         res_str += "</div>\n"
