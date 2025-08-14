@@ -37,20 +37,32 @@ def WriteTagD(f):
 </body>
 </html>""")
 
-def EscapedMarkdown(s:str):
-    tokens = md.parse(s)
-    res: str = ""
-    for token in tokens:
-        if token.type in ("paragraph_open", "heading_open"):
-            pass
-        elif token.type == "code_inline":
-            res += "`" + html.escape(token.content, quote=True) + "`"
-        elif token.type == "fence" and token.info.strip() == "cpp":
-            res += "\n```cpp\n" + html.escape(token.content, quote=True) + "```\n"
-        elif token.map is not None:
-            begin, end = token.map
-            res += s[begin : end]
-    return res
+def EscapedMarkdown(s:str) -> str:
+    if len(s) == 0:
+        return ""
+    
+    pos = s.find("`")
+    if pos == -1:
+        return s
+    res = s[:pos]
+    s = s[pos:]
+    if len(s) >= 3 and s[0] == s[1] == s[2]:
+        res += "```"
+        s = s[3:]
+        pos = s.find("```")
+        assert pos != -1
+        pos += 3
+        res += html.escape(s[:pos], quote=True)
+        s = s[pos:]
+    else:
+        res += "`"
+        s = s[1:]
+        pos = s.find("`")
+        assert pos != -1
+        pos += 1
+        res += html.escape(s[:pos], quote=True)
+        s = s[pos:]
+    return res + EscapedMarkdown(s)
 
 def FindCppFiles(path:str) -> str:
     global cnt_pages
