@@ -12,7 +12,12 @@ def WriteTagU(f):
     "<meta charset=\"UTF-8\">\n" \
     "<tytle>smkyb's library</title>\n" \
     "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap\">\n" \
-    "<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>\n" \
+    "<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\">\n" \
+    "    marked.setOptions({\n" \
+    "    gfm: true,\n" \
+    "    breaks: true\n" \
+    "});\n" \
+    "</script>\n" \
     "<style>\n" \
     "body {\n" \
     "    margin: 60px;\n" \
