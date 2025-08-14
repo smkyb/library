@@ -236,8 +236,8 @@ def FindCppFiles(path:str) -> str:
                     with open(os.path.join(path, "README.md"), "r") as readme_f:
                         WriteTagU(f)
                         f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n")
-                        f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_f.read(), quote=True)}\">copy</button>")
-                        f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_f.read()), quote=True)}\">copy_oneline</button>")
+                        f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_f.read(), quote=True)}\">copy</button>\n")
+                        f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_f.read()), quote=True)}\">copy_oneline</button>\n")
                         WriteTagD(f)
             if len(res_str) == 0:
                 res_str += "<div class=\"button_sq\">\n"
