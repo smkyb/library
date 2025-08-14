@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <tytle>smkyb's library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 body {
     margin: 60px;
@@ -13,7 +14,79 @@ body {
 </style>
 </head>
 <body>
-<pre>template&lt;typename T, typename S, auto op, auto e&gt;
+<div id="md_content">
+# sort_segtree
+通常のセグメント木に加え，非負整数のキーによる区間ソートを行えるデータ構造です．  
+可換性は要求しません．  
+<br>
+## コンストラクタ
+```cpp
+/*1*/ sort_segtree<T, S, op, e> seg(int _n);
+/*2*/ sort_segtree<T, S, op, e> seg(vector<pair<T, S>> v);
+```
+・キーの型（非負整数）`T`  
+・ACLと同様に`S`, `op`, `e`  
+を定義する必要があります．  
+<br>
+・1 : 初期値`e()`，長さ`_n`の数列`a`を作ります．  
+・2 : 初期値が`v`，長さ`v.size()`の数列`a`を作ります．  
+### 制約
+・`a`の長さが正，かつ大きすぎない  
+### 計算量
+・O(n log n)
+<br>
+## set
+```cpp
+void set(int i, T k, S x)
+```
+a[i]の，キーを`k`，値を`x`に変更します．
+### 制約
+・`0 <= i`  
+・`0 <= k`  
+### 計算量
+`T`の最大値を`m`とすると，  
+・O(log(m))
+<br>
+## prod
+```cpp
+S prod(int l, int r)
+```
+仕様はACLのセグメント木と同様です．
+### 制約
+・`0 <= l <= r <= _n`
+### 計算量
+`T`の最大値を`m`とすると，  
+・O(log(m))
+<br>
+## sort
+```cpp
+void sort(int l, int r)
+```
+`a[l], a[l+1], ..., a[r-1]`をキーの昇順でソートします．
+### 制約
+・`0 <= l <= r <= _n`
+### 計算量
+`T`の最大値を`m`とすると，  
+・償却O(log(m))
+<br>
+## sort_rev
+```cpp
+void sort_rev(int l, int r)
+```
+`a[l], a[l+1], ..., a[r-1]`をキーの降順でソートします．
+### 制約
+・`0 <= l <= r <= _n`
+### 計算量
+`T`の最大値を`m`とすると，  
+・償却O(log(m))  
+<br>
+verified? :  
+[Library Checker Point Set Range Sort Range Composite](https://judge.yosupo.jp/submission/305486)
+</div>
+<pre>
+namespace smkyb {
+
+template&lt;typename T, typename S, auto op, auto e&gt;
 struct meldable_binary_trie{
     static_assert(is_unsigned_v&lt;T&gt;);
     
@@ -450,6 +523,9 @@ struct segtree{
         return node[1];
     }
 };
+
+} //namespace smkyb
+
 template&lt;typename T, typename S, auto op, auto e&gt;
 struct sort_segtree {
     struct SS {
@@ -462,18 +538,18 @@ struct sort_segtree {
     };
     
     int n;
-    meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt; *trie;
-    fastset fset;
-    segtree&lt;S, op, e&gt; seg;
+    smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt; *trie;
+    smkyb::fastset fset;
+    smkyb::segtree&lt;S, op, e&gt; seg;
     
     sort_segtree(int _n) : n(_n), fset(n+1), seg(n) {
-        trie = new meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;[n]{};
+        trie = new smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;[n]{};
         for(int i = 0; i &lt;= n; i++) fset.insert(i);
     }
     sort_segtree(const vector&lt;pair&lt;T, S&gt;&gt; &amp;v) : n(v.size()), fset(n+1), seg(n) {
-        trie = new meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;[n];
+        trie = new smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;[n];
         for(int i = 0; i &lt;= n; i++) fset.insert(i);
-        for(int i = 0; i &lt; n; i++) trie[i] = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(v[i].first, v[i].second);
+        for(int i = 0; i &lt; n; i++) trie[i] = smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(v[i].first, v[i].second);
         for(int i = 0; i &lt; n; i++) seg.set(i, v[i].second);
     }
     sort_segtree(sort_segtree&lt;T, S, op, e&gt; &amp;&amp;o) = default;
@@ -534,8 +610,8 @@ struct sort_segtree {
         }
         lb = fset.lower_bound(l+1);
         while(lb &lt; r){
-            auto res = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;::meld(trie[l], trie[lb]);
-            trie[l] = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(res);
+            auto res = smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;::meld(trie[l], trie[lb]);
+            trie[l] = smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(res);
             fset.erase(lb);
             seg.set(lb, e());
             lb = fset.lower_bound(lb);
@@ -561,8 +637,8 @@ struct sort_segtree {
         }
         lb = fset.lower_bound(l+1);
         while(lb &lt; r){
-            auto res = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;::meld(trie[l], trie[lb]);
-            trie[l] = meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(res);
+            auto res = smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;::meld(trie[l], trie[lb]);
+            trie[l] = smkyb::meldable_binary_trie&lt;T, SS, SS::SS_op, SS::SS_e&gt;(res);
             fset.erase(lb);
             seg.set(lb, e());
             lb = fset.lower_bound(lb);
@@ -571,5 +647,6 @@ struct sort_segtree {
         seg.set(l, trie[l].all_prod().rtol);
     }
 };
-</pre></body>
+</pre>
+</body>
 </html>

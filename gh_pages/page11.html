@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <tytle>smkyb's library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 body {
     margin: 60px;
@@ -13,7 +14,10 @@ body {
 </style>
 </head>
 <body>
-<pre>struct fastset{
+<div id="md_content">
+fset</div>
+<pre>
+struct fastset{
     using ull = unsigned long long;
     using uint = unsigned;
     
@@ -97,5 +101,6 @@ body {
         while(idx &lt; siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]);
         return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]);
     }
-};</pre></body>
+};</pre>
+</body>
 </html>

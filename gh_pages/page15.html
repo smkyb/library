@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <tytle>smkyb's library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 body {
     margin: 60px;
@@ -13,7 +14,10 @@ body {
 </style>
 </head>
 <body>
-<pre>template&lt;typename T, typename S, auto op, auto e&gt;
+<div id="md_content">
+mel_b</div>
+<pre>
+template&lt;typename T, typename S, auto op, auto e&gt;
 struct meldable_binary_trie{
     static_assert(is_unsigned_v&lt;T&gt;);
     
@@ -318,5 +322,6 @@ struct meldable_binary_trie{
     }
 };
 template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::node_t meldable_binary_trie&lt;T, S, op, e&gt;::node_t::nil = meldable_binary_trie&lt;T, S, op, e&gt;::node_t(0, e(), bit_width, 0);
-template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::Pool meldable_binary_trie&lt;T, S, op, e&gt;::pool = meldable_binary_trie&lt;T, S, op, e&gt;::Pool();</pre></body>
+template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::Pool meldable_binary_trie&lt;T, S, op, e&gt;::pool = meldable_binary_trie&lt;T, S, op, e&gt;::Pool();</pre>
+</body>
 </html>
