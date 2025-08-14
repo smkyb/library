@@ -2,25 +2,18 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<tytle>smkyb's library</title>
+<title>smkyb's library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>
-    marked.setOptions({
-    gfm: true,
-    breaks: true
-});
-</script>
+<link rel="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <style>
-body {
-    margin: 60px;
-    font-family:'Noto Sans JP', Arial, sans-serif;
-    font-size:large;
-}
+body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+.markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
+.markdown-body pre { padding: 16px; overflow: auto; }
 </style>
 </head>
 <body>
-<div id="md_content">
+<article id="md_content" class="markdown-body">
 # binary trie
 非負整数の多重集合で、  
 ・要素の挿入、削除、検索  
@@ -127,7 +120,7 @@ void size()
 verified? :  
 [Library Checker Set Xor-Min](https://judge.yosupo.jp/submission/285007)  
 [Library Checker Ordered Set](https://judge.yosupo.jp/submission/285011)
-</div>
+</article>
 <pre>
 template &lt;typename T&gt;
 struct binary_trie{
@@ -418,9 +411,11 @@ struct binary_trie{
 template&lt;typename T&gt; typename binary_trie&lt;T&gt;::node_t binary_trie&lt;T&gt;::node_t::nil = node_t(0, bit_width, 0, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil);
 template&lt;typename T&gt; typename binary_trie&lt;T&gt;::Pool binary_trie&lt;T&gt;::pool = Pool();
 </pre>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
-    const content = document.getElementById("md_content")
-    content.innerHTML = marked.parse(content.textContent)
+    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
+    const el = document.getElementById('md_content');
+    el.innerHTML = marked.parse(el.textContent);
 </script>
 </body>
 </html>

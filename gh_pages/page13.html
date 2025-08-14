@@ -2,25 +2,18 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<tytle>smkyb's library</title>
+<title>smkyb's library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>
-    marked.setOptions({
-    gfm: true,
-    breaks: true
-});
-</script>
+<link rel="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <style>
-body {
-    margin: 60px;
-    font-family:'Noto Sans JP', Arial, sans-serif;
-    font-size:large;
-}
+body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+.markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
+.markdown-body pre { padding: 16px; overflow: auto; }
 </style>
 </head>
 <body>
-<div id="md_content">
+<article id="md_content" class="markdown-body">
 ***頂点クエリのみに対応しています***  
 また、非常に使いにくい形式になっていると思われます  
 # HLD
@@ -74,7 +67,7 @@ void add(int p, S x);
 verified?  
 https://judge.yosupo.jp/submission/289580  
 https://judge.yosupo.jp/submission/289570
-</div>
+</article>
 <pre>
 template&lt;typename S, auto op, auto e = []{return S();}, typename F = int, auto mapping = []{}, auto composition = []{}, auto id = []{}&gt;
 struct hld{
@@ -292,9 +285,11 @@ struct hld{
     }
 };
 </pre>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
-    const content = document.getElementById("md_content")
-    content.innerHTML = marked.parse(content.textContent)
+    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
+    const el = document.getElementById('md_content');
+    el.innerHTML = marked.parse(el.textContent);
 </script>
 </body>
 </html>
