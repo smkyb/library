@@ -104,7 +104,7 @@ fset</article>
         return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]);
     }
 };">copy</button>
-<button id="button_copy_oneline" data-copy="">copy_oneline</button>
+<button id="button_copy_oneline" data-copy="struct fastset{ using ull = unsigned long long; using uint = unsigned; int siz; vector&lt;ull&gt; node; fastset(int _n){ int n = 1; while((n&lt;&lt;6) &lt; _n) n &lt;&lt;= 6; siz = (n+1)/63; node.resize((n+1)/63 + (_n+63)/64); } void insert(int x){ uint idx = siz + (x/64); x &amp;= 63; while(true){ if((node[idx]&gt;&gt;x) &amp; 1ull) return; node[idx] |= (1ull&lt;&lt;x); if(idx == 0) return; idx--; x = idx &amp; 63; idx /= 64; } } void erase(int x){ int idx = siz + (x/64); x &amp;= 63; while(true){ node[idx] &amp;= ~(1ull&lt;&lt;x); if(idx == 0 || node[idx]) return; idx--; x = idx &amp; 63; idx /= 64; } } bool count(int x) const { return (node[siz+x/64]&gt;&gt;(x&amp;63u))&amp;1; } int lower_bound(int x){ if(count(x)) return x; int idx = siz + (x/64); x &amp;= 63; while(true){ if(node[idx] &amp; ~(((1ull&lt;&lt;x)&lt;&lt;1) - 1ull)){ x = __builtin_ctzll(node[idx] &amp; ~(((1ull&lt;&lt;x)&lt;&lt;1) - 1ull)); if(idx &gt;= siz) return (idx-siz)*64+x; break; } if(idx == 0) return -1; idx--; x = idx &amp; 63; idx /= 64; } idx = idx*64 + x+1; while(idx &lt; siz) idx = idx*64 + __builtin_ctzll(node[idx])+1; return (idx-siz)*64 + __builtin_ctzll(node[idx]); } int less_bound(int x){ if(count(x)) return x; int idx = siz + (x/64); x &amp;= 63; while(true){ if(node[idx] &amp; ((1ull&lt;&lt;x) - 1ull)){ x = 63 - __builtin_clzll(node[idx] &amp; ((1ull&lt;&lt;x) - 1ull)); if(idx &gt;= siz) return (idx-siz)*64+x; break; } if(idx == 0) return -1; idx--; x = idx &amp; 63; idx /= 64; } idx = idx*64 + x+1; while(idx &lt; siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]); return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]); } };">copy_oneline</button>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
@@ -119,7 +119,7 @@ fset</article>
             navigator.clipboard.writeText(text);
         })
     }
-    const copyButtonOneline = document.getElementById("button_copy")
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
     if(copyButtonOneline){
         copyButtonOneline.addEventListener("click", () => {
             const text = copyButtonOneline.dataset.copy;

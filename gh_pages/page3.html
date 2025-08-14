@@ -56,7 +56,7 @@ vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){
     _compression_apply(C, v, args...);
     return C;
 }">copy</button>
-<button id="button_copy_oneline" data-copy="">copy_oneline</button>
+<button id="button_copy_oneline" data-copy="void _compression_merge(...){} template&lt;typename T, typename... Args&gt; void _compression_merge(vector&lt;T&gt;&amp; C, vector&lt;T&gt;&amp; v, Args&amp;... args){ for(auto&amp; i : v) C.push_back(i); _compression_merge(C, args...); } void _compression_apply(...){} template&lt;typename T, typename... Args&gt; void _compression_apply(vector&lt;T&gt;&amp; C, vector&lt;T&gt;&amp; v, Args&amp;... args){ for(auto&amp; i : v) i = lower_bound(C.begin(), C.end(), i) - C.begin(); _compression_apply(C, args...); } template&lt;typename T, typename... Args&gt; vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){ vector&lt;T&gt; C; _compression_merge(C, v, args...); sort(C.begin(), C.end()); C.erase(unique(C.begin(), C.end()), C.end()); _compression_apply(C, v, args...); return C; }">copy_oneline</button>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
@@ -71,7 +71,7 @@ vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){
             navigator.clipboard.writeText(text);
         })
     }
-    const copyButtonOneline = document.getElementById("button_copy")
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
     if(copyButtonOneline){
         copyButtonOneline.addEventListener("click", () => {
             const text = copyButtonOneline.dataset.copy;
