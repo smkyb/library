@@ -42,11 +42,12 @@ def EscapedMarkdown(s:str):
     res: str = ""
     for token in tokens:
         if token.type == "code_inline":
-            res += "`" + token.content + "`"
+            res += "`" + html.escape(token.content, quote=True) + "`"
         elif token.type == "fence" and token.info.strip() == "cpp":
-            res += "\n```cpp\n" + token.content + "\n```\n"
+            res += "\n```cpp\n" + html.escape(token.content, quote=True) + "```\n"
         else:
-            res += token.content
+            begin, end = token.nap
+            res += s[begin : end]
     return res
 
 def FindCppFiles(path:str) -> str:
