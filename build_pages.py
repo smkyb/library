@@ -41,11 +41,13 @@ def EscapedMarkdown(s:str):
     tokens = md.parse(s)
     res: str = ""
     for token in tokens:
-        if token.type == "code_inline":
+        if token.type in ("paragraph_open", "heading_open"):
+            pass
+        elif token.type == "code_inline":
             res += "`" + html.escape(token.content, quote=True) + "`"
         elif token.type == "fence" and token.info.strip() == "cpp":
             res += "\n```cpp\n" + html.escape(token.content, quote=True) + "```\n"
-        elif token.map:
+        elif token.map is not None:
             begin, end = token.map
             res += s[begin : end]
     return res
