@@ -213,21 +213,7 @@ def FindCppFiles(path:str) -> str:
     
     for item in items:
         now = os.path.join(path, item)
-        if os.path.isdir(now):
-            res = FindCppFiles(now)
-            if len(res) != 0:
-                cnt_pages += 1
-                page_name = f"page{cnt_pages}.html"
-                page_path = os.path.join("gh_pages", page_name)
-                with open(page_path, "w", encoding="utf-8") as f:
-                    WriteTagU(f)
-                    f.write(res)
-                    WriteTagD(f)
-                
-                if len(res_str) == 0:
-                    res_str += "<div class=\"button_sq\">\n"
-                res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item}</button>\n"
-        elif item.endswith(".cpp") and not item.endswith(".test.cpp"):
+        if item.endswith(".cpp") and not item.endswith(".test.cpp"):
             cnt_pages += 1
             page_name = f"page{cnt_pages}.html"
             page_path = os.path.join("gh_pages", page_name)
@@ -242,7 +228,7 @@ def FindCppFiles(path:str) -> str:
                         WriteTagD(f)
             if len(res_str) == 0:
                 res_str += "<div class=\"button_sq\">\n"
-            res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item}</button>\n"
+            res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item[:-4]}</button>\n"
     
     if len(res_str) != 0:
         res_str += "</div>\n"
