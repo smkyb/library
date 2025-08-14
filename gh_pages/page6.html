@@ -17,5 +17,9 @@ body {
 <ul>
 <li><a href=/library/gh_pages/page5.html>cpptosnippet.cpp</a></li>
 </ul>
+<script>
+    const content = document.getElementById("md_content")
+    content.innerHTML = marked.parse(content.textContent)
+</script>
 </body>
 </html>
