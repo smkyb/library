@@ -22,7 +22,7 @@ def WriteTagU(f):
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
     .markdown-body pre { padding: 16px; overflow: auto; }
     .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
-    .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(14, 34, 34);   color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
 </style>
 </head>
 <body>
