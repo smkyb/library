@@ -18,7 +18,7 @@
 <body>
 <article id="md_content" class="markdown-body">
 fasio</article>
-<button id="button_copy" data-copy=struct FIstream{
+<button id="button_copy" data-copy="struct FIstream{
     static constexpr unsigned SIZ = 1 &lt;&lt; 17;
     char buf[SIZ], *p1 = buf, *p2 = buf;
     
@@ -159,7 +159,7 @@ struct FOstream{
 #define istream FIstream
 #define cout _cout
 #define ostream FOstream
->copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+">copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });

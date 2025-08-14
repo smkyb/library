@@ -18,7 +18,7 @@
 <body>
 <article id="md_content" class="markdown-body">
 mel_b</article>
-<button id="button_copy" data-copy=template&lt;typename T, typename S, auto op, auto e&gt;
+<button id="button_copy" data-copy="template&lt;typename T, typename S, auto op, auto e&gt;
 struct meldable_binary_trie{
     static_assert(is_unsigned_v&lt;T&gt;);
     
@@ -323,7 +323,7 @@ struct meldable_binary_trie{
     }
 };
 template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::node_t meldable_binary_trie&lt;T, S, op, e&gt;::node_t::nil = meldable_binary_trie&lt;T, S, op, e&gt;::node_t(0, e(), bit_width, 0);
-template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::Pool meldable_binary_trie&lt;T, S, op, e&gt;::pool = meldable_binary_trie&lt;T, S, op, e&gt;::Pool();>copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+template&lt;typename T, typename S, auto op, auto e&gt; typename meldable_binary_trie&lt;T, S, op, e&gt;::Pool meldable_binary_trie&lt;T, S, op, e&gt;::pool = meldable_binary_trie&lt;T, S, op, e&gt;::Pool();">copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });

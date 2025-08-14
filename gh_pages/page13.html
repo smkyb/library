@@ -64,7 +64,7 @@ void apply(int r, F x);
 void add(int p, S x);
 ```
 </article>
-<button id="button_copy" data-copy=template&lt;typename S, auto op, auto e = []{return S();}, typename F = int, auto mapping = []{}, auto composition = []{}, auto id = []{}&gt;
+<button id="button_copy" data-copy="template&lt;typename S, auto op, auto e = []{return S();}, typename F = int, auto mapping = []{}, auto composition = []{}, auto id = []{}&gt;
 struct hld{
     using node_type = segtree&lt;S, op, e&gt;;
     //using node_type = lazy_segtree&lt;S, op, e, F, mapping, composition, id&gt;
@@ -279,7 +279,7 @@ struct hld{
         node[1].apply(n-out[r], n-in[r], x);
     }
 };
->copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+">copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });

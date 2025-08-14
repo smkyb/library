@@ -34,7 +34,7 @@ vector&lt;T&gt; compression(T&amp; v1, Args&amp;... args)
 {0, 1, 2, 3, 4, 3}, {1, 3, 5, 6, 7, 1}  
 になる
 </article>
-<button id="button_copy" data-copy=void _compression_merge(...){}
+<button id="button_copy" data-copy="void _compression_merge(...){}
 template&lt;typename T, typename... Args&gt;
 void _compression_merge(vector&lt;T&gt;&amp; C, vector&lt;T&gt;&amp; v, Args&amp;... args){
     for(auto&amp; i : v) C.push_back(i);
@@ -54,7 +54,7 @@ vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){
     C.erase(unique(C.begin(), C.end()), C.end());
     _compression_apply(C, v, args...);
     return C;
-}>copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+}">copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });

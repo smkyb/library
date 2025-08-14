@@ -27,7 +27,7 @@ ChatGPT作です
 ③main関数内にあるやつを書き換える（詳細？はコード内に）  
 ④実行
 </article>
-<button id="button_copy" data-copy=#include &lt;iostream&gt;
+<button id="button_copy" data-copy="#include &lt;iostream&gt;
 #include &lt;filesystem&gt;
 #include &lt;fstream&gt;
 #include &lt;vector&gt;
@@ -106,7 +106,7 @@ int main(){
     
     generateSnippetJson(directory, outputfile);
 }
->copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+">copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });

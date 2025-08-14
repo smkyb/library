@@ -18,7 +18,7 @@
 <body>
 <article id="md_content" class="markdown-body">
 fset</article>
-<button id="button_copy" data-copy=struct fastset{
+<button id="button_copy" data-copy="struct fastset{
     using ull = unsigned long long;
     using uint = unsigned;
     
@@ -102,7 +102,7 @@ fset</article>
         while(idx &lt; siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]);
         return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]);
     }
-};>copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+};">copy</button><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
