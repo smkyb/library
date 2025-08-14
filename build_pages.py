@@ -1,4 +1,7 @@
 import shutil, os, html
+from markdown_it import MarkdownIt
+
+md = MarkdownIt()
 
 if os.path.exists("gh_pages"):
     shutil.rmtree("gh_pages")
@@ -34,6 +37,18 @@ def WriteTagD(f):
 </body>
 </html>""")
 
+def EscapedMarkdown(s:str):
+    tokens = md.parse(s)
+    res: str = ""
+    for token in tokens:
+        if token.type == "code_inline":
+            res += "`" + token.content + "`"
+        elif token.type == "fence" and token.info.strip() == "cpp":
+            res += "\n```cpp\n" + token.content + "\n```\n"
+        else:
+            res += token.content
+    return res
+
 def FindCppFiles(path:str) -> str:
     global cnt_pages
     
@@ -64,7 +79,7 @@ def FindCppFiles(path:str) -> str:
                 with open(now, "r", encoding="utf-8") as code_f:
                     with open(os.path.join(path, "README.md"), "r") as readme_f:
                         WriteTagU(f)
-                        f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{readme_f.read()}</article>\n")
+                        f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read(), quote=True)}</article>\n")
                         f.write(f"<pre>\n{html.escape(code_f.read(), quote=True)}</pre>\n")
                         WriteTagD(f)
             
