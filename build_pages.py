@@ -12,6 +12,7 @@ def WriteTagU(f):
     "<meta charset=\"UTF-8\">\n" \
     "<tytle>smkyb's library</title>\n" \
     "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap\">\n" \
+    "<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>\n" \
     "<style>\n" \
     "body {\n" \
     "    margin: 60px;\n" \
@@ -25,6 +26,10 @@ def WriteTagU(f):
 def WriteTagD(f):
     f.write("</body>\n" \
     "</html>\n")
+    "<script>\n" \
+    "    const content = document.getElementById(\"md_content\")\n" \
+    "    content.innerHTML = marked.parse(content.textContent)\n" \
+    "</script>\n"
 
 def FindCppFiles(path:str) -> str:
     global cnt_pages
@@ -54,9 +59,11 @@ def FindCppFiles(path:str) -> str:
             page_path = os.path.join("gh_pages", page_name)
             with open(page_path, "w", encoding="utf-8") as f:
                 with open(now, "r", encoding="utf-8") as code_f:
-                    WriteTagU(f)
-                    f.write(f"<pre>{html.escape(code_f.read(), quote=True)}</pre>")
-                    WriteTagD(f)
+                    with open(os.path.join(path, "README.md"), "r") as readme_f:
+                        WriteTagU(f)
+                        f.write(f"<div id=\"md_content\">\n{readme_f.read()}</div>\n")
+                        f.write(f"<pre>\n{html.escape(code_f.read(), quote=True)}</pre>\n")
+                        WriteTagD(f)
             
             if len(res_str) == 0:
                 res_str += "<ul>\n"
