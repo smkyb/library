@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <style>
-body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
-.markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
-.markdown-body pre { padding: 16px; overflow: auto; }
+    body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
+    .markdown-body pre { padding: 16px; overflow: auto; }
 </style>
 </head>
 <body>
@@ -53,10 +53,11 @@ vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){
     _compression_apply(C, v, args...);
     return C;
 }</pre>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
-    const el = document.getElementById('md_content');
+    const el = document.getElementById("md_content");
     el.innerHTML = marked.parse(el.textContent);
 </script>
 </body>
