@@ -79,7 +79,7 @@ def FindCppFiles(path:str) -> str:
                 with open(now, "r", encoding="utf-8") as code_f:
                     with open(os.path.join(path, "README.md"), "r") as readme_f:
                         WriteTagU(f)
-                        f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read(), quote=True)}</article>\n")
+                        f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n")
                         f.write(f"<pre>\n{html.escape(code_f.read(), quote=True)}</pre>\n")
                         WriteTagD(f)
             
