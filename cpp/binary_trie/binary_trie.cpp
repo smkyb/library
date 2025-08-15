@@ -286,3 +286,4 @@ struct binary_trie{
 };
 template<typename T> typename binary_trie<T>::node_t binary_trie<T>::node_t::nil = node_t(0, bit_width, 0, &node_t::nil, &node_t::nil, &node_t::nil, &node_t::nil);
 template<typename T> typename binary_trie<T>::Pool binary_trie<T>::pool = Pool();
+
