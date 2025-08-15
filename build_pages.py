@@ -232,7 +232,7 @@ def FindCppFiles(path:str) -> str:
     for item, item_path in items:
         cnt_pages += 1
         page_name = f"page{cnt_pages}.html"
-        page_path = os.path.join("pages_path", page_name)
+        page_path = os.path.join(pages_path, page_name)
         with open(page_path, "w", encoding="utf-8") as f:
             with open(item_path, "r", encoding="utf-8") as code_f:
                 code_text = code_f.read()
