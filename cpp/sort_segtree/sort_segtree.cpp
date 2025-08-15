@@ -561,4 +561,3 @@ struct sort_segtree {
         seg.set(l, trie[l].all_prod().rtol);
     }
 };
-

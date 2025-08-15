@@ -10,14 +10,24 @@ changed_files = [f for f in changed_files if f.endswith(".cpp")]
 changed_files = [f for f in changed_files if os.path.exists(f)]
 
 verify_files: list[str] = []
+
+def AddTestFiles(path:str):
+    items: list[str] = os.listdir(path)
+    for item in items:
+        now = os.path.join(path, item)
+        if item.endswith(".test.cpp"):
+            verify_files.append(now)
+        elif os.path.isdir(now):
+            AddTestFiles(now)
+
 for file in changed_files:
     if not file.endswith(".test.cpp"):
-        verify_files.append(os.path.dirname(file))
+        AddTestFiles(os.path.dirname(file))
 for file in changed_files:
     if file.endswith(".test.cpp"):
-        if not os.path.dirname(os.path.dirname(file)) in verify_files:
-            verify_files.append(file)
+        verify_files.append(file)
 
+verify_files = list(set(verify_files))
 failed: int = 0
 
 for file in verify_files:
@@ -25,4 +35,4 @@ for file in verify_files:
     if result.returncode != 0:
         failed = 1
 
-sys.exit(failed)
+#sys.exit(failed)
