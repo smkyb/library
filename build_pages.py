@@ -1,8 +1,9 @@
 import shutil, os, html
 
-if os.path.exists("gh_pages"):
-    shutil.rmtree("gh_pages")
-os.makedirs("gh_pages")
+pages_path = os.path.join("docs", "pages")
+if os.path.exists(pages_path):
+    shutil.rmtree(pages_path)
+os.makedirs(pages_path)
 cnt_pages = 0
 
 def WriteTagU(f):
@@ -12,19 +13,25 @@ def WriteTagU(f):
 <meta charset="UTF-8">
 <title>smkyb's library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <style>
-    body { margin: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    body { margin: 60px; margin-top: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
     .markdown-body pre { padding: 16px; overflow: auto; }
     .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
     .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
     #button_copy { display: flex; font-size: 14px; }
     #button_copy_oneline { display: flex; font-size: 14px; }
+    #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; backdrop-filter: blur(20px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; }
+    #status_bar a { margin: 20px; text-decoration: none; color: rgb(63, 97, 144); }
 </style>
 </head>
 <body>
+<div id="status_bar">
+    <a href="/library/docs/index.html">home</a>
+    <a href="/library/docs/about">about</a>
+</div>
 """)
 
 def WriteTagD(f):
@@ -209,7 +216,7 @@ def ListCppFile(path:str) -> list[tuple[str, str]]:
         if os.path.isdir(now):
             res.extend(ListCppFile(now))
         elif now.endswith(".cpp") and not now.endswith(".test.cpp"):
-            res.append([item, now])
+            res.append((item, now))
     return res
 
 def FindCppFiles(path:str) -> str:
@@ -225,7 +232,7 @@ def FindCppFiles(path:str) -> str:
     for item, item_path in items:
         cnt_pages += 1
         page_name = f"page{cnt_pages}.html"
-        page_path = os.path.join("gh_pages", page_name)
+        page_path = os.path.join(pages_path, page_name)
         with open(page_path, "w", encoding="utf-8") as f:
             with open(item_path, "r", encoding="utf-8") as code_f:
                 code_text = code_f.read()
@@ -235,12 +242,12 @@ def FindCppFiles(path:str) -> str:
                     f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
                     f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
                     WriteTagD(f)
-        res_str += f"<button onclick=\"location.href=\'/library/{page_path}\'\">{item[:-4]}</button>\n"
+        res_str += f"<button onclick=\"location.href=\'/library/docs/pages\'\">{item[:-4]}</button>\n"
     
     res_str += "</div>\n"
     return res_str
 
-with open("index.html", "w", encoding="utf-8") as f:
+with open("docs/index.html", "w", encoding="utf-8") as f:
     res_str = FindCppFiles("cpp")
     if len(res_str) != 0:
         WriteTagU(f)
