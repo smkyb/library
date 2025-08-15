@@ -232,7 +232,7 @@ def FindCppFiles(path:str) -> str:
     for item, item_path in items:
         cnt_pages += 1
         page_name = f"page{cnt_pages}.html"
-        page_path = os.path.join(pages_path, page_name)
+        page_path = os.path.join("pages_path", page_name)
         with open(page_path, "w", encoding="utf-8") as f:
             with open(item_path, "r", encoding="utf-8") as code_f:
                 code_text = code_f.read()
@@ -242,7 +242,7 @@ def FindCppFiles(path:str) -> str:
                     f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
                     f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
                     WriteTagD(f)
-        res_str += f"<button onclick=\"location.href=\'/library/pages\'\">{item[:-4]}</button>\n"
+        res_str += f"<button onclick=\"location.href=\'/library/{page_path[5:]}\'\">{item[:-4]}</button>\n"
     
     res_str += "</div>\n"
     return res_str
