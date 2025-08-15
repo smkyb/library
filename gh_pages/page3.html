@@ -18,103 +18,156 @@
 </head>
 <body>
 <article id="md_content" class="markdown-body">
-# .cpp、.hppをvscodeのcpp.jsonに変換するやつ
-ChatGPT作です
-<br>
-## 使い方
-⓪コードを書く  
-①ファイル名をトリガーワード(?)にする  
-②スニペットを一つのフォルダにまとめて.cppとかで保存しておく  
-③main関数内にあるやつを書き換える（詳細？はコード内に）  
-④実行
+# dynamic_segtree
+列のサイズが`numeric_limits&lt;T&gt;::max()`+1のセグ木です．  
+仕様は`atcoder::segtree`とほぼ同じです  
 </article>
 
-<button id="button_copy" data-copy="#include &lt;iostream&gt;
-#include &lt;filesystem&gt;
-#include &lt;fstream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
-
-namespace fs = std::filesystem;
-
-std::string escapeJsonString(const std::string&amp; input) {
-    std::string output;
-    for (char c : input) {
-        switch(c) {
-            case &#x27;\&quot;&#x27;: output += &quot;\\\&quot;&quot;; break;
-            case &#x27;\\&#x27;: output += &quot;\\\\&quot;; break;
-            default: output += c; break;
-        }
-    }
-    return output;
-}
-
-void generateSnippetJson(const std::string&amp; directory, const std::string&amp; outputFile) {
-    std::ofstream outFile(outputFile);
-    if (!outFile) {
-        std::cerr &lt;&lt; &quot;Failed to open output file: &quot; &lt;&lt; outputFile &lt;&lt; std::endl;
-        return;
+<button id="button_copy" data-copy="template &lt;typename T, typename S, auto op, auto e&gt;
+struct dynamic_segtree{
+    private:
+    
+    struct node_t{
+        S sum;
+        T value;
+        array&lt;int, 4&gt; child = {};
+        int width = 0;
+        node_t() : sum{e()} {}
+        node_t(const node_t &amp;o) noexcept = default;
+        node_t(node_t &amp;&amp;o) noexcept = default;
+        node_t &amp;operator=(const node_t &amp;o) noexcept = default;
+        node_t &amp;operator=(node_t &amp;&amp;o) noexcept = default;
+    };
+    
+    static constexpr T one = 1;
+    static constexpr int bit_width = sizeof(T) * 8;
+    vector&lt;node_t&gt; node;
+    int root = -1;
+    
+    //__builtin_clz
+    template&lt;typename _Tp&gt;
+    inline int clz(_Tp x) const {
+        if constexpr(sizeof(_Tp) == 8ull) return __builtin_clzll(x);
+        else return __builtin_clz(x);
     }
     
-    outFile &lt;&lt; &quot;{\n&quot;;
+    inline T mask(int l, int r) const {
+        if(r &gt;= bit_width) return -(one&lt;&lt;l);
+        return (one&lt;&lt;r) - (one&lt;&lt;l);
+    }
     
-    bool firstEntry = true;
-    for (const auto&amp; entry : fs::recursive_directory_iterator(directory)) {
-        if (entry.path().extension() == &quot;.cpp&quot; || entry.path().extension() == &quot;.hpp&quot;) {
-            if (!firstEntry) {
-                outFile &lt;&lt; &quot;,\n\t\n&quot;;
-            }
-            firstEntry = false;
-            
-            std::ifstream inFile(entry.path());
-            if (!inFile) continue;
-            
-            std::cout &lt;&lt; entry &lt;&lt; std::endl;
-            
-            std::vector&lt;std::string&gt; lines;
-            std::string line;
-            while (std::getline(inFile, line)) {
-                std::string escapedLine = escapeJsonString(line);
-                lines.push_back(&quot;\&quot;&quot; + escapedLine + &quot;\&quot;&quot;);
-            }
-            
-            std::string key = entry.path().stem().string();
-            outFile &lt;&lt; &quot;\t\&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;: {\n&quot;;
-            outFile &lt;&lt; &quot;\t\t\&quot;prefix\&quot;: \&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;,\n&quot;;
-            outFile &lt;&lt; &quot;\t\t\&quot;body\&quot;: [\n&quot;;
-            for (size_t i = 0; i &lt; lines.size(); ++i) {
-                outFile &lt;&lt; &quot;\t\t\t&quot; &lt;&lt; lines[i];
-                if (i != lines.size() - 1) {
-                    outFile &lt;&lt; &quot;,&quot;;
+    inline T masked(T v, int l, int r) const {
+        return mask(l, r) &amp; v;
+    }
+    
+    inline int diff_bit(T x, T y) const {
+        return ((bit_width-1 - clz(x^y))|1) + 1;
+    }
+    
+    inline int make_node(T v, S x){
+        node.emplace_back();
+        node.back().value = v;
+        node.back().sum = move(x);
+        return ssize(node)-1;
+    }
+    
+    public:
+    
+    dynamic_segtree(){
+        make_node(0, e());
+        root = make_node(0, e());
+        node[root].width = bit_width;
+    }
+    
+    dynamic_segtree&lt;T, S, op, e&gt;&amp; operator=(dynamic_segtree&lt;T, S, op, e&gt;&amp;&amp; o) noexcept = default;
+    
+    dynamic_segtree(dynamic_segtree&amp;&amp; o) noexcept = default;
+    
+    void set(T v, const S &amp;x) {
+        int pos = root;
+        int bit = bit_width;
+        int route[65], route_cnt = 0;
+        while(true){
+            T mv = masked(v, bit-node[pos].width, bit);
+            T mnv = masked(node[pos].value, bit-node[pos].width, bit);
+            if(mv != mnv){
+                route[route_cnt++] = pos;
+                int diff = diff_bit(mv, mnv);
+                int b = (mv&gt;&gt;(diff-2))&amp;3;
+                int nb = (mnv&gt;&gt;(diff-2))&amp;3;
+                int inter = make_node(node[pos].value, node[pos].sum);
+                int leaf = make_node(v, x);
+                node[inter] = node[pos];
+                node[inter].width -= bit - diff;
+                memset(node[pos].child.data(), 0, sizeof(int)*4);
+                node[pos].child[b] = leaf;
+                node[pos].child[nb] = inter;
+                node[pos].width = bit - diff;
+                bit = diff;
+                node[leaf].width = bit;
+                pos = leaf;
+                break;
+            } else {
+                
+                bit -= node[pos].width;
+                if(bit == 0){
+                    node[pos].sum = x;
+                    break;
                 }
-                outFile &lt;&lt; &quot;\n&quot;;
+                route[route_cnt++] = pos;
+                int nex = node[pos].child[(v&gt;&gt;(bit-2))&amp;3];
+                if(nex == 0){
+                    nex = node[pos].child[(v&gt;&gt;(bit-2))&amp;3] = make_node(v, x);
+                    node[nex].width = bit;
+                    break;
+                }
+                pos = nex;
             }
-            outFile &lt;&lt; &quot;\t\t]\n&quot;;
-            outFile &lt;&lt; &quot;\t}&quot;;
+        }
+        for(int i = route_cnt-1; i &gt;= 0; i--){
+            int idx = route[i];
+            auto &amp;child = node[idx].child;
+            node[idx].sum = op(op(op(node[child[0]].sum, node[child[1]].sum), node[child[2]].sum), node[child[3]].sum);
         }
     }
     
-    outFile &lt;&lt; &quot;\n}&quot;;
-    outFile.close();
-    std::cout &lt;&lt; std::endl;
-    std::cout &lt;&lt; &quot;cpp.json has been generated successfully.&quot; &lt;&lt; std::endl;
-}
-
-int main(){
-    //.cppや.hppが入っているフォルダを指定する
-    std::string directory = &quot;C:\\vscode programs\\Libraries&quot;;
-    //出力に使用するファイルを指定する（無い場合は新たに作られる？）
-    std::string outputfile = &quot;0_output.txt&quot;;
+    S get(T p) const {
+        int pos = root;
+        int bit = bit_width;
+        while(pos != 0){
+            bit -= node[pos].width;
+            if(bit == 0) return node[pos].value==p ? node[pos].sum : e();
+            pos = node[pos].child[(p&gt;&gt;(bit-2))&amp;3];
+        }
+        return e();
+    }
     
-    generateSnippetJson(directory, outputfile);
-}
+    S prod(T l, T r) const {
+        return _prod(l, r, root, bit_width);
+    }
+    S _prod(T l, T r, int pos, int bit) const {
+        if(pos == 0) return e();
+        bit -= node[pos].width;
+        T mv = masked(node[pos].value, bit, bit_width);
+        if(r &lt;= mv) return e();
+        if(l != numeric_limits&lt;T&gt;::min() &amp;&amp; mv-1+(one&lt;&lt;bit) &lt; l) return e();
+        if(l &lt;= mv &amp;&amp; mv-1+(one&lt;&lt;bit) &lt; r){
+            return node[pos].sum;
+        }
+        auto &amp;child = node[pos].child;
+        return op(op(op(_prod(l, r, child[0], bit), _prod(l, r, child[1], bit)), _prod(l, r, child[2], bit)), _prod(l, r, child[3], bit));
+    }
+    
+    S all_prod() const {
+        return node[root].sum;
+    }
+    
+    void reserve(int n) {
+        node.reserve(2*n+2);
+    }
+};
 ">copy</button>
-<button id="button_copy_oneline" data-copy="#include &lt;iostream&gt;
-#include &lt;filesystem&gt;
-#include &lt;fstream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
-namespace fs = std::filesystem; std::string escapeJsonString(const std::string&amp; input) { std::string output; for (char c : input) { switch(c) { case &#x27;\&quot;&#x27;: output += &quot;\\\&quot;&quot;; break; case &#x27;\\&#x27;: output += &quot;\\\\&quot;; break; default: output += c; break; } } return output; } void generateSnippetJson(const std::string&amp; directory, const std::string&amp; outputFile) { std::ofstream outFile(outputFile); if (!outFile) { std::cerr &lt;&lt; &quot;Failed to open output file: &quot; &lt;&lt; outputFile &lt;&lt; std::endl; return; } outFile &lt;&lt; &quot;{\n&quot;; bool firstEntry = true; for (const auto&amp; entry : fs::recursive_directory_iterator(directory)) { if (entry.path().extension() == &quot;.cpp&quot; || entry.path().extension() == &quot;.hpp&quot;) { if (!firstEntry) { outFile &lt;&lt; &quot;,\n\t\n&quot;; } firstEntry = false; std::ifstream inFile(entry.path()); if (!inFile) continue; std::cout &lt;&lt; entry &lt;&lt; std::endl; std::vector&lt;std::string&gt; lines; std::string line; while (std::getline(inFile, line)) { std::string escapedLine = escapeJsonString(line); lines.push_back(&quot;\&quot;&quot; + escapedLine + &quot;\&quot;&quot;); } std::string key = entry.path().stem().string(); outFile &lt;&lt; &quot;\t\&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;: {\n&quot;; outFile &lt;&lt; &quot;\t\t\&quot;prefix\&quot;: \&quot;&quot; &lt;&lt; escapeJsonString(key) &lt;&lt; &quot;\&quot;,\n&quot;; outFile &lt;&lt; &quot;\t\t\&quot;body\&quot;: [\n&quot;; for (size_t i = 0; i &lt; lines.size(); ++i) { outFile &lt;&lt; &quot;\t\t\t&quot; &lt;&lt; lines[i]; if (i != lines.size() - 1) { outFile &lt;&lt; &quot;,&quot;; } outFile &lt;&lt; &quot;\n&quot;; } outFile &lt;&lt; &quot;\t\t]\n&quot;; outFile &lt;&lt; &quot;\t}&quot;; } } outFile &lt;&lt; &quot;\n}&quot;; outFile.close(); std::cout &lt;&lt; std::endl; std::cout &lt;&lt; &quot;cpp.json has been generated successfully.&quot; &lt;&lt; std::endl; } int main(){ std::string directory = &quot;C:\\vscode programs\\Libraries&quot;; std::string outputfile = &quot;0_output.txt&quot;; generateSnippetJson(directory, outputfile); }">copy_oneline</button>
+<button id="button_copy_oneline" data-copy="template &lt;typename T, typename S, auto op, auto e&gt; struct dynamic_segtree{ private: struct node_t{ S sum; T value; array&lt;int, 4&gt; child = {}; int width = 0; node_t() : sum{e()} {} node_t(const node_t &amp;o) noexcept = default; node_t(node_t &amp;&amp;o) noexcept = default; node_t &amp;operator=(const node_t &amp;o) noexcept = default; node_t &amp;operator=(node_t &amp;&amp;o) noexcept = default; }; static constexpr T one = 1; static constexpr int bit_width = sizeof(T) * 8; vector&lt;node_t&gt; node; int root = -1; template&lt;typename _Tp&gt; inline int clz(_Tp x) const { if constexpr(sizeof(_Tp) == 8ull) return __builtin_clzll(x); else return __builtin_clz(x); } inline T mask(int l, int r) const { if(r &gt;= bit_width) return -(one&lt;&lt;l); return (one&lt;&lt;r) - (one&lt;&lt;l); } inline T masked(T v, int l, int r) const { return mask(l, r) &amp; v; } inline int diff_bit(T x, T y) const { return ((bit_width-1 - clz(x^y))|1) + 1; } inline int make_node(T v, S x){ node.emplace_back(); node.back().value = v; node.back().sum = move(x); return ssize(node)-1; } public: dynamic_segtree(){ make_node(0, e()); root = make_node(0, e()); node[root].width = bit_width; } dynamic_segtree&lt;T, S, op, e&gt;&amp; operator=(dynamic_segtree&lt;T, S, op, e&gt;&amp;&amp; o) noexcept = default; dynamic_segtree(dynamic_segtree&amp;&amp; o) noexcept = default; void set(T v, const S &amp;x) { int pos = root; int bit = bit_width; int route[65], route_cnt = 0; while(true){ T mv = masked(v, bit-node[pos].width, bit); T mnv = masked(node[pos].value, bit-node[pos].width, bit); if(mv != mnv){ route[route_cnt++] = pos; int diff = diff_bit(mv, mnv); int b = (mv&gt;&gt;(diff-2))&amp;3; int nb = (mnv&gt;&gt;(diff-2))&amp;3; int inter = make_node(node[pos].value, node[pos].sum); int leaf = make_node(v, x); node[inter] = node[pos]; node[inter].width -= bit - diff; memset(node[pos].child.data(), 0, sizeof(int)*4); node[pos].child[b] = leaf; node[pos].child[nb] = inter; node[pos].width = bit - diff; bit = diff; node[leaf].width = bit; pos = leaf; break; } else { bit -= node[pos].width; if(bit == 0){ node[pos].sum = x; break; } route[route_cnt++] = pos; int nex = node[pos].child[(v&gt;&gt;(bit-2))&amp;3]; if(nex == 0){ nex = node[pos].child[(v&gt;&gt;(bit-2))&amp;3] = make_node(v, x); node[nex].width = bit; break; } pos = nex; } } for(int i = route_cnt-1; i &gt;= 0; i--){ int idx = route[i]; auto &amp;child = node[idx].child; node[idx].sum = op(op(op(node[child[0]].sum, node[child[1]].sum), node[child[2]].sum), node[child[3]].sum); } } S get(T p) const { int pos = root; int bit = bit_width; while(pos != 0){ bit -= node[pos].width; if(bit == 0) return node[pos].value==p ? node[pos].sum : e(); pos = node[pos].child[(p&gt;&gt;(bit-2))&amp;3]; } return e(); } S prod(T l, T r) const { return _prod(l, r, root, bit_width); } S _prod(T l, T r, int pos, int bit) const { if(pos == 0) return e(); bit -= node[pos].width; T mv = masked(node[pos].value, bit, bit_width); if(r &lt;= mv) return e(); if(l != numeric_limits&lt;T&gt;::min() &amp;&amp; mv-1+(one&lt;&lt;bit) &lt; l) return e(); if(l &lt;= mv &amp;&amp; mv-1+(one&lt;&lt;bit) &lt; r){ return node[pos].sum; } auto &amp;child = node[pos].child; return op(op(op(_prod(l, r, child[0], bit), _prod(l, r, child[1], bit)), _prod(l, r, child[2], bit)), _prod(l, r, child[3], bit)); } S all_prod() const { return node[root].sum; } void reserve(int n) { node.reserve(2*n+2); } };">copy_oneline</button>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>

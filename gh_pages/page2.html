@@ -18,16 +18,17 @@
 </head>
 <body>
 <article id="md_content" class="markdown-body">
-# 座標圧縮
+# compression
 座標圧縮をします。  
-複数のvectorを同一視して処理できます*1  
-<br>
+複数のvectorを同一視して処理できます*1
 ```cpp
 vector&lt;T&gt; compression(T&amp; v1, Args&amp;... args)
 ```
-**・ 概要 :** 座標圧縮をし、要素一覧(unique, sorted)を返す  
-**・ 制約 :** 型が一致する  
-**・ 計算量 :** Θ(N log N)  
+座標圧縮をし、要素一覧(unique, sorted)を返します．
+### 制約
+型が一致する 
+## 計算量
+O(N log N)  
 <br><br>
 *1  
 {1, 2, 3, 4, 5, 4}, {2, 4, 6, 8, 10, 2}  
