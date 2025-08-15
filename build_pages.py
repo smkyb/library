@@ -29,8 +29,8 @@ def WriteTagU(f):
 </head>
 <body>
 <div id="status_bar">
-    <a href="/library/docs/index.html">home</a>
-    <a href="/library/docs/about">about</a>
+    <a href="/library/index.html">home</a>
+    <a href="/library/about">about</a>
 </div>
 """)
 
@@ -242,7 +242,7 @@ def FindCppFiles(path:str) -> str:
                     f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
                     f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
                     WriteTagD(f)
-        res_str += f"<button onclick=\"location.href=\'/library/docs/pages\'\">{item[:-4]}</button>\n"
+        res_str += f"<button onclick=\"location.href=\'/library/pages\'\">{item[:-4]}</button>\n"
     
     res_str += "</div>\n"
     return res_str
