@@ -1,7 +1,4 @@
 import shutil, os, html
-from markdown_it import MarkdownIt
-
-md = MarkdownIt()
 
 if os.path.exists("gh_pages"):
     shutil.rmtree("gh_pages")
