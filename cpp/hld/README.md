@@ -31,7 +31,7 @@ void add_edge(int u, int v)
 ### 制約
 ・`0 <= u < _n`  
 ・`0 <= v < _n`  
-・`u != n`
+・`u != v`
 ### 計算量
 ・O(1)
 <br>
@@ -131,7 +131,7 @@ void apply(int l, int r, F f)
 ・`0 <= l < _n`
 ・`0 <= r < _n`
 ### 計算量
-・log^2(_n)
+・O(log^2(_n))
 <br>
 ## apply
 ```cpp
@@ -142,4 +142,4 @@ void apply(int r, F f)
 ## 制約
 ・`0 <= r < _n`
 ### 計算量
-・log(_n)
+・O(log(_n))
