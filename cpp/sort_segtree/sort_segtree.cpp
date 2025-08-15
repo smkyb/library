@@ -468,7 +468,7 @@ struct sort_segtree {
     }
     sort_segtree(sort_segtree<T, S, op, e> &&o) = default;
     
-    void set(int i, T k, S x){
+    void set(int i, T k, S x) {
         int l = fset.less_bound(i);
         int r = fset.lower_bound(i+1);
         if(l < i){

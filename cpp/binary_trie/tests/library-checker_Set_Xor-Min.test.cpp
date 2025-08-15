@@ -8,7 +8,6 @@ int main(){
     cin >> q;
     
     binary_trie<uint> S;
-    
     while(q--){
         cin >> t >> x;
         switch(t){
