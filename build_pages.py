@@ -246,8 +246,8 @@ def FindCppFiles(path:str) -> str:
                         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
                         from google import genai
                         client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
-                    with open(os.path.join("cpp", "hld", "README.md"), "r", encoding="utf-8") as f:
-                        example_README = f.read()
+                    with open(os.path.join("cpp", "hld", "README.md"), "r", encoding="utf-8") as EX_f:
+                        example_README = EX_f.read()
                     
                     res = client.models.generate_content(
                         model="gemini-2.0-flash-lite",
@@ -256,12 +256,12 @@ def FindCppFiles(path:str) -> str:
                             "parts": [{ "text": f"以下に，ソースコードと，それとは異なるもののREADME.mdを与えます．与えられたREADMEを基に，与えられたソースコードのREADME.mdを作成してください．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md*/\n{example_README}\n" }]
                         }]
                     )
-                    with open(README_path, "w", encoding="utf-8") as f:
-                        f.write(res.text)
+                    with open(README_path, "w", encoding="utf-8") as README_f:
+                        README_f.write(res.text)
                     
-                with open(os.path.join(os.path.dirname(item_path), "README.md"), "r") as readme_f:
+                with open(os.path.join(os.path.dirname(item_path), "README.md"), "r") as README_f:
                     WriteTagU(f)
-                    f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n\n")
+                    f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(README_f.read())}</article>\n\n")
                     f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
                     f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
                     WriteTagD(f)
