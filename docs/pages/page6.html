@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>smkyb's library</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<style>
+    body { margin: 60px; margin-top: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; }
+    .markdown-body pre { padding: 16px; overflow: auto; }
+    .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    #button_copy { display: flex; font-size: 14px; }
+    #button_copy_oneline { display: flex; font-size: 14px; }
+    #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; backdrop-filter: blur(20px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; }
+    #status_bar a { margin: 20px; text-decoration: none; color: rgb(63, 97, 144); }
+</style>
+</head>
+<body>
+<div id="status_bar">
+    <a href="/library/docs/index.html">home</a>
+    <a href="/library/docs/about">about</a>
+</div>
+<article id="md_content" class="markdown-body">
+# hld
+木に対するパスクエリ，部分木クエリなどを解きます．（パスクエリはモノイド，部分木クエリは可換モノイド）  
+**頂点クエリにのみ対応しており，辺に対するクエリには対応していません**
+<br>
+## コンストラクタ
+```cpp
+hld&lt;node_type&lt;S, op, e&gt;&gt; A(int _n, int _r = random);
+hld&lt;node_type&lt;S, op, e, F, mapping, composition, id&gt;&gt; A(int _n, int _r = random);
+``` 
+・`node_type`は，  
+・・ - 後述する`apply`を用いる場合，`atcoder::lazy_segtree`相当，  
+・・ - 用いない場合，`atcoder::segtree`相当，のデータ構造を入力してください．  
+・・そこへACLと同様に`S`, `op`, `e` (, `F`, `mapping`, `composition`, `id`) 
+を定義する必要があります．  
+<br>
+・木の頂点数を`_n`と定めます  
+・木の根を`_r`と定め，指定がない場合は無作為に選びます．（部分木クエリを行う場合は必ず指定してください．）
+### 制約
+・`_n`が正，かつ大きすぎない  
+### 計算量
+・O(n)  
+<br>
+
+以下，`node_type`は関数`set`，`get`，`prod`を持っていると仮定して話を進めます．  
+また，`node_type::set`, `node_type::prod`の計算量がO(log(_n))だと仮定します．
+<br>
+## add_edge
+```cpp
+void add_edge(int u, int v)
+```
+木に2頂点`u`, `v`を結ぶ無向辺を追加します．
+### 制約
+・`0 &lt;= u &lt; _n`  
+・`0 &lt;= v &lt; _n`  
+・`u != v`  
+・この関数は，`build`を呼ぶ前にちょうど`_n`-1回，  
+　また`build`をした後には呼び出してはいけない．
+### 計算量
+・O(1)
+<br>
+## build
+```cpp
+void build(vector&lt;S&gt; v)
+```
+`add_edge`された辺に対して，頂点の値を`v`として，木を構築します．
+### 制約
+・`v.size() == _n`  
+・コンストラクタの呼び出しから，ちょうど`_n`-1回`add_edge`を呼び出した  
+・`add_edge`された辺に対して**構築される木は連結である**
+### 計算量
+・O(_n)
+<br>
+## set
+```cpp
+void set(int p, S x)
+```
+`p`番目の頂点の値を`x`に変更します．
+### 制約
+・`0 &lt;= p &lt; _n`
+### 計算量
+・`node_type::set(p)`と同様
+<br>
+## add
+```cpp
+void add(int p, S x)
+```
+`p`番目の頂点の値に対して`node_type::add`を行います．
+### 制約
+・`0 &lt;= p &lt; _n`  
+・`node_type`が関数add(int, S)を持っている
+### 計算量
+・`node_type::add(p, x)`と同様
+<br>
+## get
+```cpp
+S get(int p)
+```
+`p`番目の頂点の値を取得します．
+### 制約
+・`0 &lt;= p &lt; _n`
+### 計算量
+・`node_type::get(p)`と同様
+<br>
+## prod
+```cpp
+S prod(int l, int r)
+```
+頂点`l`から頂点`r`を結ぶパス(端点を含む)にかかれている値の列を`a0, a1, a2, ..., ai`とした時，`op(op(op(...op(a0, a1), a2), ...), ai)`を返します．
+### 制約
+・`0 &lt;= l &lt; _n`  
+・`0 &lt;= r &lt; _n`
+### 計算量
+・O(log^2(_n))
+<br>
+## prod
+```cpp
+S prod(int r)
+```
+頂点rを根とする部分木において，各頂点に書かれた値の総積を返します．**（可換性が必要です．）**
+### 制約
+・`0 &lt;= r &lt; _n`
+### 計算量
+・O(log(_n))
+<br>
+## lca
+```cpp
+int lca(int l, int r)
+```
+`l`と`r`のLCA（最近共通祖先）を返します．
+### 制約
+・`0 &lt;= l &lt; _n`  
+・`0 &lt;= r &lt; _n`
+### 計算量
+・O(log(_n))
+<br>
+## dist
+```cpp
+int dist(int l, int r)
+```
+`l`と`r`の距離（端点を含むパスに含まれる辺の数で定義される）を返します．
+### 制約
+・`0 &lt;= l &lt; _n`  
+・`0 &lt;= r &lt; _n`
+### 計算量
+・O(log(_n))
+<br>
+## apply
+```cpp
+void apply(int l, int r, F f)
+```
+頂点`l`と`r`をつなぐパス（端点を含む）の頂点の値の列を`x`としたとき，  
+`x[i] = f(x[i])`をすべての`i`について行います．
+### 制約
+・`0 &lt;= l &lt; _n`
+・`0 &lt;= r &lt; _n`
+### 計算量
+・O(log^2(_n))
+<br>
+## apply
+```cpp
+void apply(int r, F f)
+```
+頂点rを根とする部分木において，各頂点に書かれた値の列を`x`としたとき，  
+`x[i] = f(x[i])`をすべての`i`について行います．
+## 制約
+・`0 &lt;= r &lt; _n`
+### 計算量
+・O(log(_n))
+</article>
+
+<button id="button_copy" data-copy="namespace smkyb {
+
+template&lt;template&lt;typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id&gt; typename _node_type, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id&gt;
+struct _hld_7{
+    using node_type = _node_type&lt;S, op, e, F, mapping, composition, id&gt;;
+    
+    int *dum0, *dum1;
+    int n, r, edge_idx;
+    int *dep, *in, *out, *head, *par;
+    int *E;
+    
+    node_type node[2];
+    
+    _hld_7(int _n, int _r = -1):
+        n(_n), r(_r), edge_idx(0){
+            if(r == -1) r = random_device()()%n;
+            dum0 = new int[n*7-2];
+            dep = dum0;
+            in = dum0+n;
+            out = dum0+n*2;
+            head = dum0+n*3;
+            par = dum0+n*4;
+            E = dum0+n*5;
+        }
+    
+    void add_edge(int u, int v){
+        E[edge_idx++] = u;
+        E[edge_idx++] = v;
+    }
+    
+    void build(const vector&lt;S&gt;&amp; v){
+        dum1 = new int[n*8+1];
+        int *g = dum1;
+        int *start = dum1+n*2-2;
+        int *C = dum1+n*3-1;
+        memset(start, 0, sizeof(int)*(n+1));
+        
+        for(int i = 0; i &lt; 2*n-2; i+=2){
+            start[E[i]+1]++;
+            start[E[i+1]+1]++;
+        }
+        for(int i = 1; i &lt;= n; i++) start[i] += start[i-1];
+        memcpy(C, start, sizeof(int)*(n+1));
+        
+        for(int i = 0; i &lt; 2*n-2; i+=2){
+            g[C[E[i]]++] = E[i+1];
+            g[C[E[i+1]]++] = E[i];
+        }
+        
+        int *sub_siz = dum1+n*4;
+        int *idx = dum1+n*5;
+        fill(sub_siz, sub_siz+n, 1);
+        memcpy(idx, start, sizeof(int)*(n+1));
+        
+        int cur = r;
+        par[r] = -1;
+        while(true){
+            if(idx[cur] &lt; start[cur+1]-(cur!=r)){
+                int nex = g[idx[cur]++];
+                if(nex == par[cur]){
+                    g[--idx[cur]] = g[start[cur+1]-1];
+                    continue;
+                }
+                par[nex] = cur;
+                cur = nex;
+            } else {
+                if(cur == r) break;
+                sub_siz[par[cur]] += sub_siz[cur];
+                cur = par[cur];
+            }
+        }
+        
+        memcpy(idx, start, sizeof(int)*(n+1));
+        int *state = dum1+n*6+1;
+        int *heavy = dum1+n*7+1;
+        memset(state, 0, sizeof(int)*n);
+        
+        int node_siz = 0;
+        cur = r;
+        head[cur] = r;
+        dep[cur] = 0;
+        while(1){
+            if(state[cur] == 0){
+                in[cur] = node_siz++;
+                heavy[cur] = -1;
+                for(int i = start[cur]; i &lt; start[cur+1]-(cur!=r); i++){
+                    int nex = g[i];
+                    if(heavy[cur] == -1 || sub_siz[heavy[cur]] &lt; sub_siz[nex]){
+                        heavy[cur] = nex;
+                    }
+                }
+                if(heavy[cur] != -1){
+                    int nex = heavy[cur];
+                    dep[nex] = dep[cur];
+                    head[nex] = head[cur];
+                    state[cur] = 2;
+                    cur = nex;
+                } else state[cur] = 2;
+            } else if(state[cur] == 2){
+                if(idx[cur] &lt; start[cur+1]-(cur!=r)){
+                    int nex = g[idx[cur]++];
+                    if(nex == heavy[cur]) continue;
+                    dep[nex] = dep[cur]+1;
+                    head[nex] = nex;
+                    cur = nex;
+                } else state[cur] = 3;
+            } else {
+                out[cur] = node_siz;
+                if(cur == r) break;
+                cur = par[cur];
+            }
+        }
+        
+        vector&lt;S&gt; node_v(n);
+        for(int i = 0; i &lt; n; i++) node_v[in[i]] = v[i];
+        
+        node[0] = node_type(node_v);
+        reverse(node_v.begin(), node_v.end());
+        node[1] = node_type(node_v);
+        
+        delete[] dum1;
+    }
+    
+    S prod(int l, int r){
+        assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n);
+        S l_ans = e();
+        S r_ans = e();
+        bool rev = false;
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r), rev ^= 1;
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                if(!rev) l_ans = op(l_ans, node[1].prod(n-in[l]-1, n-in[head[l]]));
+                else r_ans = op(node[0].prod(in[head[l]], in[l]+1), r_ans);
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r), rev ^= 1;
+                if(!rev) l_ans = op(l_ans, node[0].prod(in[l], in[r]+1));
+                else r_ans = op(node[1].prod(n-in[r]-1, n-in[l]), r_ans);
+                return op(l_ans, r_ans);
+            }
+        }
+    }
+    
+    S prod(int r){
+        assert(0 &lt;= r &amp;&amp; r &lt; n);
+        return node[0].prod(in[r], out[r]);
+    }
+    
+    S get(int p){
+        assert(0 &lt;= p &amp;&amp; p &lt; n);
+        return node[0].get(in[p]);
+    }
+    
+    void set(int p, const S&amp; x){
+        assert(0 &lt;= p &amp;&amp; p &lt; n);
+        node[0].set(in[p], x);
+        node[1].set(n-in[p]-1, x);
+    }
+    
+    void add(int p, const S&amp; x){
+        assert(0 &lt;= p &amp;&amp; p &lt; n);
+        node[0].add(in[p], x);
+        node[1].add(n-in[p]-1, x);
+    }
+    
+    int lca(int l, int r){
+        assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n);
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r);
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r);
+                return l;
+            }
+        }
+    }
+    
+    int dist(int l, int r){
+        assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n);
+        int d = 0;
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r);
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                d += in[l] - in[head[l]] + 1;
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r);
+                d += in[r] - in[l];
+                return d;
+            }
+        }
+    }
+    
+    
+    void apply(int l, int r, const F&amp; x){
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r);
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                node[0].apply(in[head[l]], in[l]+1, x);
+                node[1].apply(n-in[l]-1, n-in[head[l]], x);
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r);
+                node[0].apply(in[l], in[r]+1, x);
+                node[1].apply(n-in[r]-1, n-in[l], x);
+                break;
+            }
+        }
+    }
+    
+    void apply(int r, const F&amp; x){
+        node[0].apply(in[r], out[r], x);
+        node[1].apply(n-out[r], n-in[r], x);
+    }
+};
+template&lt;template&lt;typename S, auto op, auto e&gt; typename _node_type, typename S, auto op, auto e&gt;
+struct _hld_3{
+    using node_type = _node_type&lt;S, op, e&gt;;
+    
+    int *dum0, *dum1;
+    int n, r, edge_idx;
+    int *dep, *in, *out, *head, *par;
+    int *E;
+    
+    node_type node[2];
+    
+    _hld_3(int _n, int _r = -1):
+        n(_n), r(_r), edge_idx(0){
+            if(r == -1) r = random_device()()%n;
+            dum0 = new int[n*7-2];
+            dep = dum0;
+            in = dum0+n;
+            out = dum0+n*2;
+            head = dum0+n*3;
+            par = dum0+n*4;
+            E = dum0+n*5;
+        }
+    
+    void add_edge(int u, int v){
+        E[edge_idx++] = u;
+        E[edge_idx++] = v;
+    }
+    
+    void build(const vector&lt;S&gt;&amp; v){
+        dum1 = new int[n*8+1];
+        int *g = dum1;
+        int *start = dum1+n*2-2;
+        int *C = dum1+n*3-1;
+        memset(start, 0, sizeof(int)*(n+1));
+        
+        for(int i = 0; i &lt; 2*n-2; i+=2){
+            start[E[i]+1]++;
+            start[E[i+1]+1]++;
+        }
+        for(int i = 1; i &lt;= n; i++) start[i] += start[i-1];
+        memcpy(C, start, sizeof(int)*(n+1));
+        
+        for(int i = 0; i &lt; 2*n-2; i+=2){
+            g[C[E[i]]++] = E[i+1];
+            g[C[E[i+1]]++] = E[i];
+        }
+        
+        int *sub_siz = dum1+n*4;
+        int *idx = dum1+n*5;
+        fill(sub_siz, sub_siz+n, 1);
+        memcpy(idx, start, sizeof(int)*(n+1));
+        
+        int cur = r;
+        par[r] = -1;
+        while(true){
+            if(idx[cur] &lt; start[cur+1]-(cur!=r)){
+                int nex = g[idx[cur]++];
+                if(nex == par[cur]){
+                    g[--idx[cur]] = g[start[cur+1]-1];
+                    continue;
+                }
+                par[nex] = cur;
+                cur = nex;
+            } else {
+                if(cur == r) break;
+                sub_siz[par[cur]] += sub_siz[cur];
+                cur = par[cur];
+            }
+        }
+        
+        memcpy(idx, start, sizeof(int)*(n+1));
+        int *state = dum1+n*6+1;
+        int *heavy = dum1+n*7+1;
+        memset(state, 0, sizeof(int)*n);
+        
+        int node_siz = 0;
+        cur = r;
+        head[cur] = r;
+        dep[cur] = 0;
+        while(1){
+            if(state[cur] == 0){
+                in[cur] = node_siz++;
+                heavy[cur] = -1;
+                for(int i = start[cur]; i &lt; start[cur+1]-(cur!=r); i++){
+                    int nex = g[i];
+                    if(heavy[cur] == -1 || sub_siz[heavy[cur]] &lt; sub_siz[nex]){
+                        heavy[cur] = nex;
+                    }
+                }
+                if(heavy[cur] != -1){
+                    int nex = heavy[cur];
+                    dep[nex] = dep[cur];
+                    head[nex] = head[cur];
+                    state[cur] = 2;
+                    cur = nex;
+                } else state[cur] = 2;
+            } else if(state[cur] == 2){
+                if(idx[cur] &lt; start[cur+1]-(cur!=r)){
+                    int nex = g[idx[cur]++];
+                    if(nex == heavy[cur]) continue;
+                    dep[nex] = dep[cur]+1;
+                    head[nex] = nex;
+                    cur = nex;
+                } else state[cur] = 3;
+            } else {
+                out[cur] = node_siz;
+                if(cur == r) break;
+                cur = par[cur];
+            }
+        }
+        
+        vector&lt;S&gt; node_v(n);
+        for(int i = 0; i &lt; n; i++) node_v[in[i]] = v[i];
+        
+        node[0] = node_type(node_v);
+        reverse(node_v.begin(), node_v.end());
+        node[1] = node_type(node_v);
+        
+        delete[] dum1;
+    }
+    
+    S prod(int l, int r){
+        assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n);
+        S l_ans = e();
+        S r_ans = e();
+        bool rev = false;
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r), rev ^= 1;
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                if(!rev) l_ans = op(l_ans, node[1].prod(n-in[l]-1, n-in[head[l]]));
+                else r_ans = op(node[0].prod(in[head[l]], in[l]+1), r_ans);
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r), rev ^= 1;
+                if(!rev) l_ans = op(l_ans, node[0].prod(in[l], in[r]+1));
+                else r_ans = op(node[1].prod(n-in[r]-1, n-in[l]), r_ans);
+                return op(l_ans, r_ans);
+            }
+        }
+    }
+    
+    S prod(int r){
+        assert(0 &lt;= r &amp;&amp; r &lt; n);
+        return node[0].prod(in[r], out[r]);
+    }
+    
+    S get(int p){
+        assert(0 &lt;= p &amp;&amp; p &lt; n);
+        return node[0].get(in[p]);
+    }
+    
+    void set(int p, const S&amp; x){
+        assert(0 &lt;= p &amp;&amp; p &lt; n);
+        node[0].set(in[p], x);
+        node[1].set(n-in[p]-1, x);
+    }
+    
+    void add(int p, const S&amp; x){
+        assert(0 &lt;= p &amp;&amp; p &lt; n);
+        node[0].add(in[p], x);
+        node[1].add(n-in[p]-1, x);
+    }
+    
+    int lca(int l, int r){
+        assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n);
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r);
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r);
+                return l;
+            }
+        }
+    }
+    
+    int dist(int l, int r){
+        assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n);
+        int d = 0;
+        while(true){
+            if(dep[l] &lt; dep[r]) swap(l, r);
+            if(dep[l] != dep[r] || head[l] != head[r]){
+                d += in[l] - in[head[l]] + 1;
+                l = par[head[l]];
+            } else {
+                if(in[l] &gt; in[r]) swap(l, r);
+                d += in[r] - in[l];
+                return d;
+            }
+        }
+    }
+};
+
+} //namespace smkyb
+
+template&lt;typename T&gt;
+struct hld;
+template&lt;template&lt;typename, auto, auto&gt; typename node_type, typename S, auto op, auto e&gt;
+struct hld&lt;node_type&lt;S, op, e&gt;&gt; : smkyb::_hld_3&lt;node_type, S, op, e&gt; {};
+template&lt;template&lt;typename, auto, auto, typename, auto, auto, auto&gt; typename node_type, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id&gt;
+struct hld&lt;node_type&lt;S, op, e, F, mapping, composition, id&gt;&gt; : smkyb::_hld_7&lt;node_type, S, op, e, F, mapping, composition, id&gt; {};
+">copy</button>
+<button id="button_copy_oneline" data-copy="namespace smkyb { template&lt;template&lt;typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id&gt; typename _node_type, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id&gt; struct _hld_7{ using node_type = _node_type&lt;S, op, e, F, mapping, composition, id&gt;; int *dum0, *dum1; int n, r, edge_idx; int *dep, *in, *out, *head, *par; int *E; node_type node[2]; _hld_7(int _n, int _r = -1): n(_n), r(_r), edge_idx(0){ if(r == -1) r = random_device()()%n; dum0 = new int[n*7-2]; dep = dum0; in = dum0+n; out = dum0+n*2; head = dum0+n*3; par = dum0+n*4; E = dum0+n*5; } void add_edge(int u, int v){ E[edge_idx++] = u; E[edge_idx++] = v; } void build(const vector&lt;S&gt;&amp; v){ dum1 = new int[n*8+1]; int *g = dum1; int *start = dum1+n*2-2; int *C = dum1+n*3-1; memset(start, 0, sizeof(int)*(n+1)); for(int i = 0; i &lt; 2*n-2; i+=2){ start[E[i]+1]++; start[E[i+1]+1]++; } for(int i = 1; i &lt;= n; i++) start[i] += start[i-1]; memcpy(C, start, sizeof(int)*(n+1)); for(int i = 0; i &lt; 2*n-2; i+=2){ g[C[E[i]]++] = E[i+1]; g[C[E[i+1]]++] = E[i]; } int *sub_siz = dum1+n*4; int *idx = dum1+n*5; fill(sub_siz, sub_siz+n, 1); memcpy(idx, start, sizeof(int)*(n+1)); int cur = r; par[r] = -1; while(true){ if(idx[cur] &lt; start[cur+1]-(cur!=r)){ int nex = g[idx[cur]++]; if(nex == par[cur]){ g[--idx[cur]] = g[start[cur+1]-1]; continue; } par[nex] = cur; cur = nex; } else { if(cur == r) break; sub_siz[par[cur]] += sub_siz[cur]; cur = par[cur]; } } memcpy(idx, start, sizeof(int)*(n+1)); int *state = dum1+n*6+1; int *heavy = dum1+n*7+1; memset(state, 0, sizeof(int)*n); int node_siz = 0; cur = r; head[cur] = r; dep[cur] = 0; while(1){ if(state[cur] == 0){ in[cur] = node_siz++; heavy[cur] = -1; for(int i = start[cur]; i &lt; start[cur+1]-(cur!=r); i++){ int nex = g[i]; if(heavy[cur] == -1 || sub_siz[heavy[cur]] &lt; sub_siz[nex]){ heavy[cur] = nex; } } if(heavy[cur] != -1){ int nex = heavy[cur]; dep[nex] = dep[cur]; head[nex] = head[cur]; state[cur] = 2; cur = nex; } else state[cur] = 2; } else if(state[cur] == 2){ if(idx[cur] &lt; start[cur+1]-(cur!=r)){ int nex = g[idx[cur]++]; if(nex == heavy[cur]) continue; dep[nex] = dep[cur]+1; head[nex] = nex; cur = nex; } else state[cur] = 3; } else { out[cur] = node_siz; if(cur == r) break; cur = par[cur]; } } vector&lt;S&gt; node_v(n); for(int i = 0; i &lt; n; i++) node_v[in[i]] = v[i]; node[0] = node_type(node_v); reverse(node_v.begin(), node_v.end()); node[1] = node_type(node_v); delete[] dum1; } S prod(int l, int r){ assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n); S l_ans = e(); S r_ans = e(); bool rev = false; while(true){ if(dep[l] &lt; dep[r]) swap(l, r), rev ^= 1; if(dep[l] != dep[r] || head[l] != head[r]){ if(!rev) l_ans = op(l_ans, node[1].prod(n-in[l]-1, n-in[head[l]])); else r_ans = op(node[0].prod(in[head[l]], in[l]+1), r_ans); l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r), rev ^= 1; if(!rev) l_ans = op(l_ans, node[0].prod(in[l], in[r]+1)); else r_ans = op(node[1].prod(n-in[r]-1, n-in[l]), r_ans); return op(l_ans, r_ans); } } } S prod(int r){ assert(0 &lt;= r &amp;&amp; r &lt; n); return node[0].prod(in[r], out[r]); } S get(int p){ assert(0 &lt;= p &amp;&amp; p &lt; n); return node[0].get(in[p]); } void set(int p, const S&amp; x){ assert(0 &lt;= p &amp;&amp; p &lt; n); node[0].set(in[p], x); node[1].set(n-in[p]-1, x); } void add(int p, const S&amp; x){ assert(0 &lt;= p &amp;&amp; p &lt; n); node[0].add(in[p], x); node[1].add(n-in[p]-1, x); } int lca(int l, int r){ assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n); while(true){ if(dep[l] &lt; dep[r]) swap(l, r); if(dep[l] != dep[r] || head[l] != head[r]){ l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r); return l; } } } int dist(int l, int r){ assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n); int d = 0; while(true){ if(dep[l] &lt; dep[r]) swap(l, r); if(dep[l] != dep[r] || head[l] != head[r]){ d += in[l] - in[head[l]] + 1; l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r); d += in[r] - in[l]; return d; } } } void apply(int l, int r, const F&amp; x){ while(true){ if(dep[l] &lt; dep[r]) swap(l, r); if(dep[l] != dep[r] || head[l] != head[r]){ node[0].apply(in[head[l]], in[l]+1, x); node[1].apply(n-in[l]-1, n-in[head[l]], x); l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r); node[0].apply(in[l], in[r]+1, x); node[1].apply(n-in[r]-1, n-in[l], x); break; } } } void apply(int r, const F&amp; x){ node[0].apply(in[r], out[r], x); node[1].apply(n-out[r], n-in[r], x); } }; template&lt;template&lt;typename S, auto op, auto e&gt; typename _node_type, typename S, auto op, auto e&gt; struct _hld_3{ using node_type = _node_type&lt;S, op, e&gt;; int *dum0, *dum1; int n, r, edge_idx; int *dep, *in, *out, *head, *par; int *E; node_type node[2]; _hld_3(int _n, int _r = -1): n(_n), r(_r), edge_idx(0){ if(r == -1) r = random_device()()%n; dum0 = new int[n*7-2]; dep = dum0; in = dum0+n; out = dum0+n*2; head = dum0+n*3; par = dum0+n*4; E = dum0+n*5; } void add_edge(int u, int v){ E[edge_idx++] = u; E[edge_idx++] = v; } void build(const vector&lt;S&gt;&amp; v){ dum1 = new int[n*8+1]; int *g = dum1; int *start = dum1+n*2-2; int *C = dum1+n*3-1; memset(start, 0, sizeof(int)*(n+1)); for(int i = 0; i &lt; 2*n-2; i+=2){ start[E[i]+1]++; start[E[i+1]+1]++; } for(int i = 1; i &lt;= n; i++) start[i] += start[i-1]; memcpy(C, start, sizeof(int)*(n+1)); for(int i = 0; i &lt; 2*n-2; i+=2){ g[C[E[i]]++] = E[i+1]; g[C[E[i+1]]++] = E[i]; } int *sub_siz = dum1+n*4; int *idx = dum1+n*5; fill(sub_siz, sub_siz+n, 1); memcpy(idx, start, sizeof(int)*(n+1)); int cur = r; par[r] = -1; while(true){ if(idx[cur] &lt; start[cur+1]-(cur!=r)){ int nex = g[idx[cur]++]; if(nex == par[cur]){ g[--idx[cur]] = g[start[cur+1]-1]; continue; } par[nex] = cur; cur = nex; } else { if(cur == r) break; sub_siz[par[cur]] += sub_siz[cur]; cur = par[cur]; } } memcpy(idx, start, sizeof(int)*(n+1)); int *state = dum1+n*6+1; int *heavy = dum1+n*7+1; memset(state, 0, sizeof(int)*n); int node_siz = 0; cur = r; head[cur] = r; dep[cur] = 0; while(1){ if(state[cur] == 0){ in[cur] = node_siz++; heavy[cur] = -1; for(int i = start[cur]; i &lt; start[cur+1]-(cur!=r); i++){ int nex = g[i]; if(heavy[cur] == -1 || sub_siz[heavy[cur]] &lt; sub_siz[nex]){ heavy[cur] = nex; } } if(heavy[cur] != -1){ int nex = heavy[cur]; dep[nex] = dep[cur]; head[nex] = head[cur]; state[cur] = 2; cur = nex; } else state[cur] = 2; } else if(state[cur] == 2){ if(idx[cur] &lt; start[cur+1]-(cur!=r)){ int nex = g[idx[cur]++]; if(nex == heavy[cur]) continue; dep[nex] = dep[cur]+1; head[nex] = nex; cur = nex; } else state[cur] = 3; } else { out[cur] = node_siz; if(cur == r) break; cur = par[cur]; } } vector&lt;S&gt; node_v(n); for(int i = 0; i &lt; n; i++) node_v[in[i]] = v[i]; node[0] = node_type(node_v); reverse(node_v.begin(), node_v.end()); node[1] = node_type(node_v); delete[] dum1; } S prod(int l, int r){ assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n); S l_ans = e(); S r_ans = e(); bool rev = false; while(true){ if(dep[l] &lt; dep[r]) swap(l, r), rev ^= 1; if(dep[l] != dep[r] || head[l] != head[r]){ if(!rev) l_ans = op(l_ans, node[1].prod(n-in[l]-1, n-in[head[l]])); else r_ans = op(node[0].prod(in[head[l]], in[l]+1), r_ans); l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r), rev ^= 1; if(!rev) l_ans = op(l_ans, node[0].prod(in[l], in[r]+1)); else r_ans = op(node[1].prod(n-in[r]-1, n-in[l]), r_ans); return op(l_ans, r_ans); } } } S prod(int r){ assert(0 &lt;= r &amp;&amp; r &lt; n); return node[0].prod(in[r], out[r]); } S get(int p){ assert(0 &lt;= p &amp;&amp; p &lt; n); return node[0].get(in[p]); } void set(int p, const S&amp; x){ assert(0 &lt;= p &amp;&amp; p &lt; n); node[0].set(in[p], x); node[1].set(n-in[p]-1, x); } void add(int p, const S&amp; x){ assert(0 &lt;= p &amp;&amp; p &lt; n); node[0].add(in[p], x); node[1].add(n-in[p]-1, x); } int lca(int l, int r){ assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n); while(true){ if(dep[l] &lt; dep[r]) swap(l, r); if(dep[l] != dep[r] || head[l] != head[r]){ l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r); return l; } } } int dist(int l, int r){ assert(0 &lt;= l &amp;&amp; 0 &lt;= r &amp;&amp; l &lt; n &amp;&amp; r &lt; n); int d = 0; while(true){ if(dep[l] &lt; dep[r]) swap(l, r); if(dep[l] != dep[r] || head[l] != head[r]){ d += in[l] - in[head[l]] + 1; l = par[head[l]]; } else { if(in[l] &gt; in[r]) swap(l, r); d += in[r] - in[l]; return d; } } } }; } template&lt;typename T&gt; struct hld; template&lt;template&lt;typename, auto, auto&gt; typename node_type, typename S, auto op, auto e&gt; struct hld&lt;node_type&lt;S, op, e&gt;&gt; : smkyb::_hld_3&lt;node_type, S, op, e&gt; {}; template&lt;template&lt;typename, auto, auto, typename, auto, auto, auto&gt; typename node_type, typename S, auto op, auto e, typename F, auto mapping, auto composition, auto id&gt; struct hld&lt;node_type&lt;S, op, e, F, mapping, composition, id&gt;&gt; : smkyb::_hld_7&lt;node_type, S, op, e, F, mapping, composition, id&gt; {};">copy_oneline</button>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
+    const mdContent = document.getElementById("md_content");
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
+    
+    const copyButton = document.getElementById("button_copy")
+    if(copyButton){
+        copyButton.addEventListener("click", () => {
+            const text = copyButton.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
+    if(copyButtonOneline){
+        copyButtonOneline.addEventListener("click", () => {
+            const text = copyButtonOneline.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+</script>
+</body>
+</html>
