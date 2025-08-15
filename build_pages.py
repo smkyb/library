@@ -246,7 +246,7 @@ def FindCppFiles(path:str) -> str:
                         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
                         from google import genai
                         client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
-                    with open(os.path.join("library", "cpp", "hld", "README.md"), "r", encoding="utf-8") as f:
+                    with open(os.path.join("cpp", "hld", "README.md"), "r", encoding="utf-8") as f:
                         example_README = f.read()
                     
                     res = client.models.generate_content(
