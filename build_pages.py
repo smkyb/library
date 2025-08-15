@@ -242,6 +242,7 @@ def FindCppFiles(path:str) -> str:
                 code_text = code_f.read()
                 README_path = os.path.join(os.path.dirname(item_path), "README.md")
                 if not os.path.exists(README_path):
+                    print("call gemini")
                     if client == None:
                         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
                         from google import genai
@@ -258,6 +259,8 @@ def FindCppFiles(path:str) -> str:
                     )
                     with open(README_path, "w", encoding="utf-8") as README_f:
                         README_f.write(res.text)
+                    
+                    print(res.text)
                     
                 with open(os.path.join(os.path.dirname(item_path), "README.md"), "r") as README_f:
                     WriteTagU(f)
