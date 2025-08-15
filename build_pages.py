@@ -253,7 +253,7 @@ def FindCppFiles(path:str) -> str:
                         model="gemini-2.0-flash-lite",
                         contents=[{
                             "role": "user",
-                            "parts": [{ "text": f"以下に，ソースコードと，それとは異なるもののREADME.mdを与えます．与えられたREADMEを基に，与えられたソースコードのREADME.mdを作成してください．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md*/\n{example_README}\n" }]
+                            "parts": [{ "text": f"以下に，ソースコードと，それとは異なるもののREADME.mdを与えます．与えられたREADMEを基に，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにしてください．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md*/\n{example_README}\n" }]
                         }]
                     )
                     with open(README_path, "w", encoding="utf-8") as README_f:
