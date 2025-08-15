@@ -1,10 +1,12 @@
-import shutil, os, html
+import shutil, os, html, subprocess
 
 pages_path = os.path.join("docs", "pages")
 if os.path.exists(pages_path):
     shutil.rmtree(pages_path)
 os.makedirs(pages_path)
+
 cnt_pages = 0
+client = None
 
 def WriteTagU(f):
     f.write("""<!DOCTYPE html>
@@ -16,7 +18,8 @@ def WriteTagU(f):
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <style>
-    body { margin: 80px; margin-top: 60px; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); overflow-y: scroll; }
+    html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
+    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
     .markdown-body pre { padding: 16px; overflow: auto; }
     .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
@@ -221,6 +224,7 @@ def ListCppFile(path:str) -> list[tuple[str, str]]:
 
 def FindCppFiles(path:str) -> str:
     global cnt_pages
+    global client
     
     res_str: str = ""
     items = sorted(ListCppFile(path))
@@ -236,6 +240,25 @@ def FindCppFiles(path:str) -> str:
         with open(page_path, "w", encoding="utf-8") as f:
             with open(item_path, "r", encoding="utf-8") as code_f:
                 code_text = code_f.read()
+                README_path = os.path.join(os.path.dirname(item_path), "README.md")
+                if not os.path.exists(README_path):
+                    if client == None:
+                        subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
+                        from google import genai
+                        client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
+                    with open(os.path.join("library", "cpp", "hld", "README.md"), "r", encoding="utf-8") as f:
+                        example_README = f.read()
+                    
+                    res = client.models.generate_content(
+                        model="gemini-2.0-flash-lite",
+                        contents=[{
+                            "role": "user",
+                            "parts": [{ "text": f"以下に，ソースコードと，それとは異なるもののREADME.mdを与えます．与えられたREADMEを基に，与えられたソースコードのREADME.mdを作成してください．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md*/\n{example_README}\n" }]
+                        }]
+                    )
+                    with open(README_path, "w", encoding="utf-8") as f:
+                        f.write(res.text)
+                    
                 with open(os.path.join(os.path.dirname(item_path), "README.md"), "r") as readme_f:
                     WriteTagU(f)
                     f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n\n")

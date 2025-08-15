@@ -22,6 +22,8 @@ jobs:
                 python-version: 3.12
         
         -   name: build
+            env:
+                GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
             run: |
                 python build_pages.py
                 
