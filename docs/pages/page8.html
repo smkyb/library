@@ -26,89 +26,71 @@
 </div>
 <article id="md_content" class="markdown-body">
 # segtree
-セグメント木を実装したデータ構造です．  
-モノイドの演算`op`と単位元`e`を定義して使用します．  
-<br>
+セグメント木を実装したデータ構造です。区間に対するクエリを効率的に行うことができます。
+
 ## コンストラクタ
+
 ```cpp
-segtree(unsigned n);
-segtree(const vector&lt;S&gt;&amp; v);
+segtree(unsigned n)
+segtree(const vector&lt;S&gt;&amp; v)
 ```
-・`S`: 値の型  
-・`op`: モノイドの演算 (例: `[](S a, S b){ return a + b; }`)  
-・`e`: モノイドの単位元 (例: `0`)  
-<br>
-・`segtree(unsigned n)`: 長さ`n`の数列のセグメント木を構築します．初期値はすべて単位元`e()`です．  
-・`segtree(const vector&lt;S&gt;&amp; v)`: 与えられた`vector&lt;S&gt;`のセグメント木を構築します．  
-### 制約
-・`n`は正であること．  
-・`v`は空でないこと．  
-### 計算量
-・`segtree(unsigned n)`: O(n)  
-・`segtree(const vector&lt;S&gt;&amp; v)`: O(v.size())  
-<br>
-## init
+
+*   `S`: 要素の型。
+*   `op`: 結合法則を満たす二項演算子（例: `std::plus&lt;&gt;`, `std::bit_and&lt;&gt;`）。
+*   `e`: `op`の単位元（例: `std::plus&lt;&gt;`なら0, `std::bit_and&lt;&gt;`なら-1）。
+*   `n`: セグメント木を構築する際の要素数。
+*   `v`: 初期化に用いる要素のリスト。
+
+**例:**
+
 ```cpp
-void init(const vector&lt;S&gt;&amp; v);
+// 合計を計算するセグメント木
+segtree&lt;int, std::plus&lt;&gt;, std::[]{return 0;}&gt; seg_sum(10);
+
+// 初期値を持つセグメント木
+vector&lt;int&gt; initial_values = {1, 2, 3, 4, 5};
+segtree&lt;int, std::plus&lt;&gt;, std::[]{return 0;}&gt; seg_init(initial_values);
 ```
-与えられた`vector&lt;S&gt;`でセグメント木を初期化します．  
-### 制約
-・`v`は空でないこと．  
-### 計算量
-・O(v.size())  
-<br>
-## get
-```cpp
-const S &amp;get(int pos) const;
-```
-`pos`番目の要素の値を取得します．  
-### 制約
-・`0 &lt;= pos &lt; siz` (`siz`はコンストラクタで指定された`n`以上の2のべき乗数)  
-### 計算量
-・O(1)  
-<br>
-## set
-```cpp
-void set(int pos, const S &amp;x);
-```
-`pos`番目の要素の値を`x`に変更します．  
-### 制約
-・`0 &lt;= pos &lt; siz`  
-### 計算量
-・O(log(siz))  
-<br>
-## add
-```cpp
-void add(int pos, const S &amp;x);
-```
-`pos`番目の要素の値に`x`を`op`で適用します．  
-`node[pos+siz] = op(node[pos+siz], x)` を行います．  
-### 制約
-・`0 &lt;= pos &lt; siz`  
-### 計算量
-・O(log(siz))  
-<br>
-## prod
-```cpp
-S prod(int left, int right);
-```
-区間 `[left, right)` の要素に対するモノイド演算の結果を返します．  
-`op`の適用順序は左から右へ行われます．  
-### 制約
-・`0 &lt;= left &lt;= right &lt;= siz`  
-### 計算量
-・O(log(siz))  
-<br>
-## all_prod
-```cpp
-S all_prod();
-```
-セグメント木全体（すべての要素）に対するモノイド演算の結果を返します．  
-### 制約
-・なし  
-### 計算量
-・O(1)  
-</article>
+
+## メソッド
+
+### `get(int pos)`
+
+指定された位置 `pos` の要素を取得します。
+
+*   `pos`: 要素のインデックス (0-indexed)。
+*   **計算量:** O(1)
+
+### `set(int pos, const S&amp; x)`
+
+指定された位置 `pos` の要素を `x` に変更します。
+
+*   `pos`: 要素のインデックス (0-indexed)。
+*   `x`: 新しい要素の値。
+*   **計算量:** O(log n)
+
+### `add(int pos, const S&amp; x)`
+
+指定された位置 `pos` の要素に `x` を加算（`op` に基づいた更新）します。
+
+*   `pos`: 要素のインデックス (0-indexed)。
+*   `x`: 加算する値。
+*   **制約:** `node_type` が `add` 関数を持っている必要があります。
+*   **計算量:** `op` の計算量に依存します。
+
+### `prod(int left, int right)`
+
+指定された区間 `[left, right)` の要素に対する `op` の累積結果を返します。
+
+*   `left`: 区間の開始インデックス (0-indexed、inclusive)。
+*   `right`: 区間の終了インデックス (0-indexed、exclusive)。
+*   **計算量:** O(log n)
+
+### `all_prod()`
+
+セグメント木全体（全ての要素）に対する `op` の累積結果を返します。
+
+*   **計算量:** O(1)</article>
 
 <button id="button_copy" data-copy="template&lt;typename S, auto op, auto e&gt;
 struct segtree{

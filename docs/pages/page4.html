@@ -25,84 +25,79 @@
     <a href="/library/about">about</a>
 </div>
 <article id="md_content" class="markdown-body">
-# Fast I/O
+# Faster IO Library
 
-このライブラリは、標準入出力の速度を向上させるためのC++の入出力ストリーム実装です。
+このライブラリは、標準入出力 (`cin`, `cout`) を高速化するためのものです。
 
 ## 機能
 
-*   **高速な整数・文字列入力**: `FIstream` クラスは、標準入力から整数や文字列を高速に読み込むためのバッファリングされた入力を提供します。
-*   **高速な整数・文字列出力**: `FOstream` クラスは、標準出力へ整数、文字、文字列、浮動小数点数を高速に書き込むためのバッファリングされた出力を提供します。
-*   **operator overloading**: `cin` と `cout` のエイリアスが提供されており、標準の C++ ストリームライクなインターフェースで使用できます。
+*   **高速な整数読み込み:** `operator&gt;&gt;` を使用して `int` などの整数型を高速に読み込みます。
+*   **高速な文字読み込み:** `operator&gt;&gt;` を使用して `char` 型を高速に読み込みます。空白文字をスキップします。
+*   **高速な文字列読み込み:** `operator&gt;&gt;` を使用して `std::string` を高速に読み込みます。空白文字をスキップし、空白文字が現れるまで読み込みます。
+*   **高速な整数書き込み:** `operator&lt;&lt;` を使用して `int` などの整数型を高速に標準出力へ書き込みます。
+*   **高速な文字書き込み:** `operator&lt;&lt;` を使用して `char` 型を高速に標準出力へ書き込みます。
+*   **高速な文字列書き込み:** `operator&lt;&lt;` を使用して `const char*` や `std::string` を高速に標準出力へ書き込みます。
+*   **高速な浮動小数点数書き込み:** `operator&lt;&lt;` を使用して `double` や `long double` を高速に標準出力へ書き込みます。
 
-## 使用例
+## 使用方法
+
+このライブラリを使用するには、以下の `#define` をソースコードの先頭に記述してください。
+
+```cpp
+#include &lt;iostream&gt; // または &lt;cstdio&gt;
+#include &lt;string&gt;
+#include &lt;cstring&gt; // for memcpy
+#include &lt;cassert&gt; // for assert
+#include &lt;cmath&gt; // for isnan
+
+// Faster IO Libraryの定義をここにコピー＆ペースト
+
+#define cin _cin
+#define istream FIstream
+#define cout _cout
+#define ostream FOstream
+```
+
+その後、通常の `std::cin` や `std::cout` と同様に使用できます。
 
 ```cpp
 #include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;vector&gt;
 
-// FIstream, FOstream, cin, cout, istream, ostream の定義が含まれていると仮定
+// Faster IO Libraryの定義をここにコピー＆ペースト
+
+#define cin _cin
+#define istream FIstream
+#define cout _cout
+#define ostream FOstream
 
 int main() {
-    // 整数入力
-    int a;
-    cin &gt;&gt; a;
+    int n;
+    cin &gt;&gt; n; // 高速に整数を読み込む
 
-    // 文字列入力
     std::string s;
-    cin &gt;&gt; s;
+    cin &gt;&gt; s; // 高速に文字列を読み込む
 
-    // 整数出力
-    cout &lt;&lt; a &lt;&lt; std::endl;
+    std::vector&lt;int&gt; arr(n);
+    for (int i = 0; i &lt; n; ++i) {
+        cin &gt;&gt; arr[i]; // 配列の各要素を高速に読み込む
+    }
 
-    // 文字列出力
-    cout &lt;&lt; &quot;Hello, &quot; &lt;&lt; s &lt;&lt; &quot;!&quot; &lt;&lt; std::endl;
+    cout &lt;&lt; &quot;Read &quot; &lt;&lt; n &lt;&lt; &quot; elements.&quot; &lt;&lt; endl; // 高速に文字列と整数を出力
+    cout &lt;&lt; &quot;String: &quot; &lt;&lt; s &lt;&lt; endl;
 
-    // 浮動小数点数出力
-    double pi = 3.1415926535;
-    cout &lt;&lt; pi &lt;&lt; std::endl;
+    for (int x : arr) {
+        cout &lt;&lt; x &lt;&lt; &quot; &quot;; // 配列の要素を高速に出力
+    }
+    cout &lt;&lt; endl;
 
-    // 複数入力
-    int x, y;
-    cin &gt;&gt; x &gt;&gt; y;
-    cout &lt;&lt; x + y &lt;&lt; std::endl;
+    double d = 3.14159;
+    cout &lt;&lt; &quot;Double: &quot; &lt;&lt; d &lt;&lt; endl; // 高速に浮動小数点数を出力
 
     return 0;
 }
-```
-
-## クラス詳細
-
-### `FIstream`
-
-*   **`_getchar()`**: バッファから1文字読み込みます。バッファが空の場合は標準入力から読み込みます。
-*   **`ignore_space()`**: 空白文字（ASCIIコード 0x20 以下）をスキップし、最初の非空白文字を返します。
-*   **`_read(T&amp; res)`**: テンプレート関数。整数型 `T` の値を読み込みます。空白文字、符号（`-`）を処理し、数値をパースします。
-*   **`operator&gt;&gt;(T&amp; x)`**: 整数型 `T` の値を `x` に読み込みます。
-*   **`operator&gt;&gt;(char&amp; x)`**: 最初の非空白文字を `x` に読み込みます。
-*   **`operator&gt;&gt;(string&amp; x)`**: 空白文字をスキップした後、次の空白文字が出現するまで文字を読み込み、`std::string` `x` に格納します。
-
-### `FOstream`
-
-*   **`_write()`**: バッファの内容を標準出力に書き込みます。
-*   **`_putchar(char c)`**: バッファに1文字書き込みます。バッファが満杯の場合は、書き込む前にバッファの内容をフラッシュします。
-*   **`_write_i(T x)`**: テンプレート関数。整数型 `T` の値を高速に文字列に変換してバッファに書き込みます。負の数も処理します。
-*   **`operator&lt;&lt;(const T&amp; x)`**: 整数型 `T` の値を標準出力に書き込みます。
-*   **`operator&lt;&lt;(char x)`**: 文字 `x` を標準出力に書き込みます。
-*   **`operator&lt;&lt;(const char* x)`**: Cスタイルの文字列 `x` を標準出力に書き込みます。
-*   **`operator&lt;&lt;(char* x)`**: `const char*` のバージョンにキャストして呼び出します。
-*   **`operator&lt;&lt;(double x)`**: `double` 型の値をフォーマットして出力します。`snprintf` を使用して、最大15桁の精度で浮動小数点数を出力します。NaN も処理します。
-*   **`operator&lt;&lt;(long double x)`**: `long double` 型の値をフォーマットして出力します。`snprintf` を使用して、最大15桁の精度で浮動小数点数を出力します。NaN も処理します。
-*   **`operator&lt;&lt;(const string&amp; x)`**: `std::string` `x` を標準出力に書き込みます。
-*   **`~FOstream()`**: デストラクタ。バッファに残っている内容があれば、標準出力に書き込みます。
-
-## マクロ
-
-*   `cin`: `_cin` ( `FIstream` のインスタンス) のエイリアス。
-*   `istream`: `FIstream` のエイリアス。
-*   `cout`: `_cout` ( `FOstream` のインスタンス) のエイリアス。
-*   `ostream`: `FOstream` のエイリアス。</article>
+```</article>
 
 <button id="button_copy" data-copy="struct FIstream{
     static constexpr unsigned SIZ = 1 &lt;&lt; 17;

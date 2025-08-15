@@ -25,74 +25,94 @@
     <a href="/library/about">about</a>
 </div>
 <article id="md_content" class="markdown-body">
-# coordinate_compression
-与えられた複数の数値の配列の値を、それらの相対的な順序を保ったまま、重複なく小さい非負整数に圧縮する機能を提供します。
+# Coordinate Compression
+
+与えられた複数の `std::vector` に含まれる値の範囲を圧縮（座圧）します。
+これにより、元の値の大小関係を保ったまま、より小さい値の集合で表現することができます。
 
 ## 関数
 ```cpp
 template&lt;typename T, typename... Args&gt;
-std::vector&lt;T&gt; compression(std::vector&lt;T&gt;&amp; v, Args&amp;... args)
+vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args)
 ```
 
-### 引数
-
-*   `v`: 圧縮したい数値の配列（`std::vector&lt;T&gt;`）。この配列は、関数内で直接変更されます。
-*   `args...`: 圧縮したい追加の数値の配列（`std::vector&lt;T&gt;`）。これらも関数内で直接変更されます。
-
-### 戻り値
-
-*   圧縮後のユニークな値のソートされた配列（`std::vector&lt;T&gt;`）。
+・`v`: 圧縮したい `std::vector` です。このベクターの値は、関数内で変更されます。
+・`args...`: 圧縮したい他の `std::vector` を可変長引数で指定します。これらのベクターの値も、関数内で変更されます。
 
 ### 制約
+・圧縮対象の `std::vector` は、同じ型 `T` である必要があります。
+・`std::vector` の要素は、比較可能である必要があります (`operator&lt;` が定義されていること)。
 
-*   入力される配列の要素型 `T` は、比較可能である必要があります（`operator&lt;` および `operator==` が定義されていること）。
-*   引数として渡される配列は、すべて同じ要素型 `T` である必要があります。
+### 返り値
+圧縮後のユニークな値のソートされた `std::vector` を返します。これは、各元の `std::vector` の要素を、この返り値のベクターにおけるインデックスに置き換えた結果となります。
 
 ### 計算量
+・`N`: 全ての `std::vector` を合わせた要素数の総和とします。
+・`M`: 全ての `std::vector` に含まれるユニークな値の総数とします。
 
-*   $O(N \log N)$
-    *   ここで $N$ は、すべての入力配列の要素数の合計です。
-    *   内部でソートと重複除去が行われるため、この計算量となります。
+・マージ処理: O(N)
+・ソート処理: O(M log M)
+・ユニーク化処理: O(M)
+・適用処理: O(N log M)
 
-### 使用例
+総合して、**O(N + M log M)** です。
+
+## 使用例
 
 ```cpp
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
-#include &lt;algorithm&gt;
+#include &lt;algorithm&gt; // for sort, unique, lower_bound
 
-// compression 関数が定義されているヘッダーファイルなどをインクルード
+// compression 関数の定義 (ソースコードから抜粋)
+void _compression_merge(...){}
+template&lt;typename T, typename... Args&gt;
+void _compression_merge(vector&lt;T&gt;&amp; C, vector&lt;T&gt;&amp; v, Args&amp;... args){
+    for(auto&amp; i : v) C.push_back(i);
+    _compression_merge(C, args...);
+}
+void _compression_apply(...){}
+template&lt;typename T, typename... Args&gt;
+void _compression_apply(vector&lt;T&gt;&amp; C, vector&lt;T&gt;&amp; v, Args&amp;... args){
+    for(auto&amp; i : v) i = lower_bound(C.begin(), C.end(), i) - C.begin();
+    _compression_apply(C, args...);
+}
+template&lt;typename T, typename... Args&gt;
+vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args){
+    vector&lt;T&gt; C;
+    _compression_merge(C, v, args...);
+    sort(C.begin(), C.end());
+    C.erase(unique(C.begin(), C.end()), C.end());
+    _compression_apply(C, v, args...);
+    return C;
+}
 
 int main() {
-    std::vector&lt;int&gt; v1 = {10, 20, 10, 30};
-    std::vector&lt;int&gt; v2 = {5, 20, 15};
+    vector&lt;int&gt; a = {5, 2, 8, 2, 5, 1};
+    vector&lt;int&gt; b = {10, 8, 3, 10};
 
-    // v1 と v2 の値を圧縮
-    std::vector&lt;int&gt; unique_values = compression(v1, v2);
+    vector&lt;int&gt; unique_sorted_values = compression(a, b);
 
-    // 圧縮後の v1 の内容
-    // v1 は {0, 1, 0, 2} のようになる
-    std::cout &lt;&lt; &quot;Compressed v1: &quot;;
-    for (int val : v1) {
+    // 圧縮後の a
+    // a は {2, 1, 3, 1, 2, 0} に変更される
+    for (int val : a) {
         std::cout &lt;&lt; val &lt;&lt; &quot; &quot;;
     }
-    std::cout &lt;&lt; std::endl;
+    std::cout &lt;&lt; std::endl; // 出力: 2 1 3 1 2 0
 
-    // 圧縮後の v2 の内容
-    // v2 は {3, 1, 4} のようになる (unique_values のインデックスに対応)
-    std::cout &lt;&lt; &quot;Compressed v2: &quot;;
-    for (int val : v2) {
+    // 圧縮後の b
+    // b は {4, 3, 0, 4} に変更される
+    for (int val : b) {
         std::cout &lt;&lt; val &lt;&lt; &quot; &quot;;
     }
-    std::cout &lt;&lt; std::endl;
+    std::cout &lt;&lt; std::endl; // 出力: 4 3 0 4
 
-    // 圧縮されたユニークな値
-    // unique_values は {5, 10, 15, 20, 30} のようになる
-    std::cout &lt;&lt; &quot;Unique values: &quot;;
-    for (int val : unique_values) {
+    // 圧縮後のユニークな値
+    // unique_sorted_values は {1, 2, 3, 5, 8, 10} になる
+    for (int val : unique_sorted_values) {
         std::cout &lt;&lt; val &lt;&lt; &quot; &quot;;
     }
-    std::cout &lt;&lt; std::endl;
+    std::cout &lt;&lt; std::endl; // 出力: 1 2 3 5 8 10
 
     return 0;
 }
