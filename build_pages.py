@@ -248,13 +248,15 @@ def FindCppFiles(path:str) -> str:
                         from google import genai
                         client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
                     with open(os.path.join("cpp", "hld", "README.md"), "r", encoding="utf-8") as EX_f:
-                        example_README = EX_f.read()
+                        example_README1 = EX_f.read()
+                    with open(os.path.join("cpp", "sort_segtree", "README.md")) as EX_f:
+                        example_README2 = EX_f.read()
                     
                     res = client.models.generate_content(
-                        model="gemini-2.0-flash-lite",
+                        model="gemini-2.5-flash-lite",
                         contents=[{
                             "role": "user",
-                            "parts": [{ "text": f"以下に，ソースコードと，それとは異なるもののREADME.mdを与えます．与えられたREADMEを基に，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにしてください．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md*/\n{example_README}\n" }]
+                            "parts": [{ "text": f"以下に，ソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEを基に，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにしてください．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
                         }]
                     )
                     with open(README_path, "w", encoding="utf-8") as README_f:
