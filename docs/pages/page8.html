@@ -26,71 +26,86 @@
 </div>
 <article id="md_content" class="markdown-body">
 # segtree
-セグメント木を実装したデータ構造です。区間に対するクエリを効率的に行うことができます。
+セグメント木です。モノイド（`op`, `e`）を扱うことができます。
 
 ## コンストラクタ
-
 ```cpp
-segtree(unsigned n)
-segtree(const vector&lt;S&gt;&amp; v)
+segtree&lt;S, op, e&gt; seg(unsigned n);
+segtree&lt;S, op, e&gt; seg(const vector&lt;S&gt;&amp; v);
 ```
+*   `S`: 要素の型
+*   `op`: モノイドの演算（例: `std::plus&lt;&gt;`, `std::multiplies&lt;&gt;`）
+*   `e`: モノイドの単位元（例: `0`, `1`）
+*   `n`: 木のサイズ（構築される配列のサイズ）
+*   `v`: 初期値の配列
 
-*   `S`: 要素の型。
-*   `op`: 結合法則を満たす二項演算子（例: `std::plus&lt;&gt;`, `std::bit_and&lt;&gt;`）。
-*   `e`: `op`の単位元（例: `std::plus&lt;&gt;`なら0, `std::bit_and&lt;&gt;`なら-1）。
-*   `n`: セグメント木を構築する際の要素数。
-*   `v`: 初期化に用いる要素のリスト。
+*   1つ目のコンストラクタは、サイズ`n`で単位元`e()`で初期化されたセグメント木を構築します。
+*   2つ目のコンストラクタは、配列`v`で初期化されたセグメント木を構築します。
 
-**例:**
+### 制約
+*   `n`は非負整数。
+*   `v`の要素数は非負整数。
 
+### 計算量
+*   1つ目のコンストラクタ: O(n)
+*   2つ目のコンストラクタ: O(n)
+
+## set
 ```cpp
-// 合計を計算するセグメント木
-segtree&lt;int, std::plus&lt;&gt;, std::[]{return 0;}&gt; seg_sum(10);
-
-// 初期値を持つセグメント木
-vector&lt;int&gt; initial_values = {1, 2, 3, 4, 5};
-segtree&lt;int, std::plus&lt;&gt;, std::[]{return 0;}&gt; seg_init(initial_values);
+void set(int pos, const S&amp; x);
 ```
+`pos`番目の要素を`x`に変更します。
 
-## メソッド
+### 制約
+*   `0 &lt;= pos &lt; siz` (`siz`は構築された配列のサイズ)
 
-### `get(int pos)`
+### 計算量
+*   O(log siz)
 
-指定された位置 `pos` の要素を取得します。
+## add
+```cpp
+void add(int pos, const S&amp; x);
+```
+`pos`番目の要素に`x`を適用します。`op(node[pos], x)`を実行します。
 
-*   `pos`: 要素のインデックス (0-indexed)。
-*   **計算量:** O(1)
+### 制約
+*   `0 &lt;= pos &lt; siz`
 
-### `set(int pos, const S&amp; x)`
+### 計算量
+*   O(log siz)
 
-指定された位置 `pos` の要素を `x` に変更します。
+## get
+```cpp
+const S&amp; get(int pos) const;
+```
+`pos`番目の要素を取得します。
 
-*   `pos`: 要素のインデックス (0-indexed)。
-*   `x`: 新しい要素の値。
-*   **計算量:** O(log n)
+### 制約
+*   `0 &lt;= pos &lt; siz`
 
-### `add(int pos, const S&amp; x)`
+### 計算量
+*   O(1)
 
-指定された位置 `pos` の要素に `x` を加算（`op` に基づいた更新）します。
+## prod
+```cpp
+S prod(int left, int right);
+```
+`left`番目から`right-1`番目までの要素の範囲積を計算します。
 
-*   `pos`: 要素のインデックス (0-indexed)。
-*   `x`: 加算する値。
-*   **制約:** `node_type` が `add` 関数を持っている必要があります。
-*   **計算量:** `op` の計算量に依存します。
+### 制約
+*   `0 &lt;= left &lt;= right &lt;= siz`
 
-### `prod(int left, int right)`
+### 計算量
+*   O(log siz)
 
-指定された区間 `[left, right)` の要素に対する `op` の累積結果を返します。
+## all_prod
+```cpp
+S all_prod();
+```
+全ての要素の積を計算します。
 
-*   `left`: 区間の開始インデックス (0-indexed、inclusive)。
-*   `right`: 区間の終了インデックス (0-indexed、exclusive)。
-*   **計算量:** O(log n)
-
-### `all_prod()`
-
-セグメント木全体（全ての要素）に対する `op` の累積結果を返します。
-
-*   **計算量:** O(1)</article>
+### 計算量
+*   O(1)</article>
 
 <button id="button_copy" data-copy="template&lt;typename S, auto op, auto e&gt;
 struct segtree{

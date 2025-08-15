@@ -25,75 +25,156 @@
     <a href="/library/about">about</a>
 </div>
 <article id="md_content" class="markdown-body">
-# Faster IO Library
+# Fast IO Library
 
-このライブラリは、標準入出力 (`cin`, `cout`) を高速化するためのものです。
+このライブラリは、標準入出力の高速化を目的としたC++のクラスを提供します。
 
-## 機能
+## クラス
 
-*   **高速な整数読み込み:** `operator&gt;&gt;` を使用して `int` などの整数型を高速に読み込みます。
-*   **高速な文字読み込み:** `operator&gt;&gt;` を使用して `char` 型を高速に読み込みます。空白文字をスキップします。
-*   **高速な文字列読み込み:** `operator&gt;&gt;` を使用して `std::string` を高速に読み込みます。空白文字をスキップし、空白文字が現れるまで読み込みます。
-*   **高速な整数書き込み:** `operator&lt;&lt;` を使用して `int` などの整数型を高速に標準出力へ書き込みます。
-*   **高速な文字書き込み:** `operator&lt;&lt;` を使用して `char` 型を高速に標準出力へ書き込みます。
-*   **高速な文字列書き込み:** `operator&lt;&lt;` を使用して `const char*` や `std::string` を高速に標準出力へ書き込みます。
-*   **高速な浮動小数点数書き込み:** `operator&lt;&lt;` を使用して `double` や `long double` を高速に標準出力へ書き込みます。
+### `FIstream` (Input Stream)
 
-## 使用方法
+標準入力からの読み込みを高速化します。
 
-このライブラリを使用するには、以下の `#define` をソースコードの先頭に記述してください。
+#### コンストラクタ
 
 ```cpp
-#include &lt;iostream&gt; // または &lt;cstdio&gt;
-#include &lt;string&gt;
-#include &lt;cstring&gt; // for memcpy
-#include &lt;cassert&gt; // for assert
-#include &lt;cmath&gt; // for isnan
-
-// Faster IO Libraryの定義をここにコピー＆ペースト
-
-#define cin _cin
-#define istream FIstream
-#define cout _cout
-#define ostream FOstream
+FIstream()
 ```
+デフォルトコンストラクタです。
 
-その後、通常の `std::cin` や `std::cout` と同様に使用できます。
+#### 演算子オーバーロード
+
+*   **`operator&gt;&gt;(T&amp; x)`**:
+    指定された型の変数`x`に、標準入力から値を読み込みます。整数型（`int`, `long long`など）および`char`、`string`に対応しています。
+
+    ```cpp
+    // 整数を読み込む例
+    int a;
+    cin &gt;&gt; a;
+
+    // 文字を読み込む例
+    char c;
+    cin &gt;&gt; c;
+
+    // 文字列を読み込む例
+    std::string s;
+    cin &gt;&gt; s;
+    ```
+
+    *   **制約**:
+        *   読み込む値は、対応する型として有効な形式である必要があります。
+        *   `char`や`string`の場合、空白文字（スペース、タブ、改行など）はスキップされます。
+
+    *   **計算量**:
+        *   `int`, `long long`などの整数型: O(log10(値))
+        *   `char`: O(1)
+        *   `string`: O(文字列長)
+
+### `FOstream` (Output Stream)
+
+標準出力への書き込みを高速化します。
+
+#### コンストラクタ
+
+```cpp
+FOstream()
+```
+デフォルトコンストラクタです。
+
+#### 演算子オーバーロード
+
+*   **`operator&lt;&lt;(const T&amp; x)`**:
+    指定された型の値`x`を標準出力に書き込みます。整数型（`int`, `long long`など）、`char`、`const char*`、`double`、`long double`、`string`に対応しています。
+
+    ```cpp
+    // 整数を出力する例
+    cout &lt;&lt; 123;
+
+    // 文字を出力する例
+    cout &lt;&lt; &#x27;A&#x27;;
+
+    // 文字列リテラルを出力する例
+    cout &lt;&lt; &quot;Hello&quot;;
+
+    // std::stringを出力する例
+    std::string message = &quot;World&quot;;
+    cout &lt;&lt; message;
+
+    // doubleを出力する例
+    double pi = 3.14159;
+    cout &lt;&lt; pi;
+    ```
+
+    *   **制約**:
+        *   `double`および`long double`は、`snprintf`を用いて最大15桁の精度で出力されます。
+        *   `double`または`long double`がNaN（非数）の場合、「nan」と出力されます。
+
+    *   **計算量**:
+        *   整数型: O(log10(値))
+        *   `char`: O(1)
+        *   `const char*`: O(文字列長)
+        *   `std::string`: O(文字列長)
+        *   `double`, `long double`: O(1) （内部バッファリングにより、実質的な計算量は定数に近い）
+
+#### デストラクタ
+
+```cpp
+~FOstream()
+```
+クラスのインスタンスが破棄される際に、バッファに残っているデータを標準出力にフラッシュします。
+
+## マクロ
+
+*   `cin`: `FIstream`クラスのグローバルインスタンス`_cin`へのエイリアスです。
+*   `istream`: `FIstream`クラスへのエイリアスです。
+*   `cout`: `FOstream`クラスのグローバルインスタンス`_cout`へのエイリアスです。
+*   `ostream`: `FOstream`クラスへのエイリアスです。
+
+これらのマクロを使用することで、C++標準ライブラリの`std::cin`や`std::cout`と同様の感覚で、高速な入出力を行うことができます。
 
 ```cpp
 #include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;vector&gt;
 
-// Faster IO Libraryの定義をここにコピー＆ペースト
+// Fast IO Library をインクルードする代わりに、直接ソースコードをコピー＆ペーストして使用します。
+// または、必要に応じてヘッダーファイルとして保存しインクルードしてください。
 
+/*
+struct FIstream { ... };
+struct FOstream_Pre { ... };
+struct FOstream { ... };
+FIstream _cin;
+FOstream _cout;
 #define cin _cin
 #define istream FIstream
 #define cout _cout
 #define ostream FOstream
+*/
 
 int main() {
+    std::ios_base::sync_with_stdio(false); // 標準ライブラリの同期を解除 (fastioライブラリ自体で対応済みですが、併用も可能です)
+    // cin.tie(NULL); // cinとcoutのtieを解除 (fastioライブラリ自体で対応済みですが、併用も可能です)
+
     int n;
-    cin &gt;&gt; n; // 高速に整数を読み込む
+    cin &gt;&gt; n; // FIstream を使用
 
-    std::string s;
-    cin &gt;&gt; s; // 高速に文字列を読み込む
-
-    std::vector&lt;int&gt; arr(n);
+    std::vector&lt;int&gt; nums(n);
     for (int i = 0; i &lt; n; ++i) {
-        cin &gt;&gt; arr[i]; // 配列の各要素を高速に読み込む
+        cin &gt;&gt; nums[i]; // FIstream を使用
     }
 
-    cout &lt;&lt; &quot;Read &quot; &lt;&lt; n &lt;&lt; &quot; elements.&quot; &lt;&lt; endl; // 高速に文字列と整数を出力
-    cout &lt;&lt; &quot;String: &quot; &lt;&lt; s &lt;&lt; endl;
-
-    for (int x : arr) {
-        cout &lt;&lt; x &lt;&lt; &quot; &quot;; // 配列の要素を高速に出力
+    for (int i = 0; i &lt; n; ++i) {
+        cout &lt;&lt; nums[i] &lt;&lt; &quot; &quot;; // FOstream を使用
     }
-    cout &lt;&lt; endl;
+    cout &lt;&lt; &quot;\n&quot;; // FOstream を使用
 
-    double d = 3.14159;
-    cout &lt;&lt; &quot;Double: &quot; &lt;&lt; d &lt;&lt; endl; // 高速に浮動小数点数を出力
+    std::string word;
+    cin &gt;&gt; word; // FIstream を使用
+    cout &lt;&lt; &quot;Read: &quot; &lt;&lt; word &lt;&lt; &quot;\n&quot;; // FOstream を使用
+
+    double val = 3.1415926535;
+    cout &lt;&lt; &quot;Pi: &quot; &lt;&lt; val &lt;&lt; &quot;\n&quot;; // FOstream を使用
 
     return 0;
 }

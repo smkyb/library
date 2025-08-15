@@ -26,141 +26,164 @@
 </div>
 <article id="md_content" class="markdown-body">
 # meldable_binary_trie
+キーと値のペアを格納し、効率的な操作を提供するデータ構造です。キーは非負整数で、値は可換モノイドを形成します。
 
-このデータ構造は、Trie構造に「meld（結合）」という操作を可能にしたものです。Trieの各ノードは、値、合計値、幅、個数、および4つの子ノードを持ちます。`op`と`e`という汎用的な演算子と単位元を用いることで、様々な応用が可能です。
-
-## テンプレートパラメータ
-
-- `T`: Trieに格納される値の型。unsigned型である必要があります。
-- `S`: Trieのノードに格納される合計値の型。
-- `op`: 合計値を計算するための二項演算子。
-- `e`: `op`の単位元。
+<br>
 
 ## コンストラクタ
-
 ```cpp
-meldable_binary_trie();
-meldable_binary_trie(T p, const S&amp; x);
-meldable_binary_trie(node_t* x);
+template&lt;typename T, typename S, auto op, auto e&gt;
+meldable_binary_trie(T p, const S &amp;x);
+
+template&lt;typename T, typename S, auto op, auto e&gt;
+meldable_binary_trie(node_t *x);
 ```
+* `T`: キーの型 (unsigned integer)
+* `S`: 値の型 (可換モノイド)
+* `op`: 値に対するモノイド演算
+* `e`: 値の単位元
 
-- `meldable_binary_trie()`: 空のTrieを構築します。
-- `meldable_binary_trie(T p, const S&amp; x)`: 値 `p` と合計値 `x` を持つ単一ノードのTrieを構築します。
-- `meldable_binary_trie(node_t* x)`: 与えられたノードをルートとするTrieを構築します。
+* `meldable_binary_trie(T p, const S &amp;x)`: キー `p`、値 `x` を持つ要素で初期化されたトライを構築します。
+* `meldable_binary_trie(node_t *x)`: 指定されたノードをルートとするトライを構築します。
 
-## メンバー関数
+### 制約
+* `T`は符号なし整数型である必要があります。
+* `op`は結合律を満たす二項演算である必要があります。
+* `e`は`op`の単位元である必要があります。
 
-### insert
+### 計算量
+* O(1) (あるいは、内部ノードの構築にかかる時間)
 
+<br>
+
+## insert
 ```cpp
-void insert(T v, const S&amp; x);
+void insert(T v, const S &amp;x)
 ```
+キー `v`、値 `x` の要素をトライに挿入します。キー `v` が既に存在する場合、その値は `op(既存の値, x)` で更新されます。
 
-Trieに値 `v` と合計値 `x` を持つ要素を挿入します。
+### 制約
+* `0 &lt;= v`
 
-- **制約**:
-    - `v` は `T` 型の有効な値であること。
-    - `x` は `S` 型の有効な値であること。
-- **計算量**: O(log `bit_width`) （`bit_width` は `T` のビット幅）
+### 計算量
+* O(log(max(T)))
 
-### count
+<br>
 
+## count
 ```cpp
-int count(T v) const;
+int count(T v) const
 ```
+キー `v` を持つ要素の数を返します。
 
-Trieに値 `v` が存在するかどうかを返します。存在すれば1、しなければ0を返します。
+### 制約
+* `0 &lt;= v`
 
-- **制約**:
-    - `v` は `T` 型の有効な値であること。
-- **計算量**: O(log `bit_width`)
+### 計算量
+* O(log(max(T)))
 
-### size
+<br>
 
+## size
 ```cpp
-int size() const;
+int size() const
 ```
+トライに含まれる要素の総数を返します。
 
-Trieに含まれる要素の総数を返します。
+### 制約
+* なし
 
-- **制約**: なし
-- **計算量**: O(1)
+### 計算量
+* O(1)
 
-### meld
+<br>
 
+## meld
 ```cpp
-static node_t* meld(meldable_binary_trie&amp; l, meldable_binary_trie&amp; r);
-static node_t* meld(node_t* l, node_t* r);
+static node_t *meld(meldable_binary_trie &amp;l, meldable_binary_trie &amp;r);
+static node_t *meld(node_t *l, node_t *r);
+static node_t *meld(node_t *l, node_t *r, int bit);
 ```
+2つのトライ `l` と `r` をマージし、新しいトライのルートノードへのポインタを返します。マージされたトライは、`l` と `r` のすべての要素を含みます。
 
-2つのTrie（またはノード）を結合し、その結果のルートノードへのポインタを返します。結合はTrieの構造を保ちながら行われます。
+### 制約
+* `l` および `r` は有効なトライのルートノードである必要があります。
 
-- **制約**:
-    - `l` と `r` は有効なTrieまたはノードであること。
-- **計算量**: O(log `bit_width`)
+### 計算量
+* O(log(max(T)))
 
-### split
+<br>
 
+## split
 ```cpp
 pair&lt;meldable_binary_trie, meldable_binary_trie&gt; split(int p);
-static pair&lt;node_t*, node_t*&gt; split(node_t* l, int p);
+static pair&lt;node_t*, node_t*&gt; split(node_t *l, int p);
 ```
+トライを、指定された要素数 `p` で2つのトライに分割します。最初のトライには最初の `p` 個の要素が、2番目のトライには残りの要素が含まれます。
 
-Trieを、指定された要素数 `p` で2つのTrieに分割します。`rev` フラグによって分割の順序が変わる場合があります。
+### 制約
+* `0 &lt;= p &lt;= size()`
 
-- **制約**:
-    - `p` は `0 &lt;= p &lt;= size()` の範囲内であること。
-- **計算量**: O(log `bit_width`)
+### 計算量
+* O(log(max(T)))
 
-### split_one
+<br>
 
+## split_one
 ```cpp
 meldable_binary_trie split_one();
-node_t* split_one(node_t* l);
-node_t* split_one_rev(node_t* l);
+node_t *split_one(node_t *l);
+node_t *split_one_rev(node_t *l);
 ```
+トライから要素を1つ取り出し、それを新しいトライとして返します。元のトライからはその要素が削除されます。
 
-Trieから要素を1つ取り出し、残りのTrieを返します。どの要素が取り出されるかは、Trieの内部構造や `rev` フラグに依存します。
+### 制約
+* トライが空でないこと。
 
-- **制約**:
-    - Trieが空でないこと。
-- **計算量**: O(log `bit_width`)
+### 計算量
+* O(log(max(T)))
 
-### all_prod
+<br>
 
+## all_prod
 ```cpp
-S all_prod() const;
+S all_prod() const
 ```
+トライに含まれるすべての要素の値に対して、モノイド演算 `op` を適用した結果を返します。
 
-Trie全体の合計値を返します。
+### 制約
+* なし
 
-- **制約**: なし
-- **計算量**: O(1)
+### 計算量
+* O(1)
 
-### init
+<br>
 
+## init
 ```cpp
-void init(T p, const S&amp; x);
+void init(T p, const S &amp;x)
 ```
+トライをキー `p`、値 `x` の要素で初期化します。既存のトライの内容は破棄されます。
 
-Trieを初期化し、値 `p` と合計値 `x` を持つ単一ノードのTrieにします。
+### 制約
+* `0 &lt;= p`
 
-- **制約**:
-    - `p` は `T` 型の有効な値であること。
-    - `x` は `S` 型の有効な値であること。
-- **計算量**: O(1)
+### 計算量
+* O(1)
 
-### get_size
+<br>
 
+## get_size
 ```cpp
-static int get_size(node_t* ptr);
+static int get_size(node_t *ptr);
 ```
+指定されたノードをルートとする部分木のノード数を計算します。
 
-指定されたノード以下のTrieに含まれるノードの総数を計算します。
+### 制約
+* `ptr` は有効なノードまたは `node_t::nil` である必要があります。
 
-- **制約**:
-    - `ptr` は有効なノードポインタであること。
-- **計算量**: O(N) （Nはサブツリー内のノード数）</article>
+### 計算量
+* O(N)、ここで N は部分木のノード数</article>
 
 <button id="button_copy" data-copy="template&lt;typename T, typename S, auto op, auto e&gt;
 struct meldable_binary_trie{

@@ -26,83 +26,78 @@
 </div>
 <article id="md_content" class="markdown-body">
 # dynamic_segtree
-
-動的セグメント木です。値の更新、区間クエリを効率的に行えます。
-キーの型`T`は非負整数である必要があり、値の型`S`と演算`op`、単位元`e`を定義する必要があります。
-
+区間に対するクエリを解くことができます．  
+モノイドの操作`op`と単位元`e`を定義する必要があります．
+<br>
 ## コンストラクタ
-
 ```cpp
+template &lt;typename T, typename S, auto op, auto e&gt;
 dynamic_segtree&lt;T, S, op, e&gt; seg;
 ```
-
-・`T`: キーの型（非負整数）
-・`S`: 値の型
-・`op`: 値に対する二項演算子
-・`e`: `op`の単位元
-
-要素数は動的に管理されます。
-
+・キーの型`T`（非負整数である必要があります）  
+・値の型`S`  
+・モノイドの演算`op`  
+・モノイドの単位元`e`  
+を定義する必要があります．
 ### 制約
-・`T`は非負整数であること。
-・`op`は結合法則を満たすこと。
-・`e`は`op`の単位元であること。
-
+* `T`は非負整数型．  
+* `op`は結合律を満たす二項演算．  
+* `e`は`op`の単位元．  
 ### 計算量
-・O(1)
-
+* O(1)
+<br>
 ## set
-
 ```cpp
-void set(T k, S x)
+void set(T v, const S&amp; x)
 ```
-
-キー`k`に対応する値`x`を設定します。
-
+キー`v`に対応する値を`x`に変更します．
 ### 制約
-・`0 &lt;= k`
-
+* `0 &lt;= v`  
 ### 計算量
-・`T`の最大値を`m`とすると、O(log(m))
-
+* O(log(V_max))  
+（`V_max`はキーの最大値）
+<br>
 ## get
-
 ```cpp
-S get(T k) const
+S get(T p) const
 ```
-
-キー`k`に対応する値を取得します。
-
+キー`p`に対応する値を取得します．
 ### 制約
-・`0 &lt;= k`
-
+* `0 &lt;= p`
 ### 計算量
-・`T`の最大値を`m`とすると、O(log(m))
-
+* O(log(V_max))  
+（`V_max`はキーの最大値）
+<br>
 ## prod
-
 ```cpp
 S prod(T l, T r) const
 ```
-
-キーの範囲`[l, r)`に含まれるすべての要素の値に対して、演算`op`を適用した結果を返します。
-
+キーが`l`以上`r`未満の範囲にある値の列に対して，`op`を適用した結果を返します．
 ### 制約
-・`0 &lt;= l &lt;= r`
-
+* `0 &lt;= l &lt;= r`
 ### 計算量
-・`T`の最大値を`m`とすると、O(log(m))
-
+* O(log(V_max))  
+（`V_max`はキーの最大値）
+<br>
 ## all_prod
-
 ```cpp
 S all_prod() const
 ```
-
-セグメント木に含まれるすべての要素の値に対して、演算`op`を適用した結果を返します。
-
+セグメント木全体に格納されているすべての値に対して，`op`を適用した結果を返します．
+### 制約
+* なし
 ### 計算量
-・O(1)</article>
+* O(1)
+<br>
+## reserve
+```cpp
+void reserve(int n)
+```
+内部のノード格納用メモリを事前に確保します．
+### 制約
+* `n`は確保したい要素数．  
+### 計算量
+* O(n)</article>
 
 <button id="button_copy" data-copy="template &lt;typename T, typename S, auto op, auto e&gt;
 struct dynamic_segtree{
