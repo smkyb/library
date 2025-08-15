@@ -21,9 +21,6 @@ jobs:
             with:
                 python-version: 3.12
     
-        -   name: Install verification-helper
-            run: pip3 install -U online-judge-verify-helper
-    
         -   name: verify_mini
             run: |
                 python verify_mini.py

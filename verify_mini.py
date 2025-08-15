@@ -30,6 +30,9 @@ for file in changed_files:
 verify_files = list(set(verify_files))
 failed: int = 0
 
+if len(verify_files) != 0:
+    subprocess.run(["pip3", "install", "-U", "online-judge-verify-helper"])
+
 for file in verify_files:
     result = subprocess.run(["oj-verify", "run", file])
     if result.returncode != 0:
