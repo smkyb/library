@@ -34,7 +34,7 @@ def WriteTagU(f):
 <div id="status_bar">
     <a href="/library/index.html">home</a>
     <a href="/library/about">about</a>
-    <a href="/library/link">about</a>
+    <a href="/library/link">link</a>
 </div>
 """)
 
