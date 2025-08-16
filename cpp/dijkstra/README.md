@@ -27,6 +27,7 @@ pair<vector<long long>, vector<int>> dijkstra(int n, const vector<pair<int, pair
 * 頂点IDは `0` から `n-1` の範囲内であること．
 * 辺のコスト `cost` は非負であること．
 * グラフは連結である必要はありません．
+* 始点と連結で最も遠い点の距離が`2^60`未満である
 ### 計算量
 * O(`n` log `n` + `|E|`)
   * `n` は頂点数，`|E|` は入力 `E` の要素数（辺の総数）です．
