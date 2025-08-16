@@ -1,4 +1,4 @@
-import shutil, os, html, subprocess
+import shutil, os, html, subprocess, re
 
 pages_path = os.path.join("docs", "pages")
 if os.path.exists(pages_path):
@@ -92,126 +92,26 @@ def EscapedMarkdown(s:str) -> str:
     return res + EscapedMarkdown(s)
 
 #by chatGPT
-def MakeOneLine(src: str) -> str:
-    s = src
-    n = len(s)
-    i = 0
-    out = []
-    need_space = False
-    col_start = 0
-
-    def append_space_if_needed():
-        nonlocal need_space
-        if need_space:
-            if out and out[-1] not in ("\n", " "):
-                out.append(" ")
-        need_space = False
-
-    def is_line_preprocessor_at(pos_newline_index: int) -> bool:
-        line = s[col_start:pos_newline_index]
-        return line.lstrip().startswith("#")
-
-    def count_backslashes_before(idx: int) -> int:
-        cnt = 0
-        j = idx - 1
-        while j >= 0 and s[j] == "\\":
-            cnt += 1
-            j -= 1
-        return cnt
-
-    while i < n:
-        ch = s[i]
-
-        if ch == '"':
-            append_space_if_needed()
-            out.append('"')
-            i += 1
-            while i < n:
-                out.append(s[i])
-                if s[i] == '"' and (count_backslashes_before(i) % 2 == 0):
-                    i += 1
-                    break
-                i += 1
-            need_space = False
-            continue
-
-        if ch == "'":
-            append_space_if_needed()
-            out.append("'")
-            i += 1
-            while i < n:
-                out.append(s[i])
-                if s[i] == "'" and (count_backslashes_before(i) % 2 == 0):
-                    i += 1
-                    break
-                i += 1
-            need_space = False
-            continue
-
-        if ch == 'R' and i + 1 < n and s[i+1] == '"':
-            j = i + 2
-            while j < n and s[j] != '(':
-                j += 1
-            if j < n and s[j] == '(':
-                delim = s[i+2:j]
-                end_pat = ')' + delim + '"'
-                append_space_if_needed()
-                out.append(s[i:j+1])
-                i = j + 1
-                while i < n:
-                    if s.startswith(end_pat, i):
-                        out.append(end_pat)
-                        i += len(end_pat)
-                        break
-                    else:
-                        out.append(s[i])
-                        i += 1
-                need_space = False
-                continue
-
+def MakeOneLine(code: str) -> str:
+    result_lines = []
+    for line in code.splitlines():
+        stripped = line.strip()
         # コメント削除
-        if ch == '/' and i + 1 < n and s[i+1] == '/':
-            i += 2
-            while i < n and s[i] != '\n':
-                i += 1
+        stripped = re.sub(r"//.*", "", stripped)
+        stripped = re.sub(r"/\*.*?\*/", "", stripped)
+        if not stripped:
             continue
-
-        if ch == '/' and i + 1 < n and s[i+1] == '*':
-            i += 2
-            while i + 1 < n:
-                if s[i] == '*' and s[i+1] == '/':
-                    i += 2
-                    break
-                i += 1
-            continue
-
-        if ch in (" ", "\t", "\r", "\n", "\v", "\f"):
-            if ch == '\n':
-                if is_line_preprocessor_at(i):
-                    if out and out[-1] == " ":
-                        out.pop()
-                    out.append("\n")
-                    need_space = False
-                    i += 1
-                    col_start = i
-                    continue
-                else:
-                    need_space = True
-                    i += 1
-                    col_start = i
-                    continue
+        # プリプロセッサはそのまま
+        if stripped.startswith("#"):
+            result_lines.append(stripped)
+        else:
+            # 空白縮約
+            stripped = re.sub(r"\s+", " ", stripped)
+            if result_lines and not result_lines[-1].startswith("#"):
+                result_lines[-1] += " " + stripped
             else:
-                need_space = True
-                i += 1
-                continue
-
-        append_space_if_needed()
-        out.append(ch)
-        i += 1
-
-    if out and out[-1] == " ":
-        out.pop()
-    return "".join(out)
+                result_lines.append(stripped)
+    return "\n".join(result_lines)
 
 def ListCppFile(path:str) -> list[tuple[str, str]]:
     res:list[tuple[str, str]] = []
