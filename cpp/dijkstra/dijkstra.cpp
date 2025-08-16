@@ -1,6 +1,8 @@
 struct _Dijkstra {
+    private:
     struct graph { vector<pair<int, long long>> G; vector<int> idx; struct ref_t { vector<pair<int, long long>>::iterator begin_, end_; auto begin() const noexcept {return begin_;} auto end() const noexcept {return end_;} auto size() const noexcept {return end_ - begin_;} pair<int, long long> operator[](int p) const {return begin_[p];} }; graph() = default; graph(int n, const vector<pair<int, pair<int, long long>>> &E){ build(n, E); } void build(int n, const vector<pair<int, pair<int, long long>>> &E){ G.resize(E.size()); idx.resize(n+1); for(auto &[u, v] : E){ idx[u+1]++; } for(int i = 1; i <= n; i++) idx[i] += idx[i-1]; auto C = idx; for(auto &[u, v] : E){ G[C[u]++] = v; } } ref_t operator[](int p) {return {G.begin()+idx[p], G.begin()+idx[p+1]};} };
     struct _comp { bool operator()(const pair<int, long long> &l, const pair<int, long long> &r) {return l.second > r.second;} };
+    public:
     //一般呼び出し用
     pair<vector<long long>, vector<int>> operator()(int n, const vector<pair<int, pair<int, long long>>> &E, const vector<int> &s){
         graph G(n, E);
