@@ -27,48 +27,37 @@
 </div>
 <article id="md_content" class="markdown-body">
 # dijkstra
-単一始点最短経路問題を解きます。
+多点始点に対応したDijkstra法による最短経路アルゴリズムです．
 <br>
-## コンストラクタ
+## 使い方
+グローバルに定義された `dijkstra` オブジェクトを関数のように呼び出して使用します．
+<br>
 ```cpp
-dijkstra()
+pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; dijkstra(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s)
 ```
-デフォルトコンストラクタです。
+* `n`: グラフの頂点数．頂点IDは `0` から `n-1` です．
+* `E`: グラフの辺を表すリスト．
+  * 各要素は `{u, {v, cost}}` の形式で，頂点 `u` から頂点 `v` へコスト `cost` の有向辺が存在することを意味します．
+  * `cost` は `long long` 型です．
+* `s`: 探索の始点となる頂点IDのリスト．複数指定可能です．
 <br>
-## operator()
-```cpp
-pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s)
-```
-* `n`: 頂点数（0-indexed）
-* `E`: 辺のリスト。`E[i] = {u, {v, cost}}` は頂点 `u` から頂点 `v` へコスト `cost` で向かう辺を表します。
-* `s`: 始点のリスト。
+### 戻り値
+`pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt;` を返します．
+* `first` (`vector&lt;long long&gt;`): 各頂点への最短距離のリスト．
+  * `dist[i]` は始点 `s` から頂点 `i` への最短距離です．
+  * 到達不可能な頂点への距離は `-1` となります．
+* `second` (`vector&lt;int&gt;`): パス復元のための直前ノードのリスト．
+  * `path[i]` は最短経路において頂点 `i` に到達する直前の頂点IDです．
+  * 始点および到達不可能な頂点の場合は `-1` となります．
 <br>
-返り値は、始点からの最短距離のリストと、最短経路の復元に用いる親頂点のリストのペアです。
 ### 制約
-* `n` は正の整数
-* `E` の各要素 `u`, `v` は `0 &lt;= u, v &lt; n` を満たす
-* `s` の各要素は `0 &lt;= s_i &lt; n` を満たす
-* 辺のコストは非負
+* `n` は正の値であること．
+* 頂点IDは `0` から `n-1` の範囲内であること．
+* 辺のコスト `cost` は非負であること．
+* グラフは連結である必要はありません．
 ### 計算量
-* O(E log V) （Eは辺の数、Vは頂点数）
-<br>
-## operator()
-```cpp
-template&lt;typename graphlike&gt;
-pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, graphlike &amp;G, const vector&lt;int&gt; &amp;s)
-```
-グラフ構造 `G` を直接受け取るオーバーロードです。`G` は `operator[](int)` で頂点 `p` に接続する辺のリスト（`pair&lt;int, long long&gt;`のコンテナ）を返す必要があります。
-* `n`: 頂点数（0-indexed）
-* `G`: グラフ構造体。`G[p]` は頂点 `p` から出る辺のリスト（`pair&lt;int, long long&gt;`のコンテナ）を返します。
-* `s`: 始点のリスト。
-<br>
-返り値は、始点からの最短距離のリストと、最短経路の復元に用いる親頂点のリストのペアです。
-### 制約
-* `n` は正の整数
-* `s` の各要素は `0 &lt;= s_i &lt; n` を満たす
-* 辺のコストは非負
-### 計算量
-* O(E log V) （Eは辺の数、Vは頂点数）</article>
+* O(`n` log `n` + `|E|`)
+  * `n` は頂点数，`|E|` は入力 `E` の要素数（辺の総数）です．</article>
 
 <button id="button_copy" data-copy="struct _Dijkstra {
     private:
