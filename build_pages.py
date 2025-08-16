@@ -154,7 +154,7 @@ def FindCppFiles(path:str) -> str:
                         example_README2 = EX_f.read()
                     
                     res = client.models.generate_content(
-                        model="gemini-2.5-flash-lite",
+                        model="gemini-2.5-flash",
                         contents=[{
                             "role": "user",
                             "parts": [{ "text": f"以下に，ソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEの記法にできる限り則って，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにして，内容はなるべく端的に，「使い方が分かる程度」でお願いします．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
