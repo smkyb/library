@@ -26,109 +26,55 @@
     <a href="/library/link">link</a>
 </div>
 <article id="md_content" class="markdown-body">
-# Dijkstra
-
-グラフ上の最短経路問題を解くためのアルゴリズムです。
-
+# dijkstra
+単一始点最短経路問題を解きます。
 <br>
-
-## 構造体 `graph`
-
-グラフの隣接リスト表現を管理します。
-
+## コンストラクタ
 ```cpp
-struct graph {
-    vector&lt;pair&lt;int, long long&gt;&gt; G;
-    vector&lt;int&gt; idx;
-    struct ref_t {
-        vector&lt;pair&lt;int, long long&gt;&gt;::iterator begin_, end_;
-        auto begin() const noexcept { return begin_; }
-        auto end() const noexcept { return end_; }
-        auto size() const noexcept { return end_ - begin_; }
-        pair&lt;int, long long&gt; operator[](int p) const { return begin_[p]; }
-    };
-    graph() = default;
-    graph(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E) { build(n, E); }
-    void build(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E) {
-        G.resize(E.size());
-        idx.resize(n + 1);
-        for (auto &amp;[u, v] : E) {
-            idx[u + 1]++;
-        }
-        for (int i = 1; i &lt;= n; i++) idx[i] += idx[i - 1];
-        auto C = idx;
-        for (auto &amp;[u, v] : E) {
-            G[C[u]++] = v;
-        }
-    }
-    ref_t operator[](int p) { return {G.begin() + idx[p], G.begin() + idx[p + 1]}; }
-};
+dijkstra()
 ```
-
-*   `graph(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E)`: 頂点数`n`と辺のリスト`E`からグラフを構築します。辺のリスト`E`は `{u, {v, cost}}` の形式です。
-
-### 制約
-
-*   `n`は正の整数。
-*   `E`の各要素 `{u, {v, cost}}` において、`0 &lt;= u &lt; n`、`0 &lt;= v &lt; n`、`cost &gt;= 0`。
-
-### 計算量
-
-*   コンストラクタ: O(V + E) (V: 頂点数, E: 辺数)
-
+デフォルトコンストラクタです。
 <br>
-
-## Dijkstra クラス
-
-ダイクストラ法による最短経路計算を行います。
-
-```cpp
-struct _Dijkstra {
-    // ... graph struct ...
-    struct _comp { bool operator()(const pair&lt;int, long long&gt; &amp;l, const pair&lt;int, long long&gt; &amp;r) { return l.second &gt; r.second; } };
-    
-    // 一般呼び出し用
-    pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s);
-    
-    // template&lt;typename graphlike, ...&gt; operator() ... (内部利用)
-};
-```
-
-### `operator()`
-
-ダイクストラ法を実行し、各頂点への最短距離と最短経路の直前の頂点を返します。
-
+## operator()
 ```cpp
 pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s)
 ```
-
-*   `n`: グラフの頂点数。
-*   `E`: グラフの辺のリスト。各要素は `{u, {v, cost}}` の形式です。
-    *   `u`: 始点
-    *   `v`: 終点
-    *   `cost`: 辺の重み (非負)
-*   `s`: 始点となる頂点のリスト。
-
+* `n`: 頂点数（0-indexed）
+* `E`: 辺のリスト。`E[i] = {u, {v, cost}}` は頂点 `u` から頂点 `v` へコスト `cost` で向かう辺を表します。
+* `s`: 始点のリスト。
+<br>
+返り値は、始点からの最短距離のリストと、最短経路の復元に用いる親頂点のリストのペアです。
 ### 制約
-
-*   `n`は正の整数。
-*   `E`の各要素 `{u, {v, cost}}` において、`0 &lt;= u &lt; n`、`0 &lt;= v &lt; n`、`cost &gt;= 0`。
-*   `s`の各要素 `i` において、`0 &lt;= i &lt; n`。
-
+* `n` は正の整数
+* `E` の各要素 `u`, `v` は `0 &lt;= u, v &lt; n` を満たす
+* `s` の各要素は `0 &lt;= s_i &lt; n` を満たす
+* 辺のコストは非負
 ### 計算量
-
-*   O(E log V)
-
-### 返り値
-
-*   `vector&lt;long long&gt;`: 各頂点への最短距離。到達不可能な場合は `-1`。
-*   `vector&lt;int&gt;`: 各頂点への最短経路における直前の頂点。始点や到達不可能な頂点は `-1`。
-
-<br></article>
+* O(E log V) （Eは辺の数、Vは頂点数）
+<br>
+## operator()
+```cpp
+template&lt;typename graphlike&gt;
+pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, graphlike &amp;G, const vector&lt;int&gt; &amp;s)
+```
+グラフ構造 `G` を直接受け取るオーバーロードです。`G` は `operator[](int)` で頂点 `p` に接続する辺のリスト（`pair&lt;int, long long&gt;`のコンテナ）を返す必要があります。
+* `n`: 頂点数（0-indexed）
+* `G`: グラフ構造体。`G[p]` は頂点 `p` から出る辺のリスト（`pair&lt;int, long long&gt;`のコンテナ）を返します。
+* `s`: 始点のリスト。
+<br>
+返り値は、始点からの最短距離のリストと、最短経路の復元に用いる親頂点のリストのペアです。
+### 制約
+* `n` は正の整数
+* `s` の各要素は `0 &lt;= s_i &lt; n` を満たす
+* 辺のコストは非負
+### 計算量
+* O(E log V) （Eは辺の数、Vは頂点数）</article>
 
 <button id="button_copy" data-copy="struct _Dijkstra {
+    private:
     struct graph { vector&lt;pair&lt;int, long long&gt;&gt; G; vector&lt;int&gt; idx; struct ref_t { vector&lt;pair&lt;int, long long&gt;&gt;::iterator begin_, end_; auto begin() const noexcept {return begin_;} auto end() const noexcept {return end_;} auto size() const noexcept {return end_ - begin_;} pair&lt;int, long long&gt; operator[](int p) const {return begin_[p];} }; graph() = default; graph(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ build(n, E); } void build(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ G.resize(E.size()); idx.resize(n+1); for(auto &amp;[u, v] : E){ idx[u+1]++; } for(int i = 1; i &lt;= n; i++) idx[i] += idx[i-1]; auto C = idx; for(auto &amp;[u, v] : E){ G[C[u]++] = v; } } ref_t operator[](int p) {return {G.begin()+idx[p], G.begin()+idx[p+1]};} };
     struct _comp { bool operator()(const pair&lt;int, long long&gt; &amp;l, const pair&lt;int, long long&gt; &amp;r) {return l.second &gt; r.second;} };
+    public:
     //一般呼び出し用
     pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s){
         graph G(n, E);
@@ -161,7 +107,7 @@ pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const v
         return make_pair(dist, path);
     }
 } dijkstra;">copy</button>
-<button id="button_copy_oneline" data-copy="struct _Dijkstra { struct graph { vector&lt;pair&lt;int, long long&gt;&gt; G; vector&lt;int&gt; idx; struct ref_t { vector&lt;pair&lt;int, long long&gt;&gt;::iterator begin_, end_; auto begin() const noexcept {return begin_;} auto end() const noexcept {return end_;} auto size() const noexcept {return end_ - begin_;} pair&lt;int, long long&gt; operator[](int p) const {return begin_[p];} }; graph() = default; graph(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ build(n, E); } void build(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ G.resize(E.size()); idx.resize(n+1); for(auto &amp;[u, v] : E){ idx[u+1]++; } for(int i = 1; i &lt;= n; i++) idx[i] += idx[i-1]; auto C = idx; for(auto &amp;[u, v] : E){ G[C[u]++] = v; } } ref_t operator[](int p) {return {G.begin()+idx[p], G.begin()+idx[p+1]};} }; struct _comp { bool operator()(const pair&lt;int, long long&gt; &amp;l, const pair&lt;int, long long&gt; &amp;r) {return l.second &gt; r.second;} }; pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s){ graph G(n, E); return (*this)(n, G, s); } template&lt;typename graphlike, typename = enable_if_t&lt;!is_same_v&lt;decay_t&lt;graphlike&gt;, vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt;&gt;&gt;&gt; pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, graphlike &amp;G, const vector&lt;int&gt; &amp;s){ vector&lt;long long&gt; dist(n, (1ll&lt;&lt;60)); vector&lt;int&gt; path(n, -1); priority_queue&lt;pair&lt;int, long long&gt;, vector&lt;pair&lt;int, long long&gt;&gt;, _comp&gt; Q; for(int i : s){ dist[i] = 0; Q.emplace(i, 0); } while(!Q.empty()){ auto [pos, d] = Q.top(); Q.pop(); if(d &gt; dist[pos]) continue; for(auto [nex, cost] : G[pos]){ long long nex_cost = d + cost; if(dist[nex] &gt; nex_cost){ dist[nex] = nex_cost; Q.emplace(nex, nex_cost); path[nex] = pos; } } } for(auto &amp;i : dist) if(i &gt;= (1ll&lt;&lt;60)) i = -1; return make_pair(dist, path); } } dijkstra;">copy_oneline</button>
+<button id="button_copy_oneline" data-copy="struct _Dijkstra { private: struct graph { vector&lt;pair&lt;int, long long&gt;&gt; G; vector&lt;int&gt; idx; struct ref_t { vector&lt;pair&lt;int, long long&gt;&gt;::iterator begin_, end_; auto begin() const noexcept {return begin_;} auto end() const noexcept {return end_;} auto size() const noexcept {return end_ - begin_;} pair&lt;int, long long&gt; operator[](int p) const {return begin_[p];} }; graph() = default; graph(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ build(n, E); } void build(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ G.resize(E.size()); idx.resize(n+1); for(auto &amp;[u, v] : E){ idx[u+1]++; } for(int i = 1; i &lt;= n; i++) idx[i] += idx[i-1]; auto C = idx; for(auto &amp;[u, v] : E){ G[C[u]++] = v; } } ref_t operator[](int p) {return {G.begin()+idx[p], G.begin()+idx[p+1]};} }; struct _comp { bool operator()(const pair&lt;int, long long&gt; &amp;l, const pair&lt;int, long long&gt; &amp;r) {return l.second &gt; r.second;} }; public: pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s){ graph G(n, E); return (*this)(n, G, s); } template&lt;typename graphlike, typename = enable_if_t&lt;!is_same_v&lt;decay_t&lt;graphlike&gt;, vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt;&gt;&gt;&gt; pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, graphlike &amp;G, const vector&lt;int&gt; &amp;s){ vector&lt;long long&gt; dist(n, (1ll&lt;&lt;60)); vector&lt;int&gt; path(n, -1); priority_queue&lt;pair&lt;int, long long&gt;, vector&lt;pair&lt;int, long long&gt;&gt;, _comp&gt; Q; for(int i : s){ dist[i] = 0; Q.emplace(i, 0); } while(!Q.empty()){ auto [pos, d] = Q.top(); Q.pop(); if(d &gt; dist[pos]) continue; for(auto [nex, cost] : G[pos]){ long long nex_cost = d + cost; if(dist[nex] &gt; nex_cost){ dist[nex] = nex_cost; Q.emplace(nex, nex_cost); path[nex] = pos; } } } for(auto &amp;i : dist) if(i &gt;= (1ll&lt;&lt;60)) i = -1; return make_pair(dist, path); } } dijkstra;">copy_oneline</button>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
