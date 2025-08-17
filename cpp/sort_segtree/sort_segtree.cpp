@@ -60,7 +60,10 @@ struct meldable_binary_trie{
     }
     
     inline static T mask(int l, int r) {
-        if(r >= bit_width) return -(one<<l);
+        if(r >= bit_width){
+            if(l >= bit_width) return 0;
+            else return -(one<<l);
+        }
         return (one<<r) - (one<<l);
     }
     
@@ -291,6 +294,62 @@ struct meldable_binary_trie{
         assert(false);
     }
     
+    S prod_l(int n) {
+        return _prod_l(n, root);
+    }
+    
+    S _prod_l(int n, node_t *pos) {
+        S res = e();
+        for(int i = 0; i < 4; i++){
+            if(n >= pos->child[i]->count){
+                n -= pos->child[i]->count;
+                res = op(res, pos->child[i]->sum);
+            } else if(n > 0) return op(res, _prod_l(n, pos->child[i]));
+        }
+        return res;
+    }
+    
+    S prod_r(int n) {
+        return _prod_r(n, root);
+    }
+    
+    S _prod_r(int n, node_t *pos) {
+        S res = e();
+        for(int i = 3; i >= 0; i--){
+            if(n >= pos->child[i]->count){
+                n -= pos->child[i]->count;
+                res = op(pos->child[i]->sum, res);
+            } else if(n > 0) return op(_prod_r(n, pos->child[i]), res);
+        }
+        return res;
+    }
+    
+    S prod_lr(int l, int r) {
+        return _prod_lr(l, r, root);
+    }
+    
+    S _prod_lr(int l, int r, node_t *pos) {
+        int acc[5];
+        acc[0] = 0;
+        acc[1] = acc[0] + pos->child[0]->count;
+        acc[2] = acc[1] + pos->child[1]->count;
+        acc[3] = acc[2] + pos->child[2]->count;
+        acc[4] = acc[3] + pos->child[3]->count;
+        S res = e();
+        for(int i = 0; i < 4; i++){
+            if(r <= acc[i]) break;
+            else if(acc[i+1] <= l) continue;
+            else if(acc[i] < l){
+                if(acc[i+1] <= r) res = op(res, _prod_r(acc[i+1]-l, pos->child[i]));
+                else res = op(res, _prod_lr(l-acc[i], r-acc[i], pos->child[i]));
+            } else {
+                if(acc[i+1] <= r) res = op(res, pos->child[i]->sum);
+                else res = op(res, _prod_l(r-acc[i], pos->child[i]));
+            }
+        }
+        return res;
+    }
+    
     S all_prod() const {return root->sum;}
     
     void init(T p, const S &x){
@@ -306,6 +365,7 @@ struct meldable_binary_trie{
 };
 template<typename T, typename S, auto op, auto e> typename meldable_binary_trie<T, S, op, e>::node_t meldable_binary_trie<T, S, op, e>::node_t::nil = meldable_binary_trie<T, S, op, e>::node_t(0, e(), bit_width, 0);
 template<typename T, typename S, auto op, auto e> typename meldable_binary_trie<T, S, op, e>::Pool meldable_binary_trie<T, S, op, e>::pool = meldable_binary_trie<T, S, op, e>::Pool();
+
 struct fastset{
     using ull = unsigned long long;
     using uint = unsigned;
@@ -488,23 +548,25 @@ struct sort_segtree {
     }
     
     S prod(int l, int r) {
-        int lb = fset.less_bound(l);
-        if(lb < l){
-            auto res = trie[lb].split(l-lb);
-            trie[lb] = move(res.first); trie[l] = move(res.second);
-            fset.insert(l);
-            seg.set(lb, trie[lb].rev ? trie[lb].all_prod().rtol : trie[lb].all_prod().ltor);
-            seg.set(l, trie[l].rev ? trie[l].all_prod().rtol : trie[l].all_prod().ltor);
+        int lbl = fset.less_bound(l);
+        int lbr = lbl + trie[lbl].size();
+        int rbl = fset.less_bound(r-1);
+        int rbr = rbl + trie[rbl].size();
+        if(lbl == l){
+            if(rbr == r) return seg.prod(l, r);
+            else {
+                if(lbl == rbl) return (trie[lbl].rev ? trie[lbl].prod_r(r-l).rtol : trie[lbl].prod_l(r-l).ltor);
+                else return op(seg.prod(l, rbl), (trie[rbl].rev ? trie[rbl].prod_r(r-rbl).rtol : trie[rbl].prod_l(r-rbl).ltor));
+            }
+        } else {
+            if(rbr == r){
+                if(lbl == rbl) return (trie[lbl].rev ? trie[lbl].prod_l(r-l).rtol : trie[lbl].prod_r(r-l).ltor);
+                else return op((trie[lbl].rev ? trie[lbl].prod_l(lbr-l).rtol : trie[lbl].prod_r(lbr-l).ltor), seg.prod(lbr, r));
+            } else {
+                if(lbl == rbl) return (trie[lbl].rev ? trie[lbl].prod_lr(rbr-r, rbr-l).rtol : trie[lbl].prod_lr(l-lbl, r-lbl).ltor);
+                else return op(op((trie[lbl].rev ? trie[lbl].prod_l(lbr-l).rtol : trie[lbl].prod_r(lbr-l).ltor), seg.prod(lbr, rbl)), (trie[rbl].rev ? trie[rbl].prod_r(r-rbl).rtol : trie[rbl].prod_l(r-rbl).ltor));
+            }
         }
-        int rb = fset.less_bound(r);
-        if(rb < r){
-            auto res = trie[rb].split(r-rb);
-            trie[rb] = move(res.first); trie[r] = move(res.second);
-            fset.insert(r);
-            seg.set(rb, trie[rb].rev ? trie[rb].all_prod().rtol : trie[rb].all_prod().ltor);
-            seg.set(r, trie[r].rev ? trie[r].all_prod().rtol : trie[r].all_prod().ltor);
-        }
-        return seg.prod(l, r);
     }
     
     void sort(int l, int r) {
