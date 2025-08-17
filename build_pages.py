@@ -1,6 +1,6 @@
 import shutil, os, html, subprocess, re
 
-pages_path = os.path.join("docs", "pages")
+pages_path = "docs/pages"
 if os.path.exists(pages_path):
     shutil.rmtree(pages_path)
 os.makedirs(pages_path)
@@ -8,7 +8,8 @@ os.makedirs(pages_path)
 cnt_pages = 0
 client = None
 
-def WriteTagU(f):
+#タグを書く（始め）
+def WriteTagU(f) -> None:
     f.write("""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,7 +39,8 @@ def WriteTagU(f):
 </div>
 """)
 
-def WriteTagD(f):
+#タグを書く（終わり）
+def WriteTagD(f) -> None:
     f.write("""<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
@@ -64,6 +66,7 @@ def WriteTagD(f):
 </body>
 </html>""")
 
+#MarkDownのコードブロック内をエスケープしたものを返す
 def EscapedMarkdown(s:str) -> str:
     if len(s) == 0:
         return ""
@@ -91,7 +94,7 @@ def EscapedMarkdown(s:str) -> str:
         s = s[pos:]
     return res + EscapedMarkdown(s)
 
-#by chatGPT
+#cppコードをなるべく１行にまとめたものを返す
 def MakeOneLine(code: str) -> str:
     result_lines = []
     for line in code.splitlines():
@@ -113,16 +116,70 @@ def MakeOneLine(code: str) -> str:
                 result_lines.append(stripped)
     return "\n".join(result_lines)
 
-def ListCppFile(path:str) -> list[tuple[str, str]]:
-    res:list[tuple[str, str]] = []
+#末尾が.cpp(.test.cppは除く)であるファイルのパスを返す
+def ListCppFile(path:str) -> list[str]:
+    res:list[str] = []
     for item in os.listdir(path):
-        now = os.path.join(path, item)
+        now = path + "/" + item
         if os.path.isdir(now):
             res.extend(ListCppFile(now))
         elif now.endswith(".cpp") and not now.endswith(".test.cpp"):
-            res.append((item, now))
+            res.append(now)
     return res
 
+#パスとコードに対応するREADMEをAIが作成する
+def MakeREADME(README_path:str, code_text:str) -> None:
+    if client == None:
+        subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
+        from google import genai
+        client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
+    
+    with open("cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
+        example_README1 = EX_f.read()
+    with open("cpp/sort_segtree/README.md") as EX_f:
+        example_README2 = EX_f.read()
+    
+    res = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[{
+            "role": "user",
+            "parts": [{ "text": f"以下に，競技プログラミングで用いるソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEの記法にできる限り則って，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにして，内容はなるべく端的に，「使い方が分かる程度」でお願いします．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
+        }]
+    )
+    with open(README_path, "w", encoding="utf-8") as README_f:
+        README_f.write(res.text)
+    print("call gemini")
+    print(f"token(MAX:250,000TPM) : {res.usage_metadata.prompt_token_count}")
+    print(f"content :\nres.text")
+
+def BuildPage(path:str) -> str:
+    global cnt_pages
+    global client
+    
+    dir_path = os.path.dirname(path)
+    item_name = os.path.basename(path)
+    cnt_pages += 1
+    page_name = f"page{cnt_pages}.html"
+    page_path = pages_path + "/" + page_name
+    
+    with open(path, "r", encoding="utf-8") as code_f:
+        code_text = code_f.read()
+    
+    readme_path = dir_path + "/" + "README.md"
+    if not os.path.exists(readme_path):
+        MakeREADME(readme_path, code_text)
+    
+    with open(page_path, "w", encoding="utf-8") as write_f:
+        with open(readme_path, "r", encoding="utf-8") as readme_f:
+            WriteTagU(write_f)
+            write_f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(readme_f.read())}</article>\n\n")
+            write_f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
+            write_f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
+            WriteTagD(write_f)
+    
+    return f"<button onclick=\"location.href=\'/library/{page_path[5:]}\'\">{item_name[:-4]}</button>\n"
+
+#.cpp(.test.cppを除く)を探し，それぞれに対してページを作成し，それに通ずるボタンがまとめて書いてあるHTMLを返す
 def FindCppFiles(path:str) -> str:
     global cnt_pages
     global client
@@ -134,48 +191,13 @@ def FindCppFiles(path:str) -> str:
         return ""
     
     res_str += "<div class=\"button_sq\">\n"
-    for item, item_path in items:
-        cnt_pages += 1
-        page_name = f"page{cnt_pages}.html"
-        page_path = os.path.join(pages_path, page_name)
-        with open(page_path, "w", encoding="utf-8") as f:
-            with open(item_path, "r", encoding="utf-8") as code_f:
-                code_text = code_f.read()
-                README_path = os.path.join(os.path.dirname(item_path), "README.md")
-                if not os.path.exists(README_path):
-                    print("call gemini")
-                    if client == None:
-                        subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
-                        from google import genai
-                        client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
-                    with open(os.path.join("cpp", "hld", "README.md"), "r", encoding="utf-8") as EX_f:
-                        example_README1 = EX_f.read()
-                    with open(os.path.join("cpp", "sort_segtree", "README.md")) as EX_f:
-                        example_README2 = EX_f.read()
-                    
-                    res = client.models.generate_content(
-                        model="gemini-2.5-flash",
-                        contents=[{
-                            "role": "user",
-                            "parts": [{ "text": f"以下に，ソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEの記法にできる限り則って，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにして，内容はなるべく端的に，「使い方が分かる程度」でお願いします．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
-                        }]
-                    )
-                    with open(README_path, "w", encoding="utf-8") as README_f:
-                        README_f.write(res.text)
-                    
-                    print(res.text)
-                    
-                with open(os.path.join(os.path.dirname(item_path), "README.md"), "r") as README_f:
-                    WriteTagU(f)
-                    f.write(f"<article id=\"md_content\" class=\"markdown-body\">\n{EscapedMarkdown(README_f.read())}</article>\n\n")
-                    f.write(f"<button id=\"button_copy\" data-copy=\"{html.escape(code_text, quote=True)}\">copy</button>\n")
-                    f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
-                    WriteTagD(f)
-        res_str += f"<button onclick=\"location.href=\'/library/{page_path[5:]}\'\">{item[:-4]}</button>\n"
+    for item_path in items:
+        res_str += BuildPage(item_path)
     
     res_str += "</div>\n"
     return res_str
 
+#実行
 with open("docs/index.html", "w", encoding="utf-8") as f:
     res_str = FindCppFiles("cpp")
     if len(res_str) != 0:
