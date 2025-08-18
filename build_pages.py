@@ -1,6 +1,6 @@
 import shutil, os, html, subprocess, re
 
-pages_path = "docs/pages"
+pages_path = "/library/docs/pages"
 if os.path.exists(pages_path):
     shutil.rmtree(pages_path)
 os.makedirs(pages_path)
@@ -19,12 +19,15 @@ def WriteTagU(f) -> None:
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <style>
+    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.woff2") format("woff2"), url("./k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
     body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
     .markdown-body pre { padding: 16px; overflow: auto; }
     .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
     .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .links { text-decoration: none; color: rgb(10, 56, 117); font-weight: bold; }
     #button_copy { display: flex; font-size: 14px; }
     #button_copy_oneline { display: flex; font-size: 14px; }
     #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.258);  backdrop-filter: blur(20px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; z-index: 998244353; }
@@ -34,8 +37,8 @@ def WriteTagU(f) -> None:
 <body>
 <div id="status_bar">
     <a href="/library/index.html">home</a>
-    <a href="/library/about">about</a>
-    <a href="/library/link">link</a>
+    <a href="/library/docs/about.html">about</a>
+    <a href="/library/docs/link.html">link</a>
 </div>
 """)
 
@@ -134,9 +137,9 @@ def MakeREADME(README_path:str, code_text:str) -> None:
         from google import genai
         client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
     
-    with open("cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
+    with open("/library/cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
         example_README1 = EX_f.read()
-    with open("cpp/sort_segtree/README.md") as EX_f:
+    with open("/library/cpp/sort_segtree/README.md") as EX_f:
         example_README2 = EX_f.read()
     
     res = client.models.generate_content(
@@ -177,7 +180,7 @@ def BuildPage(path:str) -> str:
             write_f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
             WriteTagD(write_f)
     
-    return f"<button onclick=\"location.href=\'/library/{page_path[5:]}\'\">{item_name[:-4]}</button>\n"
+    return f"<button onclick=\"location.href=\'{page_path}\'\">{item_name[:-4]}</button>\n"
 
 #.cpp(.test.cppを除く)を探し，それぞれに対してページを作成し，それに通ずるボタンがまとめて書いてあるHTMLを返す
 def FindCppFiles(path:str) -> str:
@@ -197,12 +200,26 @@ def FindCppFiles(path:str) -> str:
     res_str += "</div>\n"
     return res_str
 
-#実行
-with open("docs/index.html", "w", encoding="utf-8") as f:
-    res_str = FindCppFiles("cpp")
+#index.html
+with open("/library/index.html", "w", encoding="utf-8") as f:
+    res_str = FindCppFiles("/library/cpp")
     if len(res_str) != 0:
         WriteTagU(f)
         f.write("""<h1 style="font-family:cursive">smkyb's library</h1>
 """)
         f.write(res_str)
+        WriteTagD(f)
+
+#about.html
+with open("/library/docs/about.html", "w", encoding="utf-8") as f:
+    with open("/library/docs/about_content.txt", "r", encoding="utf-8") as content_f:
+        WriteTagU(f)
+        f.write(content_f.read())
+        WriteTagD(f)
+
+#link.html
+with open("/library/docs/link.html", "w", encoding="utf-8") as f:
+    with open("/library/docs/link_content.txt", "r", encoding="utf-8") as content_f:
+        WriteTagU(f)
+        f.write(content_f.read())
         WriteTagD(f)

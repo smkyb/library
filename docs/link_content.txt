@@ -1,0 +1,3 @@
+<h1 class="title">smkyb's library</h1>
+<a class="links" href="https://github.com/smkyb/library">github</a><br><br>
+<a class="links" href="https://twitter.com/ssmkybb">twitter</a>
