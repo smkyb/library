@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>smkyb's library</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="preload" href="./k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+    @font-face { font-family: "keifont"; src: url("./k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
+    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
+    .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
+    .markdown-body pre { padding: 16px; overflow: auto; }
+    .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .links { text-decoration: none; color: rgb(10, 56, 117); font-weight: bold; }
+    #button_copy { display: flex; font-size: 14px; }
+    #button_copy_oneline { display: flex; font-size: 14px; }
+    #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.258);  backdrop-filter: blur(20px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; z-index: 998244353; }
+    #status_bar a { margin: 20px; text-decoration: none; color: rgb(63, 97, 144); }
+</style>
+</head>
+<body>
+<div id="status_bar">
+    <a href="/library/index.html">home</a>
+    <a href="/library/docs/about.html">about</a>
+    <a href="/library/docs/link.html">link</a>
+</div>
+<article id="md_content" class="markdown-body">
+# binary trie
+非負整数の多重集合で、  
+・要素の挿入、削除、検索  
+・全体xor作用  
+・xor最小、最大値の取得  
+・k番目の要素の取得  
+・k以上の最小、k以下の最大の値の取得  
+・k以下の要素の個数の取得  
+を行えます。  
+<br>
+## コンストラクタ
+```cpp
+binary_trie&lt;T&gt; bin
+```
+Tは整数  
+<br>
+## insert
+```cpp
+void insert(T x)
+```
+**・ 概要 :** 要素の挿入  
+**・ 制約 :** 0 <= x  
+**・ 計算量 :** O(bit)  
+<br>
+## erase
+```cpp
+void erase(T x, int n = inf)
+```
+**・ 概要 :** 要素の削除  
+**・ 制約 :** 0 <= x , 0 <= n <= count(x)  
+**・ 計算量 :** O(bit)  
+<br>
+## count
+```cpp
+int count(T x)
+```
+**・ 概要 :** 要素の個数の取得  
+**・ 制約 :** 0 <= x  
+**・ 計算量 :** O(bit)  
+<br>
+## operator[]
+```cpp
+ref_type operator[int x]
+```
+**・ 概要 :** k番目(0-indexed)の値の取得(負の数を引数にとると大きい方からk番目(1-indexed)を取得)  
+**・ 制約 :** 0 <= k < size()  
+**・ 計算量 :** O(bit)  
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
+<br>
+## xor_min / xor_max
+```cpp
+ref_type xor_min(T x)
+ref_type xor_max(T x)
+```
+**・ 概要 :** xor最小、最大値の取得（xorされていない要素が返ってくる）  
+**・ 制約 :** 0 <= x  
+**・ 計算量 :** O(bit)  
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
+<br>
+## lower_bound / less_bound
+```cpp
+ref_type lower_bound(T x)
+ref_type less_bound(T x)
+```
+**・ 概要 :** x以上で最小、x以下で最大の値の取得。なければ-1を返す  
+**・ 制約 :** 0 <= x  
+**・ 計算量 :** O(bit)  
+**・ 戻り値 :** .existで値の有無、.valで値の取得  
+<br>
+## order
+```cpp
+int order(T x)
+```
+**・ 概要 :** x未満の要素の個数の取得  
+**・ 制約 :** 0 <= x  
+**・ 計算量 :** O(bit)   
+<br>
+## apply_xor
+```cpp
+void apply_xor(T x)
+```
+**・ 概要 :** 全体にxorを行う  
+**・ 制約 :** 0 <= x  
+**・ 計算量 :** O(1)  
+<br>
+## size
+```cpp
+void size()
+```
+**・ 概要 :** 要素数の取得
+**・ 計算量 :** O(1)  
+など
+</article>
+
+<button id="button_copy" data-copy="template &lt;typename T&gt;
+struct binary_trie{
+    static_assert(is_unsigned_v&lt;T&gt;);
+    
+    struct node_t{
+        T value;
+        int width;
+        int count;
+        array&lt;node_t*, 4&gt; child;
+        node_t() = default;
+        node_t(T v, int w, int c) : value(v), width(w), count(c), child{&amp;nil, &amp;nil, &amp;nil, &amp;nil} {}
+        node_t(T v, int w, int c, node_t* c0, node_t* c1, node_t* c2, node_t* c3) : value(v), width(w), count(c), child{c0, c1, c2, c3} {}
+        static node_t nil;
+    };
+    
+    struct ref_node_t{
+        T val;
+        bool exist;
+        ref_node_t(T x, bool e) : val{x}, exist{e} {}
+    };
+    
+    struct Pool {
+        constexpr static int SIZ = 1&lt;&lt;16;
+        node_t* ptr = nullptr, *en = nullptr;
+        node_t* get() {
+            if(ptr == en) [[unlikely]] {
+                ptr = new node_t[SIZ];
+                en = ptr + SIZ;
+            }
+            return ptr++;
+        }
+    };
+    
+    static constexpr T one = 1;
+    static constexpr int bit_width = sizeof(T) * 8;
+    static Pool pool;
+    T xor_val = 0;
+    node_t* root;
+    int siz = 0;
+    
+    template&lt;typename _Tp&gt;
+    inline int clz(_Tp x) const {
+        if constexpr(sizeof(_Tp) == 8ull) return __builtin_clzll(x);
+        else return __builtin_clz(x);
+    }
+    
+    inline T mask(int l, int r) const {
+        if(r &gt;= bit_width){
+            if(l &gt;= bit_width) return 0;
+            else return -(one&lt;&lt;l);
+        }
+        return (one&lt;&lt;r) - (one&lt;&lt;l);
+    }
+    
+    inline T masked(T v, int l, int r) const {
+        return mask(l, r) &amp; v;
+    }
+    
+    inline int diff_bit(T x, T y) const {
+        return ((bit_width-1 - clz(x^y))|1) + 1;
+    }
+    
+    template&lt;typename... Args&gt;
+    inline node_t* make_node(Args ...args) {
+        return &amp;((*pool.get()) = node_t(args...));
+    }
+    
+    public:
+    
+    binary_trie(){
+        root = make_node(0, bit_width, 0);
+    }
+    
+    binary_trie&lt;T&gt;&amp; operator=(binary_trie&lt;T&gt;&amp;&amp; o) noexcept = default;
+    
+    binary_trie(binary_trie&amp;&amp; o) noexcept = default;
+    
+    void insert(T v) {
+        node_t* pos = root;
+        int bit = bit_width;
+        siz++;
+        v ^= xor_val;
+        while(true){
+            T mv = masked(v, bit-pos-&gt;width, bit);
+            T mnv = masked(pos-&gt;value, bit-pos-&gt;width, bit);
+            if(mv != mnv){
+                int diff = diff_bit(mv, mnv);
+                int b = (mv&gt;&gt;(diff-2))&amp;3;
+                int nb = (mnv&gt;&gt;(diff-2))&amp;3;
+                node_t* inter = make_node(pos-&gt;value, pos-&gt;width-bit+diff, pos-&gt;count, pos-&gt;child[0], pos-&gt;child[1], pos-&gt;child[2], pos-&gt;child[3]);
+                node_t* leaf = make_node(v, diff, 1);
+                pos-&gt;width = bit-diff;
+                pos-&gt;count++;
+                pos-&gt;child = {&amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil};
+                pos-&gt;child[b] = leaf;
+                pos-&gt;child[nb] = inter;
+                return;
+            } else {
+                pos-&gt;count++;
+                bit -= pos-&gt;width;
+                if(bit == 0) return;
+                int b = (v&gt;&gt;(bit-2))&amp;3;
+                if(pos-&gt;child[b] == &amp;node_t::nil){
+                    pos-&gt;child[b] = make_node(v, bit, 1);
+                    return;
+                }
+                pos = pos-&gt;child[b];
+            }
+        }
+    }
+    
+    int count(T v) const {
+        node_t* pos = root;
+        int bit = bit_width;
+        v ^= xor_val;
+        while(pos != &amp;node_t::nil){
+            T mv = masked(v, bit-pos-&gt;width, bit);
+            T mnv = masked(pos-&gt;value, bit-pos-&gt;width, bit);
+            if(mv != mnv) return 0;
+            bit -= pos-&gt;width;
+            if(bit == 0) return pos-&gt;count;
+            pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3];
+        }
+        return 0;
+    }
+    
+    void erase(T v) {
+        node_t* pos = root;
+        int bit = bit_width;
+        siz--;
+        v ^= xor_val;
+        while(true){
+            pos-&gt;count--;
+            bit -= pos-&gt;width;
+            if(bit == 0) return;
+            pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3];
+        }
+    }
+    
+    void erase_all(T v) {
+        int n = count(v);
+        if(n == 0) return;
+        node_t* pos = root;
+        int bit = bit_width;
+        siz -= n;
+        v ^= xor_val;
+        while(true){
+            pos-&gt;count -= n;
+            bit -= pos-&gt;width;
+            if(bit == 0) return;
+            pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3];
+        }
+    }
+    
+    const T operator[](int k) const {
+        if(k &lt; 0) k += siz;
+        
+        k++;
+        node_t* pos = root;
+        int bit = bit_width;
+        while(true){
+            bit -= pos-&gt;width;
+            if(bit == 0) return pos-&gt;value^xor_val;
+            int b = (xor_val&gt;&gt;(bit-2))&amp;3;
+            auto &amp;child = pos-&gt;child;
+            if(k &lt;= child[b]-&gt;count){
+                pos = child[b];
+            } else {
+                k -= child[b]-&gt;count;
+                if(k &lt;= child[b^1]-&gt;count){
+                    pos = child[b^1];
+                } else {
+                    k -= child[b^1]-&gt;count;
+                    if(k &lt;= child[b^2]-&gt;count){
+                        pos = child[b^2];
+                    } else {
+                        k -= child[b^2]-&gt;count;
+                        pos = child[b^3];
+                    }
+                }
+            }
+        }
+    }
+    
+    T min() const {
+        node_t* pos = root;
+        int bit = bit_width;
+        while(true){
+            bit -= pos-&gt;width;
+            if(bit == 0) return pos-&gt;value^xor_val;
+            int b = (xor_val&gt;&gt;(bit-2))&amp;3;
+            auto &amp;child = pos-&gt;child;
+            if(child[b]-&gt;count) pos = child[b];
+            else if(child[b^1]-&gt;count) pos = child[b^1];
+            else if(child[b^2]-&gt;count) pos = child[b^2];
+            else pos = child[b^3];
+        }
+    }
+    
+    T max() const {
+        node_t* pos = root;
+        int bit = bit_width;
+        while(true){
+            bit -= pos-&gt;width;
+            if(bit == 0) return pos-&gt;value^xor_val;
+            int b = (xor_val&gt;&gt;(bit-2))&amp;3;
+            auto &amp;child = pos-&gt;child;
+            if(child[b^3]-&gt;count) pos = child[b^3];
+            else if(child[b^2]-&gt;count) pos = child[b^2];
+            else if(child[b^1]-&gt;count) pos = child[b^1];
+            else pos = child[b];
+        }
+    }
+    
+    int order(T v) const {
+        if(v == 0) return 0;
+        v--;
+        int res = 0;
+        node_t* pos = root;
+        int bit = bit_width;
+        while(pos != &amp;node_t::nil){
+            T mv = masked(v, bit-pos-&gt;width, bit);
+            T mnv = masked(pos-&gt;value^xor_val, bit-pos-&gt;width, bit);
+            if(mv &lt; mnv){
+                return res;
+            } else {
+                if(mv &gt; mnv){
+                    res += pos-&gt;count;
+                    return res;
+                } else {
+                    bit -= pos-&gt;width;
+                    if(bit == 0) return res + pos-&gt;count;
+                    int b = (v&gt;&gt;(bit-2))&amp;3;
+                    auto &amp;child = pos-&gt;child;
+                    T mxv = (xor_val&gt;&gt;(bit-2))&amp;3;
+                    
+                    if(b &gt;= 1){
+                        res += child[mxv]-&gt;count;
+                        if(b &gt;= 2){
+                            res += child[mxv^1]-&gt;count;
+                            if(b &gt;= 3){
+                                res += child[mxv^2]-&gt;count;
+                            }
+                        }
+                    }
+                    pos = child[b^mxv];
+                }
+            }
+        }
+        return res;
+    }
+    
+    const ref_node_t lower_bound(T v) const {
+        int ord = order(v);
+        if(siz == ord) return ref_node_t{0, false};
+        else return ref_node_t{(*this)[ord], true};
+    }
+    
+    const ref_node_t less_bound(T v) const {
+        int ord = v!=numeric_limits&lt;T&gt;::max() ? order(v+1) : siz;
+        if(ord == 0) return ref_node_t{0, false};
+        else return ref_node_t{(*this)[ord-1], true};
+    }
+    
+    int size() const {
+        return siz;
+    }
+    
+    void apply_xor(T x) {
+        xor_val ^= x;
+    }
+    
+    const T xor_min(T v) {
+        apply_xor(v);
+        T res = min()^v;
+        apply_xor(v);
+        return res;
+    }
+    
+    const T xor_max(T v) {
+        apply_xor(v);
+        T res = max()^v;
+        apply_xor(v);
+        return res;
+    }
+};
+template&lt;typename T&gt; typename binary_trie&lt;T&gt;::node_t binary_trie&lt;T&gt;::node_t::nil = node_t(0, bit_width, 0, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil);
+template&lt;typename T&gt; typename binary_trie&lt;T&gt;::Pool binary_trie&lt;T&gt;::pool = Pool();
+
+">copy</button>
+<button id="button_copy_oneline" data-copy="template &lt;typename T&gt; struct binary_trie{ static_assert(is_unsigned_v&lt;T&gt;); struct node_t{ T value; int width; int count; array&lt;node_t*, 4&gt; child; node_t() = default; node_t(T v, int w, int c) : value(v), width(w), count(c), child{&amp;nil, &amp;nil, &amp;nil, &amp;nil} {} node_t(T v, int w, int c, node_t* c0, node_t* c1, node_t* c2, node_t* c3) : value(v), width(w), count(c), child{c0, c1, c2, c3} {} static node_t nil; }; struct ref_node_t{ T val; bool exist; ref_node_t(T x, bool e) : val{x}, exist{e} {} }; struct Pool { constexpr static int SIZ = 1&lt;&lt;16; node_t* ptr = nullptr, *en = nullptr; node_t* get() { if(ptr == en) [[unlikely]] { ptr = new node_t[SIZ]; en = ptr + SIZ; } return ptr++; } }; static constexpr T one = 1; static constexpr int bit_width = sizeof(T) * 8; static Pool pool; T xor_val = 0; node_t* root; int siz = 0; template&lt;typename _Tp&gt; inline int clz(_Tp x) const { if constexpr(sizeof(_Tp) == 8ull) return __builtin_clzll(x); else return __builtin_clz(x); } inline T mask(int l, int r) const { if(r &gt;= bit_width){ if(l &gt;= bit_width) return 0; else return -(one&lt;&lt;l); } return (one&lt;&lt;r) - (one&lt;&lt;l); } inline T masked(T v, int l, int r) const { return mask(l, r) &amp; v; } inline int diff_bit(T x, T y) const { return ((bit_width-1 - clz(x^y))|1) + 1; } template&lt;typename... Args&gt; inline node_t* make_node(Args ...args) { return &amp;((*pool.get()) = node_t(args...)); } public: binary_trie(){ root = make_node(0, bit_width, 0); } binary_trie&lt;T&gt;&amp; operator=(binary_trie&lt;T&gt;&amp;&amp; o) noexcept = default; binary_trie(binary_trie&amp;&amp; o) noexcept = default; void insert(T v) { node_t* pos = root; int bit = bit_width; siz++; v ^= xor_val; while(true){ T mv = masked(v, bit-pos-&gt;width, bit); T mnv = masked(pos-&gt;value, bit-pos-&gt;width, bit); if(mv != mnv){ int diff = diff_bit(mv, mnv); int b = (mv&gt;&gt;(diff-2))&amp;3; int nb = (mnv&gt;&gt;(diff-2))&amp;3; node_t* inter = make_node(pos-&gt;value, pos-&gt;width-bit+diff, pos-&gt;count, pos-&gt;child[0], pos-&gt;child[1], pos-&gt;child[2], pos-&gt;child[3]); node_t* leaf = make_node(v, diff, 1); pos-&gt;width = bit-diff; pos-&gt;count++; pos-&gt;child = {&amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil}; pos-&gt;child[b] = leaf; pos-&gt;child[nb] = inter; return; } else { pos-&gt;count++; bit -= pos-&gt;width; if(bit == 0) return; int b = (v&gt;&gt;(bit-2))&amp;3; if(pos-&gt;child[b] == &amp;node_t::nil){ pos-&gt;child[b] = make_node(v, bit, 1); return; } pos = pos-&gt;child[b]; } } } int count(T v) const { node_t* pos = root; int bit = bit_width; v ^= xor_val; while(pos != &amp;node_t::nil){ T mv = masked(v, bit-pos-&gt;width, bit); T mnv = masked(pos-&gt;value, bit-pos-&gt;width, bit); if(mv != mnv) return 0; bit -= pos-&gt;width; if(bit == 0) return pos-&gt;count; pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3]; } return 0; } void erase(T v) { node_t* pos = root; int bit = bit_width; siz--; v ^= xor_val; while(true){ pos-&gt;count--; bit -= pos-&gt;width; if(bit == 0) return; pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3]; } } void erase_all(T v) { int n = count(v); if(n == 0) return; node_t* pos = root; int bit = bit_width; siz -= n; v ^= xor_val; while(true){ pos-&gt;count -= n; bit -= pos-&gt;width; if(bit == 0) return; pos = pos-&gt;child[(v&gt;&gt;(bit-2))&amp;3]; } } const T operator[](int k) const { if(k &lt; 0) k += siz; k++; node_t* pos = root; int bit = bit_width; while(true){ bit -= pos-&gt;width; if(bit == 0) return pos-&gt;value^xor_val; int b = (xor_val&gt;&gt;(bit-2))&amp;3; auto &amp;child = pos-&gt;child; if(k &lt;= child[b]-&gt;count){ pos = child[b]; } else { k -= child[b]-&gt;count; if(k &lt;= child[b^1]-&gt;count){ pos = child[b^1]; } else { k -= child[b^1]-&gt;count; if(k &lt;= child[b^2]-&gt;count){ pos = child[b^2]; } else { k -= child[b^2]-&gt;count; pos = child[b^3]; } } } } } T min() const { node_t* pos = root; int bit = bit_width; while(true){ bit -= pos-&gt;width; if(bit == 0) return pos-&gt;value^xor_val; int b = (xor_val&gt;&gt;(bit-2))&amp;3; auto &amp;child = pos-&gt;child; if(child[b]-&gt;count) pos = child[b]; else if(child[b^1]-&gt;count) pos = child[b^1]; else if(child[b^2]-&gt;count) pos = child[b^2]; else pos = child[b^3]; } } T max() const { node_t* pos = root; int bit = bit_width; while(true){ bit -= pos-&gt;width; if(bit == 0) return pos-&gt;value^xor_val; int b = (xor_val&gt;&gt;(bit-2))&amp;3; auto &amp;child = pos-&gt;child; if(child[b^3]-&gt;count) pos = child[b^3]; else if(child[b^2]-&gt;count) pos = child[b^2]; else if(child[b^1]-&gt;count) pos = child[b^1]; else pos = child[b]; } } int order(T v) const { if(v == 0) return 0; v--; int res = 0; node_t* pos = root; int bit = bit_width; while(pos != &amp;node_t::nil){ T mv = masked(v, bit-pos-&gt;width, bit); T mnv = masked(pos-&gt;value^xor_val, bit-pos-&gt;width, bit); if(mv &lt; mnv){ return res; } else { if(mv &gt; mnv){ res += pos-&gt;count; return res; } else { bit -= pos-&gt;width; if(bit == 0) return res + pos-&gt;count; int b = (v&gt;&gt;(bit-2))&amp;3; auto &amp;child = pos-&gt;child; T mxv = (xor_val&gt;&gt;(bit-2))&amp;3; if(b &gt;= 1){ res += child[mxv]-&gt;count; if(b &gt;= 2){ res += child[mxv^1]-&gt;count; if(b &gt;= 3){ res += child[mxv^2]-&gt;count; } } } pos = child[b^mxv]; } } } return res; } const ref_node_t lower_bound(T v) const { int ord = order(v); if(siz == ord) return ref_node_t{0, false}; else return ref_node_t{(*this)[ord], true}; } const ref_node_t less_bound(T v) const { int ord = v!=numeric_limits&lt;T&gt;::max() ? order(v+1) : siz; if(ord == 0) return ref_node_t{0, false}; else return ref_node_t{(*this)[ord-1], true}; } int size() const { return siz; } void apply_xor(T x) { xor_val ^= x; } const T xor_min(T v) { apply_xor(v); T res = min()^v; apply_xor(v); return res; } const T xor_max(T v) { apply_xor(v); T res = max()^v; apply_xor(v); return res; } }; template&lt;typename T&gt; typename binary_trie&lt;T&gt;::node_t binary_trie&lt;T&gt;::node_t::nil = node_t(0, bit_width, 0, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil, &amp;node_t::nil); template&lt;typename T&gt; typename binary_trie&lt;T&gt;::Pool binary_trie&lt;T&gt;::pool = Pool();">copy_oneline</button>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
+    const mdContent = document.getElementById("md_content");
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
+    
+    const copyButton = document.getElementById("button_copy")
+    if(copyButton){
+        copyButton.addEventListener("click", () => {
+            const text = copyButton.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
+    if(copyButtonOneline){
+        copyButtonOneline.addEventListener("click", () => {
+            const text = copyButtonOneline.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+</script>
+</body>
+</html>

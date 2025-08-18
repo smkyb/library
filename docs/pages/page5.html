@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>smkyb's library</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="preload" href="./k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+    @font-face { font-family: "keifont"; src: url("./k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
+    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
+    .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
+    .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
+    .markdown-body pre { padding: 16px; overflow: auto; }
+    .button_sq button       { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 30px; padding-right: 30px; background-color: rgb(89, 158, 157); color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .button_sq button:hover { display: flex; font-size: 22px; flex-direction: column; gap: 20px; margin-bottom: 10px; padding: 10px; padding-left: 90px; padding-right: 90px; background-color: rgb(0, 67, 67);    color: white; border: none; cursor: pointer; text-align: center; transition: 0.5s; }
+    .links { text-decoration: none; color: rgb(10, 56, 117); font-weight: bold; }
+    #button_copy { display: flex; font-size: 14px; }
+    #button_copy_oneline { display: flex; font-size: 14px; }
+    #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.258);  backdrop-filter: blur(20px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; z-index: 998244353; }
+    #status_bar a { margin: 20px; text-decoration: none; color: rgb(63, 97, 144); }
+</style>
+</head>
+<body>
+<div id="status_bar">
+    <a href="/library/index.html">home</a>
+    <a href="/library/docs/about.html">about</a>
+    <a href="/library/docs/link.html">link</a>
+</div>
+<article id="md_content" class="markdown-body">
+# Fast IO Library
+
+このライブラリは、標準入出力の高速化を目的としたC++のクラスを提供します。
+
+## クラス
+
+### `FIstream` (Input Stream)
+
+標準入力からの読み込みを高速化します。
+
+#### コンストラクタ
+
+```cpp
+FIstream()
+```
+デフォルトコンストラクタです。
+
+#### 演算子オーバーロード
+
+*   **`operator&gt;&gt;(T&amp; x)`**:
+    指定された型の変数`x`に、標準入力から値を読み込みます。整数型（`int`, `long long`など）および`char`、`string`に対応しています。
+
+    ```cpp
+    // 整数を読み込む例
+    int a;
+    cin &gt;&gt; a;
+
+    // 文字を読み込む例
+    char c;
+    cin &gt;&gt; c;
+
+    // 文字列を読み込む例
+    std::string s;
+    cin &gt;&gt; s;
+    ```
+
+    *   **制約**:
+        *   読み込む値は、対応する型として有効な形式である必要があります。
+        *   `char`や`string`の場合、空白文字（スペース、タブ、改行など）はスキップされます。
+
+    *   **計算量**:
+        *   `int`, `long long`などの整数型: O(log10(値))
+        *   `char`: O(1)
+        *   `string`: O(文字列長)
+
+### `FOstream` (Output Stream)
+
+標準出力への書き込みを高速化します。
+
+#### コンストラクタ
+
+```cpp
+FOstream()
+```
+デフォルトコンストラクタです。
+
+#### 演算子オーバーロード
+
+*   **`operator&lt;&lt;(const T&amp; x)`**:
+    指定された型の値`x`を標準出力に書き込みます。整数型（`int`, `long long`など）、`char`、`const char*`、`double`、`long double`、`string`に対応しています。
+
+    ```cpp
+    // 整数を出力する例
+    cout &lt;&lt; 123;
+
+    // 文字を出力する例
+    cout &lt;&lt; &#x27;A&#x27;;
+
+    // 文字列リテラルを出力する例
+    cout &lt;&lt; &quot;Hello&quot;;
+
+    // std::stringを出力する例
+    std::string message = &quot;World&quot;;
+    cout &lt;&lt; message;
+
+    // doubleを出力する例
+    double pi = 3.14159;
+    cout &lt;&lt; pi;
+    ```
+
+    *   **制約**:
+        *   `double`および`long double`は、`snprintf`を用いて最大15桁の精度で出力されます。
+        *   `double`または`long double`がNaN（非数）の場合、「nan」と出力されます。
+
+    *   **計算量**:
+        *   整数型: O(log10(値))
+        *   `char`: O(1)
+        *   `const char*`: O(文字列長)
+        *   `std::string`: O(文字列長)
+        *   `double`, `long double`: O(1) （内部バッファリングにより、実質的な計算量は定数に近い）
+
+#### デストラクタ
+
+```cpp
+~FOstream()
+```
+クラスのインスタンスが破棄される際に、バッファに残っているデータを標準出力にフラッシュします。
+
+## マクロ
+
+*   `cin`: `FIstream`クラスのグローバルインスタンス`_cin`へのエイリアスです。
+*   `istream`: `FIstream`クラスへのエイリアスです。
+*   `cout`: `FOstream`クラスのグローバルインスタンス`_cout`へのエイリアスです。
+*   `ostream`: `FOstream`クラスへのエイリアスです。
+
+これらのマクロを使用することで、C++標準ライブラリの`std::cin`や`std::cout`と同様の感覚で、高速な入出力を行うことができます。
+
+```cpp
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+// Fast IO Library をインクルードする代わりに、直接ソースコードをコピー＆ペーストして使用します。
+// または、必要に応じてヘッダーファイルとして保存しインクルードしてください。
+
+/*
+struct FIstream { ... };
+struct FOstream_Pre { ... };
+struct FOstream { ... };
+FIstream _cin;
+FOstream _cout;
+#define cin _cin
+#define istream FIstream
+#define cout _cout
+#define ostream FOstream
+*/
+
+int main() {
+    std::ios_base::sync_with_stdio(false); // 標準ライブラリの同期を解除 (fastioライブラリ自体で対応済みですが、併用も可能です)
+    // cin.tie(NULL); // cinとcoutのtieを解除 (fastioライブラリ自体で対応済みですが、併用も可能です)
+
+    int n;
+    cin &gt;&gt; n; // FIstream を使用
+
+    std::vector&lt;int&gt; nums(n);
+    for (int i = 0; i &lt; n; ++i) {
+        cin &gt;&gt; nums[i]; // FIstream を使用
+    }
+
+    for (int i = 0; i &lt; n; ++i) {
+        cout &lt;&lt; nums[i] &lt;&lt; &quot; &quot;; // FOstream を使用
+    }
+    cout &lt;&lt; &quot;\n&quot;; // FOstream を使用
+
+    std::string word;
+    cin &gt;&gt; word; // FIstream を使用
+    cout &lt;&lt; &quot;Read: &quot; &lt;&lt; word &lt;&lt; &quot;\n&quot;; // FOstream を使用
+
+    double val = 3.1415926535;
+    cout &lt;&lt; &quot;Pi: &quot; &lt;&lt; val &lt;&lt; &quot;\n&quot;; // FOstream を使用
+
+    return 0;
+}
+```</article>
+
+<button id="button_copy" data-copy="struct FIstream{
+    static constexpr unsigned SIZ = 1 &lt;&lt; 17;
+    char buf[SIZ], *p1 = buf, *p2 = buf;
+    
+    inline char _getchar(){
+        if(p1 == p2){
+            p2 = (p1 = buf) + fread(buf, 1, SIZ, stdin);
+            if(p1 == p2) [[unlikely]] assert(0&amp;&amp;&quot;EOF&quot;);
+        }
+        return *p1++;
+    }
+    
+    inline char ignore_space(){
+        char c;
+        while((c = _getchar()) &lt;= 0x20);
+        return c;
+    }
+    
+    template&lt;typename T&gt;
+    inline void _read(T&amp; res){
+        T x = 0, f = 1;
+        char c = ignore_space();
+        if(c == &#x27;-&#x27;){
+            f = -1;
+            c = _getchar();
+        }
+        while(&#x27;0&#x27; &lt;= c &amp;&amp; c &lt;= &#x27;9&#x27;){
+            x = x*10 + (c-&#x27;0&#x27;);
+            c = _getchar();
+        }
+        res = x*f;
+    }
+    
+    template&lt;typename T&gt;
+    inline FIstream&amp; operator&gt;&gt;(T&amp; x){_read(x); return *this;}
+    inline FIstream&amp; operator&gt;&gt;(char&amp; x){x = ignore_space(); return *this;}
+    inline FIstream&amp; operator&gt;&gt;(string&amp; x){
+        string().swap(x);
+        char c = ignore_space();
+        while(c &gt; 0x20){
+            x.push_back(c);
+            c = _getchar();
+        }
+        return *this;
+    }
+} _cin;
+
+struct FOstream_Pre{
+    char num[10000][4];
+    constexpr FOstream_Pre():num(){
+        for(int i = 0; i &lt; 10000; i++){
+            int x = i;
+            for(int j = 3; j &gt;= 0; j--){
+                num[i][j] = x%10 + &#x27;0&#x27;;
+                x /= 10;
+            }
+        }
+    }
+} constexpr _FOstream_pre;
+
+struct FOstream{
+    static constexpr unsigned SIZ = 1 &lt;&lt; 17;
+    char buf[SIZ], *p1 = buf, *p2 = buf+SIZ;
+    
+    inline void _write(){
+        fwrite(buf, 1, p1-buf, stdout);
+        p1 = buf;
+    }
+    
+    inline void _putchar(char c){
+        if(p1 == p2) [[unlikely]] {
+            _write();
+        }
+        *p1++ = c;
+    }
+    
+    template&lt;typename T&gt;
+    void _write_i(T x){
+        constexpr int DIGIT_SIZ = 40;
+        static_assert(DIGIT_SIZ &lt;= SIZ);
+        char num[DIGIT_SIZ], *idxp = num+DIGIT_SIZ;
+        if(x &lt; 0){
+            _putchar(&#x27;-&#x27;);
+            x = -x;
+        }
+        if(p2 - p1 &lt; DIGIT_SIZ) _write();
+        while(x &gt;= 10000){
+            idxp -= 4;
+            memcpy(idxp, _FOstream_pre.num[size_t(x%10000)], 4);
+            x /= 10000;
+        }
+        if(x &gt;= 1000){
+            memcpy(p1, _FOstream_pre.num[size_t(x)], 4);
+            p1 += 4;
+        } else if(x &gt;= 100){
+            memcpy(p1, _FOstream_pre.num[size_t(x)]+1, 3);
+            p1 += 3;
+        } else if(x &gt;= 10){
+            memcpy(p1, _FOstream_pre.num[size_t(x)]+2, 2);
+            p1 += 2;
+        } else *p1++ = char(x)+&#x27;0&#x27;;
+        memcpy(p1, idxp, num+DIGIT_SIZ - idxp);
+        p1 += num+DIGIT_SIZ - idxp;
+    }
+    
+    template&lt;typename T&gt;
+    FOstream &amp;operator&lt;&lt;(const T &amp;x) {_write_i(x); return *this;}
+    FOstream &amp;operator&lt;&lt;(char x) {_putchar(x); return *this;}
+    FOstream &amp;operator&lt;&lt;(const char *x) {
+        while(*x) _putchar(*x++);
+        return *this;
+    }
+    FOstream &amp;operator&lt;&lt;(char *x) {return *this &lt;&lt; const_cast&lt;const char*&gt;(x);}
+    FOstream &amp;operator&lt;&lt;(double x) {
+        if(isnan(x)) [[unlikely]] return *this &lt;&lt; &quot;nan&quot;;
+        char _b[70];
+        snprintf(_b, sizeof(_b), &quot;%.*f&quot;, 15, x);
+        return *this &lt;&lt; const_cast&lt;const char*&gt;(_b);
+    }
+    FOstream &amp;operator&lt;&lt;(long double x) {
+        if(isnan(x)) [[unlikely]] return *this &lt;&lt; &quot;nan&quot;;
+        char _b[330];
+        snprintf(_b, sizeof(_b), &quot;%.*Lf&quot;, 15, x);
+        return *this &lt;&lt; const_cast&lt;const char*&gt;(_b);
+    }
+    FOstream&amp; operator&lt;&lt;(const string&amp; x){
+        for(char i : x) _putchar(i);
+        return *this;
+    }
+    
+    ~FOstream(){
+        if(p1 != buf){
+            fwrite(buf, 1, p1 - buf, stdout);
+        }
+    }
+} _cout;
+
+#define cin _cin
+#define istream FIstream
+#define cout _cout
+#define ostream FOstream
+">copy</button>
+<button id="button_copy_oneline" data-copy="struct FIstream{ static constexpr unsigned SIZ = 1 &lt;&lt; 17; char buf[SIZ], *p1 = buf, *p2 = buf; inline char _getchar(){ if(p1 == p2){ p2 = (p1 = buf) + fread(buf, 1, SIZ, stdin); if(p1 == p2) [[unlikely]] assert(0&amp;&amp;&quot;EOF&quot;); } return *p1++; } inline char ignore_space(){ char c; while((c = _getchar()) &lt;= 0x20); return c; } template&lt;typename T&gt; inline void _read(T&amp; res){ T x = 0, f = 1; char c = ignore_space(); if(c == &#x27;-&#x27;){ f = -1; c = _getchar(); } while(&#x27;0&#x27; &lt;= c &amp;&amp; c &lt;= &#x27;9&#x27;){ x = x*10 + (c-&#x27;0&#x27;); c = _getchar(); } res = x*f; } template&lt;typename T&gt; inline FIstream&amp; operator&gt;&gt;(T&amp; x){_read(x); return *this;} inline FIstream&amp; operator&gt;&gt;(char&amp; x){x = ignore_space(); return *this;} inline FIstream&amp; operator&gt;&gt;(string&amp; x){ string().swap(x); char c = ignore_space(); while(c &gt; 0x20){ x.push_back(c); c = _getchar(); } return *this; } } _cin; struct FOstream_Pre{ char num[10000][4]; constexpr FOstream_Pre():num(){ for(int i = 0; i &lt; 10000; i++){ int x = i; for(int j = 3; j &gt;= 0; j--){ num[i][j] = x%10 + &#x27;0&#x27;; x /= 10; } } } } constexpr _FOstream_pre; struct FOstream{ static constexpr unsigned SIZ = 1 &lt;&lt; 17; char buf[SIZ], *p1 = buf, *p2 = buf+SIZ; inline void _write(){ fwrite(buf, 1, p1-buf, stdout); p1 = buf; } inline void _putchar(char c){ if(p1 == p2) [[unlikely]] { _write(); } *p1++ = c; } template&lt;typename T&gt; void _write_i(T x){ constexpr int DIGIT_SIZ = 40; static_assert(DIGIT_SIZ &lt;= SIZ); char num[DIGIT_SIZ], *idxp = num+DIGIT_SIZ; if(x &lt; 0){ _putchar(&#x27;-&#x27;); x = -x; } if(p2 - p1 &lt; DIGIT_SIZ) _write(); while(x &gt;= 10000){ idxp -= 4; memcpy(idxp, _FOstream_pre.num[size_t(x%10000)], 4); x /= 10000; } if(x &gt;= 1000){ memcpy(p1, _FOstream_pre.num[size_t(x)], 4); p1 += 4; } else if(x &gt;= 100){ memcpy(p1, _FOstream_pre.num[size_t(x)]+1, 3); p1 += 3; } else if(x &gt;= 10){ memcpy(p1, _FOstream_pre.num[size_t(x)]+2, 2); p1 += 2; } else *p1++ = char(x)+&#x27;0&#x27;; memcpy(p1, idxp, num+DIGIT_SIZ - idxp); p1 += num+DIGIT_SIZ - idxp; } template&lt;typename T&gt; FOstream &amp;operator&lt;&lt;(const T &amp;x) {_write_i(x); return *this;} FOstream &amp;operator&lt;&lt;(char x) {_putchar(x); return *this;} FOstream &amp;operator&lt;&lt;(const char *x) { while(*x) _putchar(*x++); return *this; } FOstream &amp;operator&lt;&lt;(char *x) {return *this &lt;&lt; const_cast&lt;const char*&gt;(x);} FOstream &amp;operator&lt;&lt;(double x) { if(isnan(x)) [[unlikely]] return *this &lt;&lt; &quot;nan&quot;; char _b[70]; snprintf(_b, sizeof(_b), &quot;%.*f&quot;, 15, x); return *this &lt;&lt; const_cast&lt;const char*&gt;(_b); } FOstream &amp;operator&lt;&lt;(long double x) { if(isnan(x)) [[unlikely]] return *this &lt;&lt; &quot;nan&quot;; char _b[330]; snprintf(_b, sizeof(_b), &quot;%.*Lf&quot;, 15, x); return *this &lt;&lt; const_cast&lt;const char*&gt;(_b); } FOstream&amp; operator&lt;&lt;(const string&amp; x){ for(char i : x) _putchar(i); return *this; } ~FOstream(){ if(p1 != buf){ fwrite(buf, 1, p1 - buf, stdout); } } } _cout;
+#define cin _cin
+#define istream FIstream
+#define cout _cout
+#define ostream FOstream">copy_oneline</button>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
+    const mdContent = document.getElementById("md_content");
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
+    
+    const copyButton = document.getElementById("button_copy")
+    if(copyButton){
+        copyButton.addEventListener("click", () => {
+            const text = copyButton.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+    const copyButtonOneline = document.getElementById("button_copy_oneline")
+    if(copyButtonOneline){
+        copyButtonOneline.addEventListener("click", () => {
+            const text = copyButtonOneline.dataset.copy;
+            navigator.clipboard.writeText(text);
+        })
+    }
+</script>
+</body>
+</html>

@@ -6,8 +6,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="preload" href="./k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.woff2") format("woff2"), url("./k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    @font-face { font-family: "keifont"; src: url("./k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
     body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
     .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
@@ -28,6 +29,19 @@
     <a href="/library/docs/about.html">about</a>
     <a href="/library/docs/link.html">link</a>
 </div>
+<h1 class="title" style="font-family:keifont; font-weight:lighter">smkyb's library</h1>
+競プロlibraryです．<br>
+かなり長めのコードも含めれているため，１行（とは限らない）に圧縮したものをコピーする機能をつけています．<br>
+<h1>注意書き</h1>
+library checkerの問題群には通しているつもりですが、それ以上のverifyは行えていません。<br>
+一部（結構ある）のREADMEはAIによる自動生成なので，間違っている場合があります．<br>
+私が書いたものも普通に間違っているかもしれません<br><br>
+c++23，gcc，<br>
+<pre>
+#include &ltbits/stdc++.h&gt<br>
+using namespace std;<br>
+</pre>
+を前提にしています．
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
