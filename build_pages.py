@@ -31,7 +31,7 @@ def WriteTagU(f) -> None:
     .links { text-decoration: none; color: rgb(10, 56, 117); font-weight: bold; }
     #button_copy { display: flex; font-size: 14px; }
     #button_copy_oneline { display: flex; font-size: 14px; }
-    #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.258);  backdrop-filter: blur(20px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; z-index: 998244353; }
+    #status_bar { display: flex; justify-content: center; position: fixed; height: 70px; width:100%; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.258);  backdrop-filter: blur(15px); font-family: sans-serif; font-size: 20px; font-weight: bolder; align-content: center; color: white; z-index: 998244353; }
     #status_bar a { margin: 20px; text-decoration: none; color: rgb(63, 97, 144); }
 </style>
 </head>
