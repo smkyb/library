@@ -1,0 +1,13 @@
+<h1 class="title" style="font-family:keifont; font-weight:lighter">smkyb's library</h1>
+競プロlibraryです．<br>
+かなり長めのコードも含めれているため，１行（とは限らない）に圧縮したものをコピーする機能をつけています．<br>
+<h1>注意書き</h1>
+library checkerの問題群には通しているつもりですが、それ以上のverifyは行えていません。<br>
+一部（結構ある）のREADMEはAIによる自動生成なので，間違っている場合があります．<br>
+私が書いたものも普通に間違っているかもしれません<br><br>
+c++23，gcc，<br>
+<pre>
+#include &ltbits/stdc++.h&gt<br>
+using namespace std;<br>
+</pre>
+を前提にしています．
