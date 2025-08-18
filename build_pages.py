@@ -202,12 +202,9 @@ def FindCppFiles(path:str) -> str:
 
 #index.html
 with open("index.html", "w", encoding="utf-8") as f:
-    res_str = FindCppFiles("cpp")
-    if len(res_str) != 0:
+    with open("docs/index_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
-        f.write("""<h1 style="font-family:cursive">smkyb's library</h1>
-""")
-        f.write(res_str)
+        f.write(content_f.read())
         WriteTagD(f)
 
 #about.html
