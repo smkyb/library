@@ -1,6 +1,6 @@
 import shutil, os, html, subprocess, re
 
-pages_path = "/library/docs/pages"
+pages_path = "docs/pages"
 if os.path.exists(pages_path):
     shutil.rmtree(pages_path)
 os.makedirs(pages_path)
@@ -137,9 +137,9 @@ def MakeREADME(README_path:str, code_text:str) -> None:
         from google import genai
         client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
     
-    with open("/library/cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
+    with open("cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
         example_README1 = EX_f.read()
-    with open("/library/cpp/sort_segtree/README.md") as EX_f:
+    with open("cpp/sort_segtree/README.md") as EX_f:
         example_README2 = EX_f.read()
     
     res = client.models.generate_content(
@@ -201,8 +201,8 @@ def FindCppFiles(path:str) -> str:
     return res_str
 
 #index.html
-with open("/library/index.html", "w", encoding="utf-8") as f:
-    res_str = FindCppFiles("/library/cpp")
+with open("index.html", "w", encoding="utf-8") as f:
+    res_str = FindCppFiles("cpp")
     if len(res_str) != 0:
         WriteTagU(f)
         f.write("""<h1 style="font-family:cursive">smkyb's library</h1>
@@ -211,15 +211,15 @@ with open("/library/index.html", "w", encoding="utf-8") as f:
         WriteTagD(f)
 
 #about.html
-with open("/library/docs/about.html", "w", encoding="utf-8") as f:
-    with open("/library/docs/about_content.txt", "r", encoding="utf-8") as content_f:
+with open("docs/about.html", "w", encoding="utf-8") as f:
+    with open("docs/about_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
         f.write(content_f.read())
         WriteTagD(f)
 
 #link.html
-with open("/library/docs/link.html", "w", encoding="utf-8") as f:
-    with open("/library/docs/link_content.txt", "r", encoding="utf-8") as content_f:
+with open("docs/link.html", "w", encoding="utf-8") as f:
+    with open("docs/link_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
         f.write(content_f.read())
         WriteTagD(f)
