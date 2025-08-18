@@ -1,4 +1,4 @@
-<h1 class="title" style="font-family:keifont; font-weight:lighter">smkyb's library</h1>
+<h1 class="title">smkyb's library</h1>
 競プロlibraryです．<br>
 かなり長めのコードも含めれているため，１行（とは限らない）に圧縮したものをコピーする機能をつけています．<br>
 <h1>注意書き</h1>

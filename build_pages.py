@@ -20,7 +20,7 @@ def WriteTagU(f) -> None:
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <link rel="preload" href="/library/docs/k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"), url("/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
     body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:large; }
     .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
