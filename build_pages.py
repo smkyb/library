@@ -5,7 +5,6 @@ if os.path.exists(pages_path):
     shutil.rmtree(pages_path)
 os.makedirs(pages_path)
 
-cnt_pages = 0
 client = None
 
 #タグを書く（始め）
@@ -22,6 +21,7 @@ def WriteTagU(f) -> None:
 <style>
     @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"), url("/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
+    h1 { font-size: 34px; }
     body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; }
     .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
@@ -40,6 +40,7 @@ def WriteTagU(f) -> None:
     <a href="/library/index.html">home</a>
     <a href="/library/docs/about.html">about</a>
     <a href="/library/docs/link.html">link</a>
+    <a href="/library/docs/library-checker.html">library-checker</a>
 </div>
 """)
 
@@ -157,13 +158,11 @@ def MakeREADME(README_path:str, code_text:str) -> None:
     print(f"content :\nres.text")
 
 def BuildPage(path:str) -> str:
-    global cnt_pages
     global client
     
     dir_path = os.path.dirname(path)
     item_name = os.path.basename(path)
-    cnt_pages += 1
-    page_name = f"page{cnt_pages}.html"
+    page_name = f"{item_name}.html"
     page_path = pages_path + "/" + page_name
     
     with open(path, "r", encoding="utf-8") as code_f:
@@ -185,7 +184,6 @@ def BuildPage(path:str) -> str:
 
 #.cpp(.test.cppを除く)を探し，それぞれに対してページを作成し，それに通ずるボタンがまとめて書いてあるHTMLを返す
 def FindCppFiles(path:str) -> str:
-    global cnt_pages
     global client
     
     res_str: str = ""

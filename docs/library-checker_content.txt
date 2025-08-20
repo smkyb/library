@@ -1,0 +1,4 @@
+<div class="button_sq">
+<button onclick="location.href='pages/page1.html'">binary_trie</button>
+
+</div>
