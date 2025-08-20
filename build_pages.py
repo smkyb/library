@@ -162,7 +162,7 @@ def BuildPage(path:str) -> str:
     
     dir_path = os.path.dirname(path)
     item_name = os.path.basename(path)
-    page_name = f"{item_name}.html"
+    page_name = f"{item_name[:-4]}.html"
     page_path = pages_path + "/" + page_name
     
     with open(path, "r", encoding="utf-8") as code_f:
@@ -217,6 +217,13 @@ with open("docs/about.html", "w", encoding="utf-8") as f:
 #link.html
 with open("docs/link.html", "w", encoding="utf-8") as f:
     with open("docs/link_content.txt", "r", encoding="utf-8") as content_f:
+        WriteTagU(f)
+        f.write(content_f.read())
+        WriteTagD(f)
+
+#library-checker.html
+with open("docs/library-checker.html", "w", encoding="utf-8") as f:
+    with open("docs/library-checker_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
         f.write(content_f.read())
         WriteTagD(f)
