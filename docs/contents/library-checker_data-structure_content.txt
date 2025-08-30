@@ -1,9 +1,9 @@
 <h1 class="title">smkyb's library</h1>
 <div class="button_sq">
-<button onclick="location.href='../binary_trie.html'">Ordered Set</button>
-<button onclick="location.href='../segtree.html'">Point Set Range Composite</button>
-<button onclick="location.href='../dynamic_segtree.html'">Point Set Range Composite (Large Array)</button>
-<button onclick="location.href='../sort_segtree.html'">Point Set Range Sort Range Composite</button>
-<button onclick="location.href='../fastset.html'">Predecessor Problem</button>
-<button onclick="location.href='../binary_trie.html'">Set Xor-Min</button>
+<button onclick="location.href='/library/pages/binary_trie.html'">Ordered Set</button>
+<button onclick="location.href='/library/pages/segtree.html'">Point Set Range Composite</button>
+<button onclick="location.href='/library/pages/dynamic_segtree.html'">Point Set Range Composite (Large Array)</button>
+<button onclick="location.href='/library/pages/sort_segtree.html'">Point Set Range Sort Range Composite</button>
+<button onclick="location.href='/library/pages/fastset.html'">Predecessor Problem</button>
+<button onclick="location.href='/library/pages/binary_trie.html'">Set Xor-Min</button>
 </div>
