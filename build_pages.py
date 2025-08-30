@@ -4,6 +4,7 @@ pages_path = "docs/pages"
 if os.path.exists(pages_path):
     shutil.rmtree(pages_path)
 os.makedirs(pages_path)
+os.makedirs(pages_path + "/" + "library-checker")
 
 client = None
 
