@@ -41,7 +41,10 @@
 <script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
     const mdContent = document.getElementById("md_content");
-    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
+    if(mdContent){
+        mdContent.innerHTML = marked.parse(mdContent.textContent);
+        document.body.style.visibility = "visible";
+    } else document.body.style.visibility = "visible";
     
     const copyButton = document.getElementById("button_copy")
     if(copyButton){
@@ -58,7 +61,6 @@
         })
     }
     
-    document.body.style.visibility = "visible";
 </script>
 </body>
 </html>
