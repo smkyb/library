@@ -4,15 +4,17 @@
 <meta charset="UTF-8">
 <meta name="google-site-verification" content="81kYLtl-Z1udi-AqoyIz8Pl38ya4DdHB4epvzWAECkI" />
 <title>smkyb's library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/library/docs/k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"), url("/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
     h1 { font-size: 34px; }
-    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; visibility: hidden; }
+    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; }
     .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
     .markdown-body pre { padding: 16px; overflow: auto; }
@@ -35,15 +37,12 @@
 <h1 class="title">smkyb's library</h1>
 <a class="links" href="https://github.com/smkyb/library">github</a><br><br>
 <a class="links" href="https://twitter.com/ssmkybb">twitter</a>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+<script defer>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
     const mdContent = document.getElementById("md_content");
-    if(mdContent){
-        mdContent.innerHTML = marked.parse(mdContent.textContent);
-        document.body.style.visibility = "visible";
-    } else document.body.style.visibility = "visible";
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
     
     const copyButton = document.getElementById("button_copy")
     if(copyButton){

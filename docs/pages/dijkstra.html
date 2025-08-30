@@ -4,15 +4,17 @@
 <meta charset="UTF-8">
 <meta name="google-site-verification" content="81kYLtl-Z1udi-AqoyIz8Pl38ya4DdHB4epvzWAECkI" />
 <title>smkyb's library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/library/docs/k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"), url("/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
     h1 { font-size: 34px; }
-    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; visibility: hidden; }
+    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; }
     .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
     .markdown-body pre { padding: 16px; overflow: auto; }
@@ -105,15 +107,12 @@ pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; dijkstra(int n, const vec
     }
 } dijkstra;">copy</button>
 <button id="button_copy_oneline" data-copy="struct _Dijkstra { private: struct graph { vector&lt;pair&lt;int, long long&gt;&gt; G; vector&lt;int&gt; idx; struct ref_t { vector&lt;pair&lt;int, long long&gt;&gt;::iterator begin_, end_; auto begin() const noexcept {return begin_;} auto end() const noexcept {return end_;} auto size() const noexcept {return end_ - begin_;} pair&lt;int, long long&gt; operator[](int p) const {return begin_[p];} }; graph() = default; graph(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ build(n, E); } void build(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E){ G.resize(E.size()); idx.resize(n+1); for(auto &amp;[u, v] : E){ idx[u+1]++; } for(int i = 1; i &lt;= n; i++) idx[i] += idx[i-1]; auto C = idx; for(auto &amp;[u, v] : E){ G[C[u]++] = v; } } ref_t operator[](int p) {return {G.begin()+idx[p], G.begin()+idx[p+1]};} }; struct _comp { bool operator()(const pair&lt;int, long long&gt; &amp;l, const pair&lt;int, long long&gt; &amp;r) {return l.second &gt; r.second;} }; public: pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, const vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt; &amp;E, const vector&lt;int&gt; &amp;s){ graph G(n, E); return (*this)(n, G, s); } template&lt;typename graphlike, typename = enable_if_t&lt;!is_same_v&lt;decay_t&lt;graphlike&gt;, vector&lt;pair&lt;int, pair&lt;int, long long&gt;&gt;&gt;&gt;&gt;&gt; pair&lt;vector&lt;long long&gt;, vector&lt;int&gt;&gt; operator()(int n, graphlike &amp;G, const vector&lt;int&gt; &amp;s){ vector&lt;long long&gt; dist(n, (1ll&lt;&lt;60)); vector&lt;int&gt; path(n, -1); priority_queue&lt;pair&lt;int, long long&gt;, vector&lt;pair&lt;int, long long&gt;&gt;, _comp&gt; Q; for(int i : s){ dist[i] = 0; Q.emplace(i, 0); } while(!Q.empty()){ auto [pos, d] = Q.top(); Q.pop(); if(d &gt; dist[pos]) continue; for(auto [nex, cost] : G[pos]){ long long nex_cost = d + cost; if(dist[nex] &gt; nex_cost){ dist[nex] = nex_cost; Q.emplace(nex, nex_cost); path[nex] = pos; } } } for(auto &amp;i : dist) if(i &gt;= (1ll&lt;&lt;60)) i = -1; return make_pair(dist, path); } } dijkstra;">copy_oneline</button>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+<script defer>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
     const mdContent = document.getElementById("md_content");
-    if(mdContent){
-        mdContent.innerHTML = marked.parse(mdContent.textContent);
-        document.body.style.visibility = "visible";
-    } else document.body.style.visibility = "visible";
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
     
     const copyButton = document.getElementById("button_copy")
     if(copyButton){

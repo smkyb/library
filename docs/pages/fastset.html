@@ -4,15 +4,17 @@
 <meta charset="UTF-8">
 <meta name="google-site-verification" content="81kYLtl-Z1udi-AqoyIz8Pl38ya4DdHB4epvzWAECkI" />
 <title>smkyb's library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/library/docs/k-font/keifont.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"), url("/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
+    @font-face { font-family: "keifont"; src: url("/library/docs/k-font/keifont.ttf") format("truetype"); font-display: swap; }
     html { background: repeating-linear-gradient(-45deg, rgb(245, 245, 245), 40px, rgb(255, 255, 255) 40px, rgb(255, 255, 255) 70px); }
     h1 { font-size: 34px; }
-    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; visibility: hidden; }
+    body { margin: 60px; margin-top: 60px; min-height: 100vh; font-family:'Noto Sans JP', Arial, sans-serif; font-size:17px; }
     .title { padding-top: 20px; font-family: keifont; font-weight: lighter; }
     .markdown-body { box-sizing: border-box; max-width: 900px; margin: 0 auto; background: #ffffff56; backdrop-filter: blur(3px); color: black; padding: 40px; }
     .markdown-body pre { padding: 16px; overflow: auto; }
@@ -186,15 +188,12 @@ int less_bound(int x)
     }
 };">copy</button>
 <button id="button_copy_oneline" data-copy="struct fastset{ using ull = unsigned long long; using uint = unsigned; int siz; vector&lt;ull&gt; node; fastset(int _n){ int n = 1; while((n&lt;&lt;6) &lt; _n) n &lt;&lt;= 6; siz = (n+1)/63; node.resize((n+1)/63 + (_n+63)/64); } void insert(int x){ uint idx = siz + (x/64); x &amp;= 63; while(true){ if((node[idx]&gt;&gt;x) &amp; 1ull) return; node[idx] |= (1ull&lt;&lt;x); if(idx == 0) return; idx--; x = idx &amp; 63; idx /= 64; } } void erase(int x){ int idx = siz + (x/64); x &amp;= 63; while(true){ node[idx] &amp;= ~(1ull&lt;&lt;x); if(idx == 0 || node[idx]) return; idx--; x = idx &amp; 63; idx /= 64; } } bool count(int x) const { return (node[siz+x/64]&gt;&gt;(x&amp;63u))&amp;1; } int lower_bound(int x){ if(count(x)) return x; int idx = siz + (x/64); x &amp;= 63; while(true){ if(node[idx] &amp; ~(((1ull&lt;&lt;x)&lt;&lt;1) - 1ull)){ x = __builtin_ctzll(node[idx] &amp; ~(((1ull&lt;&lt;x)&lt;&lt;1) - 1ull)); if(idx &gt;= siz) return (idx-siz)*64+x; break; } if(idx == 0) return -1; idx--; x = idx &amp; 63; idx /= 64; } idx = idx*64 + x+1; while(idx &lt; siz) idx = idx*64 + __builtin_ctzll(node[idx])+1; return (idx-siz)*64 + __builtin_ctzll(node[idx]); } int less_bound(int x){ if(count(x)) return x; int idx = siz + (x/64); x &amp;= 63; while(true){ if(node[idx] &amp; ((1ull&lt;&lt;x) - 1ull)){ x = 63 - __builtin_clzll(node[idx] &amp; ((1ull&lt;&lt;x) - 1ull)); if(idx &gt;= siz) return (idx-siz)*64+x; break; } if(idx == 0) return -1; idx--; x = idx &amp; 63; idx /= 64; } idx = idx*64 + x+1; while(idx &lt; siz) idx = idx*64 + 64 - __builtin_clzll(node[idx]); return (idx-siz)*64 + 63 - __builtin_clzll(node[idx]); } };">copy_oneline</button>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+<script defer>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
     const mdContent = document.getElementById("md_content");
-    if(mdContent){
-        mdContent.innerHTML = marked.parse(mdContent.textContent);
-        document.body.style.visibility = "visible";
-    } else document.body.style.visibility = "visible";
+    if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
     
     const copyButton = document.getElementById("button_copy")
     if(copyButton){
