@@ -202,7 +202,7 @@ def FindCppFiles(path:str) -> str:
 
 #index.html
 with open("index.html", "w", encoding="utf-8") as f:
-    with open("docs/index_content.txt", "r", encoding="utf-8") as content_f:
+    with open("docs/contents/index_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
         f.write(content_f.read())
         f.write(FindCppFiles("cpp"))
@@ -210,21 +210,114 @@ with open("index.html", "w", encoding="utf-8") as f:
 
 #about.html
 with open("docs/about.html", "w", encoding="utf-8") as f:
-    with open("docs/about_content.txt", "r", encoding="utf-8") as content_f:
+    with open("docs/contents/about_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
         f.write(content_f.read())
         WriteTagD(f)
 
 #link.html
 with open("docs/link.html", "w", encoding="utf-8") as f:
-    with open("docs/link_content.txt", "r", encoding="utf-8") as content_f:
+    with open("docs/contents/link_content.txt", "r", encoding="utf-8") as content_f:
         WriteTagU(f)
         f.write(content_f.read())
         WriteTagD(f)
 
 #library-checker.html
 with open("docs/library-checker.html", "w", encoding="utf-8") as f:
-    with open("docs/library-checker_content.txt", "r", encoding="utf-8") as content_f:
-        WriteTagU(f)
+    WriteTagU(f)
+    
+    with open("docs/contents/library-checker_content.txt", "r", encoding="utf-8") as content_f:
         f.write(content_f.read())
-        WriteTagD(f)
+    
+    f.write("""<div class="button_sq">
+""")
+    
+    with open("docs/pages/library-checker/data-structure.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_data-structure_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/data-structure.html'">Data Structure</button>
+""")
+    with open("docs/pages/library-checker/graph.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_graph_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/graph.html'">Graph</button>
+""")
+    with open("docs/pages/library-checker/tree.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_tree_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/tree.html'">Tree</button>
+""")
+    with open("docs/pages/library-checker/convolution.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_convolution_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/convolution.html'">Convolution</button>
+""")
+    with open("docs/pages/library-checker/number-theory.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_number-theory_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/number-theory.html'">Number Theory</button>
+""")
+    with open("docs/pages/library-checker/polynomial.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_polynomial_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/polynomial.html'">Polynomial</button>
+""")
+    with open("docs/pages/library-checker/set-power-series.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_set-power-series_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/set-power-series.html'">Set Power Series</button>
+""")
+    with open("docs/pages/library-checker/enumerative-combinatorics.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_enumerative-combinatorics_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/enumerative-combinatorics.html'">Enumerative Combinatorics</button>
+""")
+    with open("docs/pages/library-checker/linear-algebra.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_linear-algebra_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/linear-algebra.html'">Linear Algebra</button>
+""")
+    with open("docs/pages/library-checker/string.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_string_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/string.html'">String</button>
+""")
+    with open("docs/pages/library-checker/geometry.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_geometry_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/geometry.html'">Geometry</button>
+""")
+    with open("docs/pages/library-checker/big-integer.html", "w", encoding="utf-8") as inner_f:
+        WriteTagU(inner_f)
+        with open("docs/contents/library-checker_big-integer_content.txt", "r", encoding="utf-8") as content_f:
+            inner_f.write(content_f.read())
+        WriteTagD(inner_f)
+    f.write("""<button onclick="location.href='docs/pages/library-checker/big-integer.html'">Big Integer</button>
+""")
+    
+    
+    f.write("""</div>
+""")
+    WriteTagD(f)
