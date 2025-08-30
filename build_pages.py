@@ -50,9 +50,9 @@ def WriteTagU(f) -> None:
 
 #タグを書く（終わり）
 def WriteTagD(f) -> None:
-    f.write("""<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
-<script defer>
+    f.write("""<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
     marked.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, highlight: (code, lang) => { if (lang && hljs.getLanguage(lang)) { return hljs.highlight(code, { language: lang }).value; } return hljs.highlightAuto(code).value; } });
     const mdContent = document.getElementById("md_content");
     if(mdContent) mdContent.innerHTML = marked.parse(mdContent.textContent);
