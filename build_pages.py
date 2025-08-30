@@ -186,7 +186,7 @@ def BuildPage(path:str) -> str:
             write_f.write(f"<button id=\"button_copy_oneline\" data-copy=\"{html.escape(MakeOneLine(code_text), quote=True)}\">copy_oneline</button>\n")
             WriteTagD(write_f)
     
-    return f"<button onclick=\"location.href=\'{page_path}\'\">{item_name[:-4]}</button>\n"
+    return f"<button onclick=\"location.href=/library/\'{page_path}\'\">{item_name[:-4]}</button>\n"
 
 #.cpp(.test.cppを除く)を探し，それぞれに対してページを作成し，それに通ずるボタンがまとめて書いてあるHTMLを返す
 def FindCppFiles(path:str) -> str:
