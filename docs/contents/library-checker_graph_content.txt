@@ -1,4 +1,4 @@
 <h1 class="title">smkyb's library</h1>
 <div class="button_sq">
-<button onclick="location.href='pages/dijkstra.html'">Shortest Path</button>
+<button onclick="location.href='../dijkstra.html'">Shortest Path</button>
 </div>

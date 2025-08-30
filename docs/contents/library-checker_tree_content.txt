@@ -1,4 +1,4 @@
 <h1 class="title">smkyb's library</h1>
 <div class="button_sq">
-<button onclick="location.href='pages/hld.html'">Vertex Set Path Composite</button>
+<button onclick="location.href='../hld.html'">Vertex Set Path Composite</button>
 </div>
