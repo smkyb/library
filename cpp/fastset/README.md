@@ -20,7 +20,7 @@ void insert(int x)
 ### 制約
 * `0 <= x < _n`
 ### 計算量
-* O(1)
+* O(log n)
 <br>
 ## erase
 ```cpp
@@ -30,7 +30,7 @@ void erase(int x)
 ### 制約
 * `0 <= x < _n`
 ### 計算量
-* O(1)
+* O(log n)
 <br>
 ## count
 ```cpp
@@ -40,7 +40,7 @@ bool count(int x) const
 ### 制約
 * `0 <= x < _n`
 ### 計算量
-* O(1)
+* O(log n)
 <br>
 ## lower_bound
 ```cpp
@@ -51,7 +51,7 @@ int lower_bound(int x)
 ### 制約
 * `0 <= x < _n`
 ### 計算量
-* O(1)
+* O(log n)
 <br>
 ## less_bound
 ```cpp
@@ -62,5 +62,5 @@ int less_bound(int x)
 ### 制約
 * `0 <= x < _n`
 ### 計算量
-* O(1)
+* O(log n)
 <br>

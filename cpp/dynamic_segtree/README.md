@@ -60,7 +60,7 @@ S all_prod() const
 ### 制約
 * なし
 ### 計算量
-* O(1)
+* O(log(V_max))
 <br>
 ## reserve
 ```cpp
