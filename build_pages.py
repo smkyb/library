@@ -146,6 +146,8 @@ def ListCppFile(path:str) -> list[str]:
 
 #パスとコードに対応するREADMEをAIが作成する
 def MakeREADME(README_path:str, code_text:str) -> None:
+    global client
+    
     if client == None:
         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
         from google import genai
