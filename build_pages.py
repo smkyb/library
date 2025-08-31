@@ -160,14 +160,14 @@ def MakeREADME(README_path:str, code_text:str) -> None:
         model="gemini-2.5-flash",
         contents=[{
             "role": "user",
-            "parts": [{ "text": f"以下に，競技プログラミングで用いるソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEの記法にできる限り則って，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情はなるべく書かないようにして，内容はなるべく端的に，「使い方が分かる程度」でお願いします．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
+            "parts": [{ "text": f"以下に，競技プログラミングで用いるソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEの記法にできる限り則って，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情は書かず，内容はできる限り端的に，「使い方が分かる程度」でお願いします．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
         }]
     )
     with open(README_path, "w", encoding="utf-8") as README_f:
         README_f.write(res.text)
-    print("call gemini")
+    print("call gemini(MAX:10RPM)")
     print(f"token(MAX:250,000TPM) : {res.usage_metadata.prompt_token_count}")
-    print(f"content :\nres.text")
+    print(f"content :\n{res.text}")
 
 def BuildPage(path:str) -> str:
     global client
