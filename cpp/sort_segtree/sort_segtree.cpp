@@ -97,62 +97,6 @@ struct meldable_binary_trie{
     
     meldable_binary_trie(meldable_binary_trie&& o) noexcept = default;
     
-    void insert(T v, const S &x) {
-        node_t* pos = root;
-        int bit = bit_width;
-        node_t *route[65]; int route_cnt = 0;
-        while(true){
-            T mv = masked(v, bit-pos->width, bit);
-            T mnv = masked(pos->value, bit-pos->width, bit);
-            if(mv != mnv){
-                route[route_cnt++] = pos;
-                int diff = diff_bit(mv, mnv);
-                int b = (mv>>(diff-2))&3;
-                int nb = (mnv>>(diff-2))&3;
-                node_t* inter = make_node(pos->value, pos->sum, pos->width-bit+diff, pos->count, pos->child[0], pos->child[1], pos->child[2], pos->child[3]);
-                node_t* leaf = make_node(v, x, diff, 1);
-                pos->width = bit-diff;
-                pos->count++;
-                pos->child = {&node_t::nil, &node_t::nil, &node_t::nil, &node_t::nil};
-                pos->child[b] = leaf;
-                pos->child[nb] = inter;
-                break;
-            } else {
-                pos->count++;
-                bit -= pos->width;
-                if(bit == 0) {
-                    pos->sum = x;
-                    break;
-                }
-                route[route_cnt++] = pos;
-                int b = (v>>(bit-2))&3;
-                if(pos->child[b] == &node_t::nil){
-                    pos->child[b] = make_node(v, x, bit, 1);
-                    break;
-                }
-                pos = pos->child[b];
-            }
-        }
-        for(int i = route_cnt-1; i >= 0; i--){
-            node_t *ptr = route[i];
-            ptr->sum = op(op(op(ptr->child[0]->sum, ptr->child[1]->sum), ptr->child[2]->sum), ptr->child[3]->sum);
-        }
-    }
-    
-    int count(T v) const {
-        node_t* pos = root;
-        int bit = bit_width;
-        while(pos != &node_t::nil){
-            T mv = masked(v, bit-pos->width, bit);
-            T mnv = masked(pos->value, bit-pos->width, bit);
-            if(mv != mnv) return 0;
-            bit -= pos->width;
-            if(bit == 0) return pos->count;
-            pos = pos->child[(v>>(bit-2))&3];
-        }
-        return 0;
-    }
-    
     int size() const {
         return root->count;
     }
@@ -501,7 +445,7 @@ struct segtree{
 } //namespace smkyb
 
 template<typename T, typename S, auto op, auto e>
-struct sort_segtree {
+struct sortable_segtree {
     struct SS {
         S ltor, rtol;
         SS() = default;
@@ -516,17 +460,17 @@ struct sort_segtree {
     smkyb::fastset fset;
     smkyb::segtree<S, op, e> seg;
     
-    sort_segtree(int _n) : n(_n), fset(n+1), seg(n) {
+    sortable_segtree(int _n) : n(_n), fset(n+1), seg(n) {
         trie = new smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n]{};
         for(int i = 0; i <= n; i++) fset.insert(i);
     }
-    sort_segtree(const vector<pair<T, S>> &v) : n(v.size()), fset(n+1), seg(n) {
+    sortable_segtree(const vector<pair<T, S>> &v) : n(v.size()), fset(n+1), seg(n) {
         trie = new smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n];
         for(int i = 0; i <= n; i++) fset.insert(i);
         for(int i = 0; i < n; i++) trie[i] = smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>(v[i].first, v[i].second);
         for(int i = 0; i < n; i++) seg.set(i, v[i].second);
     }
-    sort_segtree(sort_segtree<T, S, op, e> &&o) = default;
+    sortable_segtree(sortable_segtree<T, S, op, e> &&o) = default;
     
     void set(int i, T k, S x) {
         int l = fset.less_bound(i);
