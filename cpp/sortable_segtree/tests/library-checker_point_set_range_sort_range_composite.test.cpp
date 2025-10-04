@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_sort_range_composite"
 
 #include "../../../_initialize.cpp"
-#include "../sort_segtree.cpp"
+#include "../sortable_segtree.cpp"
 
 struct S{
     mint9 first, second;
@@ -21,7 +21,7 @@ int main(){
         cin >> A[i].first >> a >> b;
         A[i].second = {a, b};
     }
-    sort_segtree<uint, S, S::op, S::e> trie(A);
+    sortable_segtree<uint, S, S::op, S::e> trie(A);
     
     uint i{}, p{}, a{}, b{}, l{}, r{}, x{};
     S res{};
