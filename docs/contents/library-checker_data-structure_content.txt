@@ -3,7 +3,7 @@
 <button onclick="location.href='/library/docs/pages/binary_trie.html'">Ordered Set</button>
 <button onclick="location.href='/library/docs/pages/segtree.html'">Point Set Range Composite</button>
 <button onclick="location.href='/library/docs/pages/dynamic_segtree.html'">Point Set Range Composite (Large Array)</button>
-<button onclick="location.href='/library/docs/pages/sort_segtree.html'">Point Set Range Sort Range Composite</button>
+<button onclick="location.href='/library/docs/pages/sortable_segtree.html'">Point Set Range Sort Range Composite</button>
 <button onclick="location.href='/library/docs/pages/fastset.html'">Predecessor Problem</button>
 <button onclick="location.href='/library/docs/pages/binary_trie.html'">Set Xor-Min</button>
 </div>
