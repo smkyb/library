@@ -4,8 +4,8 @@
 <br>
 ## コンストラクタ
 ```cpp
-/*1*/ sort_segtree<T, S, op, e> seg(int _n);
-/*2*/ sort_segtree<T, S, op, e> seg(vector<pair<T, S>> v);
+/*1*/ sortable_segtree<T, S, op, e> seg(int _n);
+/*2*/ sortable_segtree<T, S, op, e> seg(vector<pair<T, S>> v);
 ```
 * キーの型（非負整数）`T`  
 * ACLと同様に`S`, `op`, `e`  
