@@ -455,11 +455,13 @@ struct sortable_segtree {
         static SS SS_e() {return SS{e()};}
     };
     
+    private:
     int n;
     smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e> *trie;
     smkyb::fastset fset;
     smkyb::segtree<S, op, e> seg;
     
+    public:
     sortable_segtree(int _n) : n(_n), fset(n+1), seg(n) {
         trie = new smkyb::meldable_binary_trie<T, SS, SS::SS_op, SS::SS_e>[n]{};
         for(int i = 0; i <= n; i++) fset.insert(i);

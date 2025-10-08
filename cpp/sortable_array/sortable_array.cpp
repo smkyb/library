@@ -348,10 +348,12 @@ struct sortable_array {
         }
     };
     
+    private:
     int n;
     binary_trie *trie;
     fastset fset;
     
+    public:
     sortable_array(int _n) : n(_n), fset(n+1) {
         trie = new binary_trie[n]{};
         for(int i = 0; i <= n; i++) fset.insert(i);
