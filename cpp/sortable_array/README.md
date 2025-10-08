@@ -5,7 +5,7 @@
 ## コンストラクタ
 ```cpp
 /*1*/ sortable_array<T> arr(int _n);
-/*2*/ sortable_array<T> arr(vector<T>> v);
+/*2*/ sortable_array<T> arr(vector<T> v);
 ```
 * キーの型（非負整数）`T`   
 を定義する必要があります．  
