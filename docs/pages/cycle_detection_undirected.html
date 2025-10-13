@@ -47,7 +47,7 @@ pair&lt;int, vector&lt;int&gt;&gt; cycle_detection_undirected(int n, const auto 
 頂点数 `n` と辺のリスト `e` を持つ無向グラフからサイクルを1つ検出します．
 * `e` は `vector&lt;pair&lt;int, int&gt;&gt;` や `vector&lt;array&lt;int, 2&gt;&gt;` などを想定しています．
 * 返り値は `pair&lt;int, vector&lt;int&gt;&gt;` です．
-* * サイクルが存在する場合，`first` はサイクル上の1頂点，`second` はサイクルを構成する辺の入力`e`におけるインデックスのリストです．
+* * サイクルが存在する場合，`first` はサイクル上の始点，`second` はサイクルを構成する辺の入力`e`におけるインデックスのリストです．
 * * サイクルが存在しない場合，`{-1, {}}` を返します．
 ### 制約
 * `0 &lt;= 頂点番号 &lt; n`
