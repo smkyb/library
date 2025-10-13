@@ -13,7 +13,7 @@ int main(){
         cin >> t >> x;
         switch(t){
             case '0':
-                S.insert(x);
+                if(!S.count(x)) S.insert(x);
                 break;
             case '1':
                 if(S.count(x)) S.erase(x, 1);
