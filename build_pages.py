@@ -155,7 +155,7 @@ def MakeREADME(README_path:str, code_text:str) -> None:
     
     with open("cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
         example_README1 = EX_f.read()
-    with open("cpp/sort_segtree/README.md") as EX_f:
+    with open("cpp/sortable_segtree/README.md") as EX_f:
         example_README2 = EX_f.read()
     
     res = client.models.generate_content(
