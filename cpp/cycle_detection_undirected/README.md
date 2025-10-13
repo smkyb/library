@@ -8,7 +8,7 @@ pair<int, vector<int>> cycle_detection_undirected(int n, const auto &e);
 頂点数 `n` と辺のリスト `e` を持つ無向グラフからサイクルを1つ検出します．
 * `e` は `vector<pair<int, int>>` や `vector<array<int, 2>>` などを想定しています．
 * 返り値は `pair<int, vector<int>>` です．
-* * サイクルが存在する場合，`first` はサイクル上の1頂点，`second` はサイクルを構成する辺の入力`e`におけるインデックスのリストです．
+* * サイクルが存在する場合，`first` はサイクル上の始点，`second` はサイクルを構成する辺の入力`e`におけるインデックスのリストです．
 * * サイクルが存在しない場合，`{-1, {}}` を返します．
 ### 制約
 * `0 <= 頂点番号 < n`
