@@ -37,71 +37,145 @@
     <a href="/library/docs/library-checker.html">library-checker</a>
 </div>
 <article id="md_content" class="markdown-body">
-# unionfind (Disjoint Set Union)
-互いに素な集合を管理するデータ構造です．要素の併合や，同じ集合に属するかの判定などを高速に行います．
-
+# unionfind
+要素のグループ分けと、それらの結合・判定を行うデータ構造です。
+<br>
 ## コンストラクタ
 ```cpp
-unionfind uf(int n);
-unionfind uf(const vector&lt;vector&lt;int&gt;&gt;&amp; v);
+/*1*/ unionfind(int n)
+/*2*/ unionfind(const vector&lt;vector&lt;int&gt;&gt;&amp; v)
 ```
-* `unionfind uf(int n)`:  
-  `n`個の要素を持つUnion-Find木を構築します．最初は各要素がそれぞれ異なる集合に属しています．  
-* `unionfind uf(const vector&lt;vector&lt;int&gt;&gt;&amp; v)`:  
-  `v.size()`個の要素を持つUnion-Find木を構築します．  
-  `v[i]`に含まれるすべての要素`j`について，`i`と`j`を併合します．  
+*   1 : `n`個の要素を持つUnion-Find木を初期化します。最初はどの要素も互いに異なるグループに属しています。
+*   2 : `v`を隣接リストとみなし、`v[i]`に含まれる全ての頂点`j`と`i`を結合したUnion-Find木を初期化します。`v.size()`が要素数となります。
 ### 制約
-* `n`は正の整数であること．
-* `v`の各要素`j`について `0 &lt;= j &lt; v.size()`であること．
+*   1: `n`が正、かつ大きすぎない
+*   2: `v.size()`が正、かつ大きすぎない。`v`の各要素は`0`以上`v.size()-1`未満
 ### 計算量
-* `unionfind(int n)`: O(n)
-* `unionfind(const vector&lt;vector&lt;int&gt;&gt;&amp; v)`: O(N + Mα(N)) (N: 要素数, M: 併合回数)
-
+*   1: O(n)
+*   2: O(N + Mα(N)) （`N`は要素数、`M`は`v`に含まれる辺の総数、`α`はアッカーマン関数の逆関数）
+<br>
 ## root
 ```cpp
-int root(int x);
+int root(int x)
 ```
-要素`x`が属する集合の代表元（根）を返します．
+要素`x`が属するグループの代表要素（根）を返します。経路圧縮を行います。
 ### 制約
-* `0 &lt;= x &lt; n` (nはコンストラクタで指定した要素数)
+*   `0 &lt;= x &lt; _n` （`_n`はコンストラクタで指定した要素数）
 ### 計算量
-* ほぼO(α(n)) (償却定数時間)
-
+*   O(α(_n)) （償却）
+<br>
 ## merge
 ```cpp
-bool merge(int x, int y);
+bool merge(int x, int y)
 ```
-要素`x`と要素`y`が属する集合を併合します．  
-既に同じ集合に属していた場合は`false`を，異なる集合だった場合は`true`を返します．
+要素`x`が属するグループと、要素`y`が属するグループを結合します。
+結合が行われた場合`true`を、既に同じグループに属していた場合は`false`を返します。
 ### 制約
-* `0 &lt;= x &lt; n`
-* `0 &lt;= y &lt; n`
+*   `0 &lt;= x &lt; _n`
+*   `0 &lt;= y &lt; _n`
 ### 計算量
-* ほぼO(α(n)) (償却定数時間)
-
+*   O(α(_n)) （償却）
+<br>
 ## same
 ```cpp
-bool same(int x, int y);
+bool same(int x, int y)
 ```
-要素`x`と要素`y`が同じ集合に属するかどうかを判定します．  
-同じ集合に属する場合は`true`を，異なる集合に属する場合は`false`を返します．
+要素`x`と要素`y`が同じグループに属するかどうかを判定します。
+同じグループに属している場合`true`を、そうでない場合`false`を返します。
 ### 制約
-* `0 &lt;= x &lt; n`
-* `0 &lt;= y &lt; n`
+*   `0 &lt;= x &lt; _n`
+*   `0 &lt;= y &lt; _n`
 ### 計算量
-* ほぼO(α(n)) (償却定数時間)
-
+*   O(α(_n)) （償却）
+<br>
 ## groups
 ```cpp
-vector&lt;vector&lt;int&gt;&gt; groups();
+vector&lt;vector&lt;int&gt;&gt; groups()
 ```
-現在のUnion-Find木におけるすべての集合を，要素のリストのリストとして返します．  
-例: `{ {0, 2}, {1}, {3, 4} }`  
+現在のUnion-Find木における全てのグループを、各グループに属する要素のリストとして返します。
 ### 制約
-* なし
+*   なし
 ### 計算量
-* O(n)
-</article>
+*   O(_n)
+<br>
+## 使用例
+```cpp
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;numeric&gt; // iota用
+
+// unionfind構造体はここに定義されていると仮定
+
+int main() {
+    // 5つの要素を持つUnion-Find木を初期化 (0, 1, 2, 3, 4)
+    unionfind uf(5);
+
+    std::cout &lt;&lt; &quot;Initial groups:&quot; &lt;&lt; std::endl;
+    for (const auto&amp; group : uf.groups()) {
+        std::cout &lt;&lt; &quot;  Group: &quot;;
+        for (int member : group) {
+            std::cout &lt;&lt; member &lt;&lt; &quot; &quot;;
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+    // Output:
+    //   Group: 0
+    //   Group: 1
+    //   Group: 2
+    //   Group: 3
+    //   Group: 4
+
+    // 0と1を結合
+    uf.merge(0, 1);
+    std::cout &lt;&lt; &quot;\nMerged 0 and 1.&quot; &lt;&lt; std::endl;
+    // 1と2を結合
+    uf.merge(1, 2);
+    std::cout &lt;&lt; &quot;Merged 1 and 2.&quot; &lt;&lt; std::endl;
+    // 3と4を結合
+    uf.merge(3, 4);
+    std::cout &lt;&lt; &quot;Merged 3 and 4.&quot; &lt;&lt; std::endl;
+
+    // 0と2は同じグループか？ -&gt; true
+    std::cout &lt;&lt; &quot;Are 0 and 2 in the same group? &quot; &lt;&lt; (uf.same(0, 2) ? &quot;Yes&quot; : &quot;No&quot;) &lt;&lt; std::endl;
+    // 0と3は同じグループか？ -&gt; false
+    std::cout &lt;&lt; &quot;Are 0 and 3 in the same group? &quot; &quot; &lt;&lt; (uf.same(0, 3) ? &quot;Yes&quot; : &quot;No&quot;) &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; &quot;Groups after merges:&quot; &lt;&lt; std::endl;
+    for (const auto&amp; group : uf.groups()) {
+        std::cout &lt;&lt; &quot;  Group: &quot;;
+        for (int member : group) {
+            std::cout &lt;&lt; member &lt;&lt; &quot; &quot;;
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+    // Output:
+    //   Group: 0 1 2
+    //   Group: 3 4
+    
+    // グラフの隣接リストからの初期化
+    std::vector&lt;std::vector&lt;int&gt;&gt; graph_adj = {
+        {1},    // 0 -&gt; 1 と辺がある
+        {0, 2}, // 1 -&gt; 0, 2 と辺がある
+        {1},    // 2 -&gt; 1 と辺がある
+        {4},    // 3 -&gt; 4 と辺がある
+        {3}     // 4 -&gt; 3 と辺がある
+    };
+    unionfind uf_from_graph(graph_adj);
+    std::cout &lt;&lt; &quot;\nInitialized from graph. Groups:&quot; &lt;&lt; std::endl;
+    for (const auto&amp; group : uf_from_graph.groups()) {
+        std::cout &lt;&lt; &quot;  Group: &quot;;
+        for (int member : group) {
+            std::cout &lt;&lt; member &lt;&lt; &quot; &quot;;
+        }
+        std::cout &lt;&lt; std::endl;
+    }
+    // Output:
+    //   Group: 0 1 2
+    //   Group: 3 4
+
+    return 0;
+}
+```</article>
 
 <button id="button_copy" data-copy="struct unionfind{
     vector&lt;int&gt; par, rank;
