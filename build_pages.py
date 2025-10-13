@@ -159,7 +159,7 @@ def MakeREADME(README_path:str, code_text:str) -> None:
         example_README2 = EX_f.read()
     
     res = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-pro",
         contents=[{
             "role": "user",
             "parts": [{ "text": """以下の指示に従ってください．
@@ -173,6 +173,9 @@ def MakeREADME(README_path:str, code_text:str) -> None:
 ・コードの内部実装の詳細（利用者に不要な事情）は書かないこと．
 ・必要なら「使用例」などの新しい項目を追加しても良い．（追加しなくても良い）
 ・先頭に「```markdown」などのコードフェンスはつけないこと．
+・・使用例に関するルール
+・・使用例を追加する場合は，#include 「<bits/stdc++.h>」と「using namespace std;」を用いること．
+・・例のコード内に直接ソースコードは貼り付けず，該当箇所に「//ここにソースコードを貼り付ける」と書くこと．
 4.出力はREADME.md本文のみとし，余計な説明は書かないこと．
 
 ルールは以上になります．
