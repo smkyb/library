@@ -36,21 +36,120 @@
     <a href="/library/docs/link.html">link</a>
     <a href="/library/docs/library-checker.html">library-checker</a>
 </div>
-<h1 class="title">smkyb's library</h1>
-<div class="button_sq">
-<button onclick="location.href='/library/docs/pages/binary_trie.html'">binary_trie</button>
-<button onclick="location.href='/library/docs/pages/compression.html'">compression</button>
-<button onclick="location.href='/library/docs/pages/dijkstra.html'">dijkstra</button>
-<button onclick="location.href='/library/docs/pages/dynamic_segtree.html'">dynamic_segtree</button>
-<button onclick="location.href='/library/docs/pages/fastio.html'">fastio</button>
-<button onclick="location.href='/library/docs/pages/fastset.html'">fastset</button>
-<button onclick="location.href='/library/docs/pages/hld.html'">hld</button>
-<button onclick="location.href='/library/docs/pages/meldable_binary_trie.html'">meldable_binary_trie</button>
-<button onclick="location.href='/library/docs/pages/segtree.html'">segtree</button>
-<button onclick="location.href='/library/docs/pages/sortable_array.html'">sortable_array</button>
-<button onclick="location.href='/library/docs/pages/sortable_segtree.html'">sortable_segtree</button>
-<button onclick="location.href='/library/docs/pages/unionfind.html'">unionfind</button>
-</div>
+<article id="md_content" class="markdown-body">
+# unionfind (Disjoint Set Union)
+互いに素な集合を管理するデータ構造です．要素の併合や，同じ集合に属するかの判定などを高速に行います．
+
+## コンストラクタ
+```cpp
+unionfind uf(int n);
+unionfind uf(const vector&lt;vector&lt;int&gt;&gt;&amp; v);
+```
+* `unionfind uf(int n)`:  
+  `n`個の要素を持つUnion-Find木を構築します．最初は各要素がそれぞれ異なる集合に属しています．  
+* `unionfind uf(const vector&lt;vector&lt;int&gt;&gt;&amp; v)`:  
+  `v.size()`個の要素を持つUnion-Find木を構築します．  
+  `v[i]`に含まれるすべての要素`j`について，`i`と`j`を併合します．  
+### 制約
+* `n`は正の整数であること．
+* `v`の各要素`j`について `0 &lt;= j &lt; v.size()`であること．
+### 計算量
+* `unionfind(int n)`: O(n)
+* `unionfind(const vector&lt;vector&lt;int&gt;&gt;&amp; v)`: O(N + Mα(N)) (N: 要素数, M: 併合回数)
+
+## root
+```cpp
+int root(int x);
+```
+要素`x`が属する集合の代表元（根）を返します．
+### 制約
+* `0 &lt;= x &lt; n` (nはコンストラクタで指定した要素数)
+### 計算量
+* ほぼO(α(n)) (償却定数時間)
+
+## merge
+```cpp
+bool merge(int x, int y);
+```
+要素`x`と要素`y`が属する集合を併合します．  
+既に同じ集合に属していた場合は`false`を，異なる集合だった場合は`true`を返します．
+### 制約
+* `0 &lt;= x &lt; n`
+* `0 &lt;= y &lt; n`
+### 計算量
+* ほぼO(α(n)) (償却定数時間)
+
+## same
+```cpp
+bool same(int x, int y);
+```
+要素`x`と要素`y`が同じ集合に属するかどうかを判定します．  
+同じ集合に属する場合は`true`を，異なる集合に属する場合は`false`を返します．
+### 制約
+* `0 &lt;= x &lt; n`
+* `0 &lt;= y &lt; n`
+### 計算量
+* ほぼO(α(n)) (償却定数時間)
+
+## groups
+```cpp
+vector&lt;vector&lt;int&gt;&gt; groups();
+```
+現在のUnion-Find木におけるすべての集合を，要素のリストのリストとして返します．  
+例: `{{0, 2}, {1}, {3, 4}}`
+### 制約
+* なし
+### 計算量
+* O(n)</article>
+
+<button id="button_copy" data-copy="struct unionfind{
+    vector&lt;int&gt; par, rank;
+    int siz;
+    
+    unionfind(int n):
+        par(n), rank(n, 1), siz(n){
+            iota(par.begin(), par.end(), 0);
+        }
+    unionfind(const vector&lt;vector&lt;int&gt;&gt;&amp; v):
+    unionfind(v.size()){
+        for(int i = 0; i &lt; siz; i++){
+            for(int j : v[i]) merge(i, j);
+        }
+    }
+    
+    int root(int x){
+        if(par[x] == x) return x;
+        return par[x] = root(par[x]);
+    }
+    
+    bool merge(int x, int y){
+        x = root(x);
+        y = root(y);
+        if(x == y) return false;
+        if(rank[x] &lt; rank[y]) swap(x, y);
+        par[y] = x;
+        rank[x] += rank[y];
+        return true;
+    }
+    
+    bool same(int x, int y){
+        return root(x) == root(y);
+    }
+    
+    vector&lt;vector&lt;int&gt;&gt; groups(){
+        vector&lt;vector&lt;int&gt;&gt; res_memo(siz);
+        for(int i = 0; i &lt; siz; i++){
+            res_memo[root(i)].emplace_back(i);
+        }
+        vector&lt;vector&lt;int&gt;&gt; res;
+        for(int i = 0; i &lt; siz; i++){
+            if(!res_memo[i].empty()) res.emplace_back(res_memo[i]);
+        }
+        return res;
+    }
+};
+">copy</button>
+<button id="button_copy_oneline" data-copy="struct unionfind{ vector&lt;int&gt; par, rank; int siz; unionfind(int n): par(n), rank(n, 1), siz(n){ iota(par.begin(), par.end(), 0); } unionfind(const vector&lt;vector&lt;int&gt;&gt;&amp; v): unionfind(v.size()){ for(int i = 0; i &lt; siz; i++){ for(int j : v[i]) merge(i, j); } } int root(int x){ if(par[x] == x) return x; return par[x] = root(par[x]); } bool merge(int x, int y){ x = root(x); y = root(y); if(x == y) return false; if(rank[x] &lt; rank[y]) swap(x, y); par[y] = x; rank[x] += rank[y]; return true; } bool same(int x, int y){ return root(x) == root(y); } vector&lt;vector&lt;int&gt;&gt; groups(){ vector&lt;vector&lt;int&gt;&gt; res_memo(siz); for(int i = 0; i &lt; siz; i++){ res_memo[root(i)].emplace_back(i); } vector&lt;vector&lt;int&gt;&gt; res; for(int i = 0; i &lt; siz; i++){ if(!res_memo[i].empty()) res.emplace_back(res_memo[i]); } return res; } };">copy_oneline</button>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
