@@ -24,18 +24,10 @@ void insert(T x)
 <br>
 ## erase
 ```cpp
-void erase(T x)
+void erase(T x, int n = 1)
 ```
-**・ 概要 :** 要素の削除（１つ）  
+**・ 概要 :** 要素の削除（個数指定）  
 **・ 制約 :** count(x) > 0  
-**・ 計算量 :** O(bit)  
-<br>
-## erase_all
-```cpp
-void erase_all(T x)
-```
-**・ 概要 :** 要素の削除（全要素）  
-**・ 制約 :** 0 <= x  
 **・ 計算量 :** O(bit)  
 <br>
 ## count
@@ -51,9 +43,18 @@ int count(T x)
 ref_type operator[int x]
 ```
 **・ 概要 :** k番目(0-indexed)の値の取得(負の数を引数にとると大きい方からk番目(1-indexed)を取得)  
-**・ 制約 :** 0 <= k < size()  
+**・ 制約 :** 0 <= k < size() または -size() <= k < 0  
 **・ 計算量 :** O(bit)  
 **・ 戻り値 :** .existで値の有無、.valで値の取得  
+<br>
+## min / max
+```cpp
+T min()
+T max()
+```
+**・ 概要 :** 最も小さい / 最も大きい要素を取得  
+**・ 制約 :** 0 < size()  
+**・ 計算量 :** O(bit)  
 <br>
 ## xor_min / xor_max
 ```cpp
@@ -97,4 +98,4 @@ void size()
 ```
 **・ 概要 :** 要素数の取得
 **・ 計算量 :** O(1)  
-など
+<br>

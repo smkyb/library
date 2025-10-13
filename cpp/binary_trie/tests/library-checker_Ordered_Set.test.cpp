@@ -20,7 +20,7 @@ int main(){
         if(t == 0){
             if(S.count(x) == 0) S.insert(x);
         } elif(t == 1){
-            S.erase_all(x);
+            if(S.count(x)) S.erase(x);
         } elif(t == 2){
             x--;
             if(x < S.size()) cout << S[x] << el;

@@ -124,22 +124,7 @@ struct binary_trie{
         return 0;
     }
     
-    void erase(T v) {
-        node_t* pos = root;
-        int bit = bit_width;
-        siz--;
-        v ^= xor_val;
-        while(true){
-            pos->count--;
-            bit -= pos->width;
-            if(bit == 0) return;
-            pos = pos->child[(v>>(bit-2))&3];
-        }
-    }
-    
-    void erase_all(T v) {
-        int n = count(v);
-        if(n == 0) return;
+    void erase(T v, int n = 1) {
         node_t* pos = root;
         int bit = bit_width;
         siz -= n;
@@ -286,4 +271,3 @@ struct binary_trie{
 };
 template<typename T> typename binary_trie<T>::node_t binary_trie<T>::node_t::nil = node_t(0, bit_width, 0, &node_t::nil, &node_t::nil, &node_t::nil, &node_t::nil);
 template<typename T> typename binary_trie<T>::Pool binary_trie<T>::pool = Pool();
-

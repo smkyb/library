@@ -16,7 +16,7 @@ int main(){
                 S.insert(x);
                 break;
             case '1':
-                S.erase_all(x);
+                if(S.count(x)) S.erase(x, 1);
                 break;
             case '2':
                 cout << (x^S.xor_min(x)) << '\n';
