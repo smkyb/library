@@ -37,157 +37,49 @@
     <a href="/library/docs/library-checker.html">library-checker</a>
 </div>
 <article id="md_content" class="markdown-body">
-# Fast IO Library
-
-このライブラリは、標準入出力の高速化を目的としたC++のクラスを提供します。
-
-## クラス
-
-### `FIstream` (Input Stream)
-
-標準入力からの読み込みを高速化します。
-
-#### コンストラクタ
-
+# fast_io
+`std::cin`, `std::cout` を置き換えることで、標準入出力を高速化します。  
+`#define` により `cin`, `cout` を再定義するため、既存のコードを変更することなく利用できます。
+<br>
+## 使い方
+このソースコードをプログラムの先頭に貼り付け、あとは通常通り `cin`, `cout` を使用してください。  
+`&gt;&gt;`, `&lt;&lt;` 演算子で以下の型に対応しています。
+* **入力 (`cin`)**: 整数型 (`int`, `long long`など), `char`, `std::string`
+* **出力 (`cout`)**: 整数型, `char`, `const char*`, `std::string`, `double`, `long double`
+<br>
+## 注意事項
+* `std::ios_base::sync_with_stdio(false);` や `std::cin.tie(nullptr);` の記述は不要です。
+* C言語形式の入出力 (`scanf`, `printf` など) と混ぜて使用しないでください。
+* 改行には `std::endl` の代わりに `&#x27;\n&#x27;` を使用してください。
+<br>
+## 使用例
 ```cpp
-FIstream()
-```
-デフォルトコンストラクタです。
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
 
-#### 演算子オーバーロード
-
-*   **`operator&gt;&gt;(T&amp; x)`**:
-    指定された型の変数`x`に、標準入力から値を読み込みます。整数型（`int`, `long long`など）および`char`、`string`に対応しています。
-
-    ```cpp
-    // 整数を読み込む例
-    int a;
-    cin &gt;&gt; a;
-
-    // 文字を読み込む例
-    char c;
-    cin &gt;&gt; c;
-
-    // 文字列を読み込む例
-    std::string s;
-    cin &gt;&gt; s;
-    ```
-
-    *   **制約**:
-        *   読み込む値は、対応する型として有効な形式である必要があります。
-        *   `char`や`string`の場合、空白文字（スペース、タブ、改行など）はスキップされます。
-
-    *   **計算量**:
-        *   `int`, `long long`などの整数型: O(log10(値))
-        *   `char`: O(1)
-        *   `string`: O(文字列長)
-
-### `FOstream` (Output Stream)
-
-標準出力への書き込みを高速化します。
-
-#### コンストラクタ
-
-```cpp
-FOstream()
-```
-デフォルトコンストラクタです。
-
-#### 演算子オーバーロード
-
-*   **`operator&lt;&lt;(const T&amp; x)`**:
-    指定された型の値`x`を標準出力に書き込みます。整数型（`int`, `long long`など）、`char`、`const char*`、`double`、`long double`、`string`に対応しています。
-
-    ```cpp
-    // 整数を出力する例
-    cout &lt;&lt; 123;
-
-    // 文字を出力する例
-    cout &lt;&lt; &#x27;A&#x27;;
-
-    // 文字列リテラルを出力する例
-    cout &lt;&lt; &quot;Hello&quot;;
-
-    // std::stringを出力する例
-    std::string message = &quot;World&quot;;
-    cout &lt;&lt; message;
-
-    // doubleを出力する例
-    double pi = 3.14159;
-    cout &lt;&lt; pi;
-    ```
-
-    *   **制約**:
-        *   `double`および`long double`は、`snprintf`を用いて最大15桁の精度で出力されます。
-        *   `double`または`long double`がNaN（非数）の場合、「nan」と出力されます。
-
-    *   **計算量**:
-        *   整数型: O(log10(値))
-        *   `char`: O(1)
-        *   `const char*`: O(文字列長)
-        *   `std::string`: O(文字列長)
-        *   `double`, `long double`: O(1) （内部バッファリングにより、実質的な計算量は定数に近い）
-
-#### デストラクタ
-
-```cpp
-~FOstream()
-```
-クラスのインスタンスが破棄される際に、バッファに残っているデータを標準出力にフラッシュします。
-
-## マクロ
-
-*   `cin`: `FIstream`クラスのグローバルインスタンス`_cin`へのエイリアスです。
-*   `istream`: `FIstream`クラスへのエイリアスです。
-*   `cout`: `FOstream`クラスのグローバルインスタンス`_cout`へのエイリアスです。
-*   `ostream`: `FOstream`クラスへのエイリアスです。
-
-これらのマクロを使用することで、C++標準ライブラリの`std::cin`や`std::cout`と同様の感覚で、高速な入出力を行うことができます。
-
-```cpp
-#include &lt;iostream&gt;
-#include &lt;string&gt;
-#include &lt;vector&gt;
-
-// Fast IO Library をインクルードする代わりに、直接ソースコードをコピー＆ペーストして使用します。
-// または、必要に応じてヘッダーファイルとして保存しインクルードしてください。
-
-/*
-struct FIstream { ... };
-struct FOstream_Pre { ... };
-struct FOstream { ... };
-FIstream _cin;
-FOstream _cout;
-#define cin _cin
-#define istream FIstream
-#define cout _cout
-#define ostream FOstream
-*/
+//ここにソースコードを貼り付ける
 
 int main() {
-    std::ios_base::sync_with_stdio(false); // 標準ライブラリの同期を解除 (fastioライブラリ自体で対応済みですが、併用も可能です)
-    // cin.tie(NULL); // cinとcoutのtieを解除 (fastioライブラリ自体で対応済みですが、併用も可能です)
-
+    // 標準入力から整数 N と、N個の整数を受け取る
+    // 入力例:
+    // 5
+    // 1 2 3 4 5
+    
     int n;
-    cin &gt;&gt; n; // FIstream を使用
-
-    std::vector&lt;int&gt; nums(n);
+    cin &gt;&gt; n;
+    
+    long long sum = 0;
     for (int i = 0; i &lt; n; ++i) {
-        cin &gt;&gt; nums[i]; // FIstream を使用
+        int a;
+        cin &gt;&gt; a;
+        sum += a;
     }
-
-    for (int i = 0; i &lt; n; ++i) {
-        cout &lt;&lt; nums[i] &lt;&lt; &quot; &quot;; // FOstream を使用
-    }
-    cout &lt;&lt; &quot;\n&quot;; // FOstream を使用
-
-    std::string word;
-    cin &gt;&gt; word; // FIstream を使用
-    cout &lt;&lt; &quot;Read: &quot; &lt;&lt; word &lt;&lt; &quot;\n&quot;; // FOstream を使用
-
-    double val = 3.1415926535;
-    cout &lt;&lt; &quot;Pi: &quot; &lt;&lt; val &lt;&lt; &quot;\n&quot;; // FOstream を使用
-
+    
+    cout &lt;&lt; sum &lt;&lt; &#x27;\n&#x27;;
+    
+    // 出力:
+    // 15
+    
     return 0;
 }
 ```</article>

@@ -38,27 +38,69 @@
 </div>
 <article id="md_content" class="markdown-body">
 # compression
-複数の`vector`を同時に座標圧縮します。元の`vector`の要素を0から始まる連続した整数に置き換えます。
-
+1つ以上の配列（`vector`）をまとめて座標圧縮します．  
+引数として与えられた配列の要素は，圧縮後の値（0-indexedの整数）に直接書き換えられます．
+<br>
 ## compression
 ```cpp
 template&lt;typename T, typename... Args&gt;
-vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args)
+vector&lt;T&gt; compression(vector&lt;T&gt;&amp; v, Args&amp;... args);
 ```
-引数として与えられたすべての`vector`の要素を抽出し、それらを同時に座標圧縮します。各`vector`の各要素は、その値がソートされたユニークな集合内で何番目に出現するかを示す0から始まるインデックスに置き換えられます。元の`vector`は参照渡しのため、関数呼び出し後に内容が変更されます。
-<br>
-* **型パラメータ`T`**: `vector`の要素の型。比較可能である必要があります。
-* `v`: 圧縮したい最初の`vector`です。
-* `args`: 圧縮したい追加の`vector`です。複数指定可能です。
-<br>
-### 戻り値
-`vector&lt;T&gt;`: 圧縮後の各値に対応する元の値のリストです。`C[i]`は圧縮後の値`i`に対応する元の値を示します。
-<br>
+* 引数として与えられた1つ以上の `vector&lt;T&gt;` をまとめて座標圧縮します．
+* 返り値は，圧縮に使われたユニークな値のリスト（昇順）です．このリスト `C` を用いて，圧縮後の値 `i` から元の値 `C[i]` を復元できます．
 ### 制約
-* `T`が比較可能であること (`operator&lt;` が定義されていること)。
-* `v`および`args`で与えられるすべての`vector`の要素の合計数が、システムメモリや許容される時間計算量の範囲内であること。
+* `T` はソート可能である必要があります．
 ### 計算量
-全要素数を`N_total`としたとき、O(`N_total` log `N_total`)</article>
+入力される全要素数をNとすると，
+* O(N log N)
+<br>
+## 使用例
+```cpp
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+//ここにソースコードを貼り付ける
+
+int main() {
+    vector&lt;int&gt; a = {10, 50, 30, 100, 30};
+    vector&lt;int&gt; b = {30, 20, 50};
+
+    cout &lt;&lt; &quot;Before compression:&quot; &lt;&lt; endl;
+    cout &lt;&lt; &quot;a: &quot;;
+    for (int i = 0; i &lt; a.size(); ++i) cout &lt;&lt; a[i] &lt;&lt; (i == a.size() - 1 ? &quot;&quot; : &quot; &quot;);
+    cout &lt;&lt; endl;
+    cout &lt;&lt; &quot;b: &quot;;
+    for (int i = 0; i &lt; b.size(); ++i) cout &lt;&lt; b[i] &lt;&lt; (i == b.size() - 1 ? &quot;&quot; : &quot; &quot;);
+    cout &lt;&lt; endl &lt;&lt; endl;
+    
+    // aとbをまとめて座標圧縮
+    auto C = compression(a, b);
+
+    cout &lt;&lt; &quot;After compression:&quot; &lt;&lt; endl;
+    cout &lt;&lt; &quot;a: &quot;;
+    for (int i = 0; i &lt; a.size(); ++i) cout &lt;&lt; a[i] &lt;&lt; (i == a.size() - 1 ? &quot;&quot; : &quot; &quot;);
+    cout &lt;&lt; endl;
+    cout &lt;&lt; &quot;b: &quot;;
+    for (int i = 0; i &lt; b.size(); ++i) cout &lt;&lt; b[i] &lt;&lt; (i == b.size() - 1 ? &quot;&quot; : &quot; &quot;);
+    cout &lt;&lt; endl &lt;&lt; endl;
+    
+    cout &lt;&lt; &quot;Unique values list (C):&quot; &lt;&lt; endl;
+    for (int i = 0; i &lt; C.size(); ++i) cout &lt;&lt; C[i] &lt;&lt; (i == C.size() - 1 ? &quot;&quot; : &quot; &quot;);
+    cout &lt;&lt; endl;
+
+    // 出力:
+    // Before compression:
+    // a: 10 50 30 100 30
+    // b: 30 20 50
+    // 
+    // After compression:
+    // a: 0 3 2 4 2
+    // b: 2 1 3
+    // 
+    // Unique values list (C):
+    // 10 20 30 50 100
+}
+```</article>
 
 <button id="button_copy" data-copy="void _compression_merge(...){}
 template&lt;typename T, typename... Args&gt;
