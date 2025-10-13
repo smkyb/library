@@ -155,8 +155,10 @@ def MakeREADME(README_path:str, code_text:str) -> None:
     
     with open("cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
         example_README1 = EX_f.read()
-    with open("cpp/sortable_segtree/README.md") as EX_f:
+    with open("cpp/sortable_segtree/README.md", "r", encoding="utf-8") as EX_f:
         example_README2 = EX_f.read()
+    with open("cpp/cycle_detection_undirected/README.md", "r", encoding="utf-8") as EX_f:
+        example_README3 = EX_f.read()
     
     res = client.models.generate_content(
         model="gemini-2.5-pro",
@@ -165,8 +167,8 @@ def MakeREADME(README_path:str, code_text:str) -> None:
             "parts": [{ "text": """以下の指示に従ってください．
 
 1.これから「競技プログラミング用のソースコード（1つ）」と，
-「これとは別のソースコードに対するREADME.md（2つ）」を与えます．
-2.与えられた2つのREADME.mdの記法・構成・表現のスタイルにできる限り合わせて，
+「これとは別のソースコードに対するREADME.md（3つ）」を与えます．
+2.与えられた3つのREADME.mdの記法・構成・表現のスタイルにできる限り合わせて，
 ソースコードのためのREADME.mdを作成してください．
 3.README.mdに含める内容は以下を守ってください：
 ・内容は「使い方が分かる程度」に端的にまとめること．
@@ -179,7 +181,7 @@ def MakeREADME(README_path:str, code_text:str) -> None:
 4.出力はREADME.md本文のみとし，余計な説明は書かないこと．
 
 ルールは以上になります．
-これから先程述べた「ソースコード（1つ）」と「別のソースコードに対するREADME.md（2つ）」を与えるので，
+これから先程述べた「ソースコード（1つ）」と「別のソースコードに対するREADME.md（3つ）」を与えるので，
 このデータを基に，README.mdを作成してください．
 
 /* ソースコード */
@@ -190,13 +192,16 @@ def MakeREADME(README_path:str, code_text:str) -> None:
 
 /* README.md（例2） */
 """ + example_README2 + """
+
+/* README.md（例3） */
+""" + example_README3 + """
 """}]
         }]
     )
     with open(README_path, "w", encoding="utf-8") as README_f:
         README_f.write(res.text)
-    print("call gemini(MAX:10RPM)")
-    print(f"token(MAX:250,000TPM) : {res.usage_metadata.prompt_token_count}")
+    print("call gemini(MAX:5RPM)")
+    print(f"token(MAX:125,000TPM) : {res.usage_metadata.prompt_token_count}")
     print(f"content :\n{res.text}")
 
 def BuildPage(path:str) -> str:
