@@ -1,4 +1,7 @@
 <h1 class="title">smkyb's library</h1>
 <div class="button_sq">
+<button onclick="location.href='/library/docs/pages/tree_diameter.html'">Tree Diameter</button>
+<button onclick="location.href='/library/docs/pages/hld.html'">Vertex Add Path Sum</button>
 <button onclick="location.href='/library/docs/pages/hld.html'">Vertex Set Path Composite</button>
+<button onclick="location.href='/library/docs/pages/hld.html'">Vertex Add Subtree Sum Composite</button>
 </div>
