@@ -38,134 +38,92 @@
 </div>
 <article id="md_content" class="markdown-body">
 # graph
-有向グラフの隣接リストを効率的に構築し、各頂点からの出辺を高速に参照できるデータ構造です。
-
+静的な有向グラフを、辺のリストから高速に構築します。  
+構築後のグラフは、各頂点に隣接する頂点のリストを`for`文などで走査できます。  
+**無向グラフを扱う場合は、各辺について双方向に辺を追加してください。**
 <br>
 ## コンストラクタ
 ```cpp
-graph(int n, const auto &amp;E);
+graph&lt;T&gt; G(int n, const auto &amp;E);
+graph&lt;T&gt; G;
 ```
-*   `n`: グラフの頂点数。`0`から`n-1`までの頂点が存在すると仮定します。
-*   `E`: 辺のリスト。`vector&lt;pair&lt;int, int&gt;&gt;`や`vector&lt;array&lt;int, 2&gt;&gt;`のような、`{u, v}`の形式で辺を表すコレクションを想定しています。
+* `T`は辺の情報を格納する型です．辺の行き先のみの場合は`int`，重み付きなら`pair&lt;int, cost_type&gt;`などを指定します．
+<br>
+* `graph(n, E)`は，頂点数`n`，辺のリスト`E`からグラフを構築します．
+* * 辺のリスト`E`の各要素は，`{u, v}`のように始点`u`と辺の情報`v`（型は`T`）で構成される必要があります．
+* `graph()`は，空のグラフを作成します．後から`build`で構築できます．
 ### 制約
-*   `n`は正の整数であり、かつ大きすぎないこと。
-*   `E`に含まれるすべての頂点`u`, `v`について、`0 &lt;= u &lt; n` および `0 &lt;= v &lt; n` が成り立つこと。
-*   **多重辺に対応していますが、自己ループも処理されます**。
+* `n &gt;= 0`
+* `E`の各要素`{u, v}`について，`0 &lt;= u &lt; n`
 ### 計算量
-*   O(n + |E|) (ここで`|E|`は辺の数)
-
+* `graph(n, E)`: `O(n + |E|)`
+* `graph()`: `O(1)`
 <br>
 ## build
 ```cpp
 void build(int n, const auto &amp;E);
 ```
-デフォルトコンストラクタで`graph`オブジェクトを生成した後、このメソッドでグラフを構築します。引数の意味はコンストラクタと同様です。
+頂点数`n`，辺のリスト`E`からグラフを構築します．既にグラフが構築されている場合でも，この関数で再構築できます．
 ### 制約
-*   コンストラクタと同様。
-*   このメソッドは一度だけ呼び出すべきです。複数回呼び出した場合、既存のグラフデータが上書きされます。
+* `n &gt;= 0`
+* `E`の各要素`{u, v}`について，`0 &lt;= u &lt; n`
 ### 計算量
-*   O(n + |E|)
-
+* `O(n + |E|)`
 <br>
 ## operator[]
 ```cpp
-ref_t operator[](int p);
+auto operator[](int p);
 ```
-頂点`p`に隣接する頂点（つまり、頂点`p`から出る辺の終点）のコレクションを`ref_t`型で返します。
-`ref_t`はイテレータ、サイズ取得、インデックスアクセスをサポートする軽量なオブジェクトです。
-
-*   `auto begin() const noexcept`: 隣接頂点の範囲の先頭イテレータを返します。
-*   `auto end() const noexcept`: 隣接頂点の範囲の末尾イテレータを返します。
-*   `auto size() const noexcept`: 頂点`p`の出次数を返します。
-*   `T operator[](int i) const`: `i`番目の隣接頂点を返します。
+頂点`p`から出る辺のリストを取得します．返されるオブジェクトは範囲for文で走査できます．
 ### 制約
-*   `0 &lt;= p &lt; n` (構築時に指定した頂点数`n`の範囲内)
+* `0 &lt;= p &lt; n`
 ### 計算量
-*   O(1)
-
+* O(1)
 <br>
 ## 使用例
 ```cpp
-#include &lt;vector&gt;
-#include &lt;iostream&gt;
-#include &lt;utility&gt; // for std::pair
-#include &lt;array&gt;   // for std::array (optional, if E uses array)
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
 
-// (ここに graph struct をコピー)
-template&lt;typename T&gt;
-struct graph {
-    std::vector&lt;T&gt; G;
-    std::vector&lt;int&gt; idx;
-    struct ref_t {
-        typename std::vector&lt;T&gt;::iterator begin_, end_;
-        auto begin() const noexcept {return begin_;}
-        auto end() const noexcept {return end_;}
-        auto size() const noexcept {return end_ - begin_;}
-        T operator[](int p) const {return begin_[p];}
-    };
-    
-    graph() = default;
-    graph(int n, const auto &amp;E){
-        build(n, E);
-    }
-    
-    void build(int n, const auto &amp;E){
-        G.resize(E.size());
-        idx.resize(n+1);
-        for(auto &amp;[u, v] : E){
-            idx[u+1]++;
-        }
-        for(int i = 1; i &lt;= n; i++) idx[i] += idx[i-1];
-        auto C = idx;
-        for(auto &amp;[u, v] : E){
-            G[C[u]++] = v;
-        }
-    }
-    
-    ref_t operator[](int p) {return {G.begin()+idx[p], G.begin()+idx[p+1]};}
-};
-
+//ここにソースコードを貼り付ける
 
 int main() {
-    int n = 4; // 頂点数
-    std::vector&lt;std::pair&lt;int, int&gt;&gt; edges = {
-        {0, 1},
-        {0, 2},
-        {1, 2},
-        {2, 0},
-        {2, 3},
-        {3, 3}
+    // 頂点数 4
+    int n = 4;
+
+    // 重み付き有向グラフ
+    // E: {始点, {終点, 重み}} のリスト
+    vector&lt;pair&lt;int, pair&lt;int, int&gt;&gt;&gt; E = {
+        {0, {1, 10}},
+        {0, {2, 20}},
+        {1, {2, 30}},
+        {1, {3, 40}},
+        {2, {3, 50}}
     };
 
-    // コンストラクタでグラフを構築
-    graph&lt;int&gt; g(n, edges);
+    // グラフ構築
+    // 辺の情報(行き先, 重み)の型は pair&lt;int, int&gt;
+    graph&lt;pair&lt;int, int&gt;&gt; G(n, E);
 
-    std::cout &lt;&lt; &quot;Graph Edges:&quot; &lt;&lt; std::endl;
-    for (int i = 0; i &lt; n; ++i) {
-        std::cout &lt;&lt; &quot;Node &quot; &lt;&lt; i &lt;&lt; &quot; neighbors (out-edges): &quot;;
-        // 範囲for文で隣接頂点をイテレート
-        for (int neighbor : g[i]) {
-            std::cout &lt;&lt; neighbor &lt;&lt; &quot; &quot;;
+    // 各頂点から出る辺を走査
+    for (int i = 0; i &lt; n; i++) {
+        cout &lt;&lt; &quot;Vertex &quot; &lt;&lt; i &lt;&lt; &quot;:&quot;;
+        for (auto [to, cost] : G[i]) {
+            cout &lt;&lt; &quot; (&quot; &lt;&lt; to &lt;&lt; &quot;, &quot; &lt;&lt; cost &lt;&lt; &quot;)&quot;;
         }
-        std::cout &lt;&lt; &quot;(count: &quot; &lt;&lt; g[i].size() &lt;&lt; &quot;)&quot; &lt;&lt; std::endl;
-    }
-
-    // 特定の隣接頂点へのアクセス
-    if (g[0].size() &gt; 0) {
-        std::cout &lt;&lt; &quot;First neighbor of node 0: &quot; &lt;&lt; g[0][0] &lt;&lt; std::endl;
+        cout &lt;&lt; endl;
     }
 
     return 0;
 }
-```
-出力例：
-```
-Graph Edges:
-Node 0 neighbors (out-edges): 1 2 (count: 2)
-Node 1 neighbors (out-edges): 2 (count: 1)
-Node 2 neighbors (out-edges): 0 3 (count: 2)
-Node 3 neighbors (out-edges): 3 (count: 1)
-First neighbor of node 0: 1
+
+/*
+出力:
+Vertex 0: (1, 10) (2, 20)
+Vertex 1: (2, 30) (3, 40)
+Vertex 2: (3, 50)
+Vertex 3:
+*/
 ```</article>
 
 <button id="button_copy" data-copy="template&lt;typename T&gt;
