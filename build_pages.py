@@ -162,7 +162,32 @@ def MakeREADME(README_path:str, code_text:str) -> None:
         model="gemini-2.5-flash",
         contents=[{
             "role": "user",
-            "parts": [{ "text": f"以下に，競技プログラミングで用いるソースコード1つと，それとは異なるもののREADME.md2つを与えます．与えられたREADMEの記法にできる限り則って，与えられたソースコードのREADME.mdを作成してください．ただし，コードを利用するにあたって不必要な内部的な事情は書かず，内容はできる限り端的に，「使い方が分かる程度」でお願いします．また，最初の```markdownとかはいりません．\n/*ソースコード*/\n{code_text}\n/*別のREADME.md，1つ目*/\n{example_README1}\n/*別のREADME.md，2つ目*/\n{example_README2}\n" }]
+            "parts": [{ "text": """以下の指示に従ってください．
+
+1.これから「競技プログラミング用のソースコード（1つ）」と，
+「これとは別のソースコードに対するREADME.md（2つ）」を与えます．
+2.与えられた2つのREADME.mdの記法・構成・表現のスタイルにできる限り合わせて，
+ソースコードのためのREADME.mdを作成してください．
+3.README.mdに含める内容は以下を守ってください：
+・内容は「使い方が分かる程度」に端的にまとめること．
+・コードの内部実装の詳細（利用者に不要な事情）は書かないこと．
+・必要なら「使用例」などの新しい項目を追加しても良い．
+・先頭に「```markdown」などのコードフェンスはつけないこと．
+4.出力はREADME.md本文のみとし，余計な説明は書かないこと．
+
+ルールは以上になります．
+これから先程述べた「ソースコード（1つ）」と「別のソースコードに対するREADME.md（2つ）」を与えるので，
+このデータを基に，README.mdを作成してください．
+
+/* ソースコード */
+""" + code_text + """
+
+/* README.md（例1） */
+""" + example_README1 + """
+
+/* README.md（例2） */
+""" + example_README2 + """
+"""}]
         }]
     )
     with open(README_path, "w", encoding="utf-8") as README_f:
