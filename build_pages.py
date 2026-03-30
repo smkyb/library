@@ -148,6 +148,9 @@ def ListCppFile(path:str) -> list[str]:
 def MakeREADME(README_path:str, code_text:str) -> None:
     global client
     
+    if not os.getenv("GEMINI_KEY"):
+        assert(False)
+    
     if client == None:
         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
         from google import genai
