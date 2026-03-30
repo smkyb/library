@@ -200,8 +200,9 @@ def MakeREADME(README_path:str, code_text:str) -> None:
     )
     with open(README_path, "w", encoding="utf-8") as README_f:
         README_f.write(res.text)
-    print("call gemini(MAX:5RPM)")
-    print(f"token(MAX:125,000TPM) : {res.usage_metadata.prompt_token_count}")
+    print("called gemini")
+    print(f"prompt_token : {res.usage_metadata.prompt_token_count}")
+    print(f"candidates_token : {res.usage_metadata.candidates_token_count}")
     print(f"content :\n{res.text}")
 
 def BuildPage(path:str) -> str:
