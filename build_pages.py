@@ -148,14 +148,10 @@ def ListCppFile(path:str) -> list[str]:
 def MakeREADME(README_path:str, code_text:str) -> None:
     global client
     
-    if os.getenv("GEMINI_KEY"):
-        print(f"Key starts with: {os.getenv("GEMINI_KEY")}...")
-        print(f"Key length: {len(os.getenv("GEMINI_KEY"))}")
-    
     if client == None:
         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
         from google import genai
-        client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
+        client = genai.Client(api_key=os.getenv("GEMINI_KEY").strip())
     
     with open("cpp/hld/README.md", "r", encoding="utf-8") as EX_f:
         example_README1 = EX_f.read()
