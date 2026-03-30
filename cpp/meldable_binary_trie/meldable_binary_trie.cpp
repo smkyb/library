@@ -10,10 +10,10 @@ struct meldable_binary_trie{
         S sum;
         int width;
         int count;
-        array<node_t*, 4> child;
+        array<node_t*, 2> child;
         node_t() = default;
-        node_t(T v, S s, int w, int c) : value(v), sum(s), width(w), count(c), child{&nil, &nil, &nil, &nil} {}
-        node_t(T v, S s, int w, int c, node_t* c0, node_t* c1, node_t* c2, node_t* c3) : value(v), sum(s), width(w), count(c), child{c0, c1, c2, c3} {}
+        node_t(T v, S s, int w, int c) : value(v), sum(s), width(w), count(c), child{&nil, &nil} {}
+        node_t(T v, S s, int w, int c, node_t* c0, node_t* c1) : value(v), sum(s), width(w), count(c), child{c0, c1} {}
         static node_t nil;
     };
     
@@ -24,7 +24,6 @@ struct meldable_binary_trie{
     };
     
     struct Pool {
-        int cnt = 0;
         constexpr static int SIZ = 1<<17;
         node_t *ptr = nullptr, *en = nullptr;
         vector<node_t*> reuse;
@@ -33,12 +32,12 @@ struct meldable_binary_trie{
             en = ptr + SIZ;
         }
         node_t *get() {
+            if(!reuse.empty()) {
+                auto ptr = reuse.back();
+                reuse.pop_back();
+                return ptr;
+            }
             if(ptr == en) {
-                if(!reuse.empty()) {
-                    auto ptr = reuse.back();
-                    reuse.pop_back();
-                    return ptr;
-                }
                 ptr = new node_t[SIZ];
                 en = ptr + SIZ;
             }
@@ -58,7 +57,10 @@ struct meldable_binary_trie{
     }
     
     inline static T mask(int l, int r) {
-        if(r >= bit_width) return -(one<<l);
+        if(r >= bit_width){
+            if(l >= bit_width) return 0;
+            else return -(one<<l);
+        }
         return (one<<r) - (one<<l);
     }
     
@@ -67,7 +69,7 @@ struct meldable_binary_trie{
     }
     
     inline static int diff_bit(T x, T y) {
-        return ((bit_width-1 - clz(x^y))|1) + 1;
+        return bit_width - clz(x^y);
     }
     
     //value, sum, width, count, child
@@ -92,72 +94,15 @@ struct meldable_binary_trie{
     
     meldable_binary_trie(meldable_binary_trie&& o) noexcept = default;
     
-    void insert(T v, const S &x) {
-        node_t* pos = root;
-        int bit = bit_width;
-        node_t *route[65]; int route_cnt = 0;
-        while(true){
-            T mv = masked(v, bit-pos->width, bit);
-            T mnv = masked(pos->value, bit-pos->width, bit);
-            if(mv != mnv){
-                route[route_cnt++] = pos;
-                int diff = diff_bit(mv, mnv);
-                int b = (mv>>(diff-2))&3;
-                int nb = (mnv>>(diff-2))&3;
-                node_t* inter = make_node(pos->value, pos->sum, pos->width-bit+diff, pos->count, pos->child[0], pos->child[1], pos->child[2], pos->child[3]);
-                node_t* leaf = make_node(v, x, diff, 1);
-                pos->width = bit-diff;
-                pos->count++;
-                pos->child = {&node_t::nil, &node_t::nil, &node_t::nil, &node_t::nil};
-                pos->child[b] = leaf;
-                pos->child[nb] = inter;
-                break;
-            } else {
-                pos->count++;
-                bit -= pos->width;
-                if(bit == 0) {
-                    pos->sum = x;
-                    break;
-                }
-                route[route_cnt++] = pos;
-                int b = (v>>(bit-2))&3;
-                if(pos->child[b] == &node_t::nil){
-                    pos->child[b] = make_node(v, x, bit, 1);
-                    break;
-                }
-                pos = pos->child[b];
-            }
-        }
-        for(int i = route_cnt-1; i >= 0; i--){
-            node_t *ptr = route[i];
-            ptr->sum = op(op(op(ptr->child[0]->sum, ptr->child[1]->sum), ptr->child[2]->sum), ptr->child[3]->sum);
-        }
-    }
-    
-    int count(T v) const {
-        node_t* pos = root;
-        int bit = bit_width;
-        while(pos != &node_t::nil){
-            T mv = masked(v, bit-pos->width, bit);
-            T mnv = masked(pos->value, bit-pos->width, bit);
-            if(mv != mnv) return 0;
-            bit -= pos->width;
-            if(bit == 0) return pos->count;
-            pos = pos->child[(v>>(bit-2))&3];
-        }
-        return 0;
-    }
-    
     int size() const {
         return root->count;
     }
     
     static node_t *meld(meldable_binary_trie &l, meldable_binary_trie &r){
-        return meld(l.root, r.root);
+        return meld(l.root, r.root, bit_width);
     }
     static node_t *meld(node_t *l, node_t *r){
-        node_t *res = meld(l, r, bit_width);
-        return res;
+        return meld(l, r, bit_width);
     }
     static node_t *meld(node_t *l, node_t *r, int bit){
         if(l->count == 0){
@@ -171,19 +116,15 @@ struct meldable_binary_trie{
         if(mlv == mrv){
             if(l->width == r->width){
                 l->count += r->count;
-                if(bit == l->width){
-                    l->sum = op(l->sum, r->sum);
-                    return l;
-                } else {
-                    for(int i = 0; i < 4; i++) l->child[i] = meld(l->child[i], r->child[i], bit - l->width);
-                    pool.push(r);
-                }
+                l->child[0] = meld(l->child[0], r->child[0], bit - l->width);
+                l->child[1] = meld(l->child[1], r->child[1], bit - l->width);
+                pool.push(r);
             } else {
                 if(l->width > r->width) swap(l, r);
                 l->count += r->count;
                 bit -= l->width;
                 r->width -= l->width;
-                int b = (r->value>>(bit-2))&3;
+                bool b = (r->value>>(bit-1))&1;
                 l->child[b] = meld(l->child[b], r, bit);
             }
         } else {
@@ -193,19 +134,18 @@ struct meldable_binary_trie{
                 l->count += r->count;
                 r->width -= l->width;
                 bit -= l->width;
-                int b = (r->value>>(bit-2))&3;
+                bool b = (r->value>>(bit-1))&1;
                 l->child[b] = meld(l->child[b], r, bit);
             } else {
-                node_t *ptr = make_node(l->value, l->sum, l->width-bit+diff, l->count, l->child[0], l->child[1], l->child[2], l->child[3]);
-                memcpy(l->child.data(), node_t::nil.child.data(), sizeof(node_t*) * 4);
+                node_t *ptr = make_node(l->value, l->sum, l->width-bit+diff, l->count, l->child[0], l->child[1]);
                 r->width -= bit - diff;
                 l->width = bit - diff;
                 l->count += r->count;
-                l->child[l->value>>(diff-2)&3] = ptr;
-                l->child[r->value>>(diff-2)&3] = r;
+                l->child[ptr->value>>(diff-1)&1] = ptr;
+                l->child[r->value>>(diff-1)&1] = r;
             }
         }
-        l->sum = op(op(op(l->child[0]->sum, l->child[1]->sum), l->child[2]->sum), l->child[3]->sum);
+        l->sum = op(l->child[0]->sum, l->child[1]->sum);
         return l;
     }
     
@@ -222,33 +162,29 @@ struct meldable_binary_trie{
     static pair<node_t*, node_t*> split(node_t *l, int p){
         if(p == 0) return {&node_t::nil, l};
         if(p == l->count) return {l, &node_t::nil};
-        int acc = 0;
         
-        for (int i = 0; i < 4; i++) {
-            int c = l->child[i]->count;
-            if (p < acc + c) {
-                auto sub = split(l->child[i], p - acc);
-                
-                node_t *ptr = make_node(l->value, e(), l->width, 0);
-                
-                l->child[i] = sub.first;
-                ptr->child[i] = sub.second;
-                for(int j = i+1; j < 4; j++) ptr->child[j] = l->child[j];
-                for(int j = i+1; j < 4; j++) l->child[j] = &node_t::nil;
-                
-                l->count = 0;
-                for(int j = 0; j <= i; j++) l->count += l->child[j]->count;
-                for(int j = i; j < 4; j++) ptr->count += ptr->child[j]->count;
-                
-                l->sum = e();
-                for(int j = 0; j <= i; j++) l->sum = op(l->sum, l->child[j]->sum);
-                for(int j = i; j < 4; j++) ptr->sum = op(ptr->sum, ptr->child[j]->sum);
-                
-                return {l, ptr};
-            }
-            acc += c;
+        if(p == l->child[0]->count) {
+            l->child[0]->width += l->width;
+            l->child[1]->width += l->width;
+            pool.push(l);
+            return {l->child[0], l->child[1]};
+        } else if(p < l->child[0]->count) {
+            auto [subl, subr] = split(l->child[0], p);
+            
+            subl->width += l->width;
+            l->child[0] = subr;
+            l->count = l->child[0]->count + l->child[1]->count;
+            l->sum = op(l->child[0]->sum, l->child[1]->sum);
+            return {subl, l};
+        } else {
+            auto [subl, subr] = split(l->child[1], p - l->child[0]->count);
+            
+            subr->width += l->width;
+            l->child[1] = subl;
+            l->count = l->child[0]->count + l->child[1]->count;
+            l->sum = op(l->child[0]->sum, l->child[1]->sum);
+            return {l, subr};
         }
-        assert(false);
     }
     
     meldable_binary_trie split_one(){
@@ -261,32 +197,84 @@ struct meldable_binary_trie{
         }
     }
     node_t *split_one(node_t *l){
-        if(l->count == 1) return &node_t::nil;
+        if(l->count == 1){
+            pool.push(l);
+            return &node_t::nil;
+        }
         
         l->count--;
-        for(int i = 0; i < 4; i++){
-            int c = l->child[i]->count;
-            if(c == 0) continue;
-            l->child[i] = split_one(l->child[i]);
-            l->sum = e();
-            for(int j = i; j < 4; j++) l->sum = op(l->sum, l->child[j]->sum);
-            return l;
+        if(l->child[0]->count > 0){
+            l->child[0] = split_one(l->child[0]);
+            l->sum = op(l->child[0]->sum, l->child[1]->sum);
+        } else {
+            l->child[1] = split_one(l->child[1]);
+            l->sum = l->child[1]->sum;
         }
-        assert(false);
+        return l;
     }
     node_t *split_one_rev(node_t *l){
-        if(l->count == 1) return &node_t::nil;
+        if(l->count == 1){
+            pool.push(l);
+            return &node_t::nil;
+        }
         
         l->count--;
-        for(int i = 3; i >= 0; i--){
-            int c = l->child[i]->count;
-            if(c == 0) continue;
-            l->child[i] = split_one_rev(l->child[i]);
-            l->sum = e();
-            for(int j = 0; j <= i; j++) l->sum = op(l->sum, l->child[j]->sum);
-            return l;
+        if(l->child[1]->count > 0){
+            l->child[1] = split_one_rev(l->child[1]);
+            l->sum = op(l->child[0]->sum, l->child[1]->sum);
+        } else {
+            l->child[0] = split_one_rev(l->child[0]);
+            l->sum = l->child[0]->sum;
         }
-        assert(false);
+        return l;
+    }
+    
+    S prod_l(int n) {
+        return _prod_l(n, root);
+    }
+    
+    S _prod_l(int n, node_t *pos) {
+        if(n == 0) return e();
+        if(n == pos->count) return pos->sum;
+        
+        if(n < pos->child[0]->count) return _prod_l(n, pos->child[0]);
+        else if(n == pos->child[0]->count) return pos->child[0]->sum;
+        else return op(pos->child[0]->sum, _prod_l(n - pos->child[0]->count, pos->child[1]));
+    }
+    
+    S prod_r(int n) {
+        return _prod_r(n, root);
+    }
+    
+    S _prod_r(int n, node_t *pos) {
+        if(n == 0) return e();
+        if(n == pos->count) return pos->sum;
+        
+        if(n < pos->child[1]->count) return _prod_r(n, pos->child[1]);
+        else if(n == pos->child[1]->count) return pos->child[1]->sum;
+        else return op(_prod_r(n - pos->child[1]->count, pos->child[0]), pos->child[1]->sum);
+    }
+    
+    S prod_lr(int l, int r) {
+        return _prod_lr(l, r, root);
+    }
+    
+    S _prod_lr(int l, int r, node_t *pos) {
+        if(l == r) return e();
+        if(l == 0) return _prod_l(r, pos);
+        if(r == pos->count) return _prod_r(r-l, pos);
+        
+        const auto &child = pos->child;
+        
+        if(l == child[0]->count) return _prod_l(r-l, child[1]);
+        if(r == child[0]->count) return _prod_r(r-l, child[0]);
+        
+        if(l < child[0]->count){
+            if(r < child[0]->count) return _prod_lr(l, r, child[0]);
+            else return op(_prod_r(child[0]->count-l, child[0]), _prod_l(r-child[0]->count, child[1]));
+        } else {
+            return _prod_lr(l-child[0]->count, r-child[0]->count, child[1]);
+        }
     }
     
     S all_prod() const {return root->sum;}
@@ -298,7 +286,7 @@ struct meldable_binary_trie{
     static int get_size(node_t *ptr){
         if(ptr == &node_t::nil) return 0;
         int res = 1;
-        for(int i = 0; i < 4; i++) res += get_size(ptr->child[i]);
+        for(int i = 0; i < 2; i++) res += get_size(ptr->child[i]);
         return res;
     }
 };
