@@ -148,8 +148,9 @@ def ListCppFile(path:str) -> list[str]:
 def MakeREADME(README_path:str, code_text:str) -> None:
     global client
     
-    if not os.getenv("GEMINI_KEY"):
-        assert(False)
+    if os.getenv("GEMINI_KEY"):
+        print(f"Key starts with: {os.getenv("GEMINI_KEY")}...")
+        print(f"Key length: {len(os.getenv("GEMINI_KEY"))}")
     
     if client == None:
         subprocess.run(["pip3", "install", "-q", "-U", "google-genai"])
@@ -164,7 +165,7 @@ def MakeREADME(README_path:str, code_text:str) -> None:
         example_README3 = EX_f.read()
     
     res = client.models.generate_content(
-        model="gemini-2.5-pro",
+        model="gemini-3.1-pro-preview",
         contents=[{
             "role": "user",
             "parts": [{ "text": """以下の指示に従ってください．
