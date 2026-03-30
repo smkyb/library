@@ -4,9 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/mingw64/include",
-                "C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.2.0/include",
-                "C:/mingw64/x86_64-w64-mingw32/include"
+                "C:/msys64/mingw64/include/c++/15.2.0"
             ],
             "defines": [
                 "_GLIBCXX_DEBUG",
@@ -15,7 +13,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:/mingw64/bin/g++.exe",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++23",
             "intelliSenseMode": "windows-gcc-x64"
