@@ -1,0 +1,1 @@
+chrono::duration_cast<chrono::milliseconds>($1)

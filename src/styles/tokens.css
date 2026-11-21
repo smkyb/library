@@ -1,0 +1,182 @@
+/* ==========================================================================
+   Design Tokens — サイト全体の配色・タイポグラフィ・余白・レイアウト幅を集約
+   デザイン刷新時は主にこのファイルを編集します。
+   ========================================================================== */
+
+:root {
+  /* Light / Dark raw palette */
+  --bg-page-light: #fcfcfd;
+  --bg-page-dark: #0b0d11;
+
+  --bg-surface-light: #ffffff;
+  --bg-surface-dark: #11141b;
+
+  --bg-subtle-light: #f4f6f9;
+  --bg-subtle-dark: #161a23;
+
+  --bg-hover-light: #eef1f6;
+  --bg-hover-dark: #1d222e;
+
+  --bg-code-light: #f8fafc;
+  --bg-code-dark: #0f131a;
+
+  --border-light: #e2e8f0;
+  --border-dark: #232936;
+
+  --border-strong-light: #cbd5e1;
+  --border-strong-dark: #333c4d;
+
+  --ink-primary-light: #0f172a;
+  --ink-primary-dark: #eef2f8;
+
+  --ink-secondary-light: #475569;
+  --ink-secondary-dark: #9ba6b8;
+
+  --ink-muted-light: #64748b;
+  --ink-muted-dark: #78849a;
+
+  --accent-light: #2563eb;
+  --accent-dark: #60a5fa;
+
+  --accent-hover-light: #1d4ed8;
+  --accent-hover-dark: #93c5fd;
+
+  --accent-tint-light: #eff6ff;
+  --accent-tint-dark: #13223b;
+
+  --accent-ink-light: #1e40af;
+  --accent-ink-dark: #bfdbfe;
+
+  --success-light: #047857;
+  --success-dark: #34d399;
+
+  --success-tint-light: #ecfdf5;
+  --success-tint-dark: #0d2b22;
+
+  --danger-light: #b91c1c;
+  --danger-dark: #f87171;
+
+  --danger-tint-light: #fef2f2;
+  --danger-tint-dark: #331618;
+
+  --note-bg-light: #f8fafc;
+  --note-bg-dark: #141923;
+
+  --scrollbar-track-light: #f1f5f9;
+  --scrollbar-track-dark: #11141b;
+  --scrollbar-thumb-light: #7a8699;
+  --scrollbar-thumb-dark: #5b677a;
+
+  --shadow-overlay-light: 0 20px 50px rgb(15 23 42 / 0.14), 0 4px 12px rgb(15 23 42 / 0.08);
+  --shadow-overlay-dark: 0 24px 60px rgb(0 0 0 / 0.6), 0 4px 16px rgb(0 0 0 / 0.4);
+
+  /* Semantic tokens (fallback to light first) */
+  --color-bg-page: var(--bg-page-light);
+  --color-bg-surface: var(--bg-surface-light);
+  --color-bg-subtle: var(--bg-subtle-light);
+  --color-bg-hover: var(--bg-hover-light);
+  --color-bg-code: var(--bg-code-light);
+  --color-border: var(--border-light);
+  --color-border-strong: var(--border-strong-light);
+  --color-ink-primary: var(--ink-primary-light);
+  --color-ink-secondary: var(--ink-secondary-light);
+  --color-ink-muted: var(--ink-muted-light);
+  --color-accent: var(--accent-light);
+  --color-accent-hover: var(--accent-hover-light);
+  --color-accent-tint: var(--accent-tint-light);
+  --color-accent-ink: var(--accent-ink-light);
+  --color-success: var(--success-light);
+  --color-success-tint: var(--success-tint-light);
+  --color-danger: var(--danger-light);
+  --color-danger-tint: var(--danger-tint-light);
+  --color-note-bg: var(--note-bg-light);
+  --scrollbar-track: var(--scrollbar-track-light);
+  --scrollbar-thumb: var(--scrollbar-thumb-light);
+  --shadow-overlay: var(--shadow-overlay-light);
+
+  /* Fallback for browsers without light-dark() */
+  @media (prefers-color-scheme: dark) {
+    --color-bg-page: var(--bg-page-dark);
+    --color-bg-surface: var(--bg-surface-dark);
+    --color-bg-subtle: var(--bg-subtle-dark);
+    --color-bg-hover: var(--bg-hover-dark);
+    --color-bg-code: var(--bg-code-dark);
+    --color-border: var(--border-dark);
+    --color-border-strong: var(--border-strong-dark);
+    --color-ink-primary: var(--ink-primary-dark);
+    --color-ink-secondary: var(--ink-secondary-dark);
+    --color-ink-muted: var(--ink-muted-dark);
+    --color-accent: var(--accent-dark);
+    --color-accent-hover: var(--accent-hover-dark);
+    --color-accent-tint: var(--accent-tint-dark);
+    --color-accent-ink: var(--accent-ink-dark);
+    --color-success: var(--success-dark);
+    --color-success-tint: var(--success-tint-dark);
+    --color-danger: var(--danger-dark);
+    --color-danger-tint: var(--danger-tint-dark);
+    --color-note-bg: var(--note-bg-dark);
+    --scrollbar-track: var(--scrollbar-track-dark);
+    --scrollbar-thumb: var(--scrollbar-thumb-dark);
+    --shadow-overlay: var(--shadow-overlay-dark);
+  }
+
+  /* Modern adaptive color tokens via light-dark() */
+  @supports (color: light-dark(white, black)) {
+    --color-bg-page: light-dark(var(--bg-page-light), var(--bg-page-dark));
+    --color-bg-surface: light-dark(var(--bg-surface-light), var(--bg-surface-dark));
+    --color-bg-subtle: light-dark(var(--bg-subtle-light), var(--bg-subtle-dark));
+    --color-bg-hover: light-dark(var(--bg-hover-light), var(--bg-hover-dark));
+    --color-bg-code: light-dark(var(--bg-code-light), var(--bg-code-dark));
+    --color-border: light-dark(var(--border-light), var(--border-dark));
+    --color-border-strong: light-dark(var(--border-strong-light), var(--border-strong-dark));
+    --color-ink-primary: light-dark(var(--ink-primary-light), var(--ink-primary-dark));
+    --color-ink-secondary: light-dark(var(--ink-secondary-light), var(--ink-secondary-dark));
+    --color-ink-muted: light-dark(var(--ink-muted-light), var(--ink-muted-dark));
+    --color-accent: light-dark(var(--accent-light), var(--accent-dark));
+    --color-accent-hover: light-dark(var(--accent-hover-light), var(--accent-hover-dark));
+    --color-accent-tint: light-dark(var(--accent-tint-light), var(--accent-tint-dark));
+    --color-accent-ink: light-dark(var(--accent-ink-light), var(--accent-ink-dark));
+    --color-success: light-dark(var(--success-light), var(--success-dark));
+    --color-success-tint: light-dark(var(--success-tint-light), var(--success-tint-dark));
+    --color-danger: light-dark(var(--danger-light), var(--danger-dark));
+    --color-danger-tint: light-dark(var(--danger-tint-light), var(--danger-tint-dark));
+    --color-note-bg: light-dark(var(--note-bg-light), var(--note-bg-dark));
+    --scrollbar-track: light-dark(var(--scrollbar-track-light), var(--scrollbar-track-dark));
+    --scrollbar-thumb: light-dark(var(--scrollbar-thumb-light), var(--scrollbar-thumb-dark));
+  }
+
+  /* Color scheme synced with <meta name="color-scheme"> */
+  color-scheme: light dark;
+
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    color-scheme: dark;
+    --shadow-overlay: var(--shadow-overlay-dark);
+  }
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
+    --shadow-overlay: var(--shadow-overlay-light);
+  }
+
+  accent-color: var(--color-accent);
+
+  /* Typography */
+  --font-sans: "Inter", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  /* Spacing & Layout */
+  --header-height: 56px;
+  --sidebar-width: 248px;
+  --toc-width: 212px;
+  --layout-max-width: 1380px;
+  --prose-max-width: 72ch;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+}

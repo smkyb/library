@@ -1,0 +1,53 @@
+{
+  "site": {
+    "title": "smkyb's Library",
+    "description": "C++20 競技プログラミング用ライブラリ集",
+    "githubRepo": "https://github.com/smkyb/library",
+    "defaultBranch": "main"
+  },
+  "categories": [
+    { "id": "data-structure", "label": "データ構造" },
+    { "id": "graph", "label": "グラフ" },
+    { "id": "tree", "label": "木" },
+    { "id": "string", "label": "文字列" },
+    { "id": "math", "label": "数学・組合せ" },
+    { "id": "geometry", "label": "幾何" },
+    { "id": "algorithm", "label": "アルゴリズム・その他" },
+    { "id": "utility", "label": "テンプレート・I/O" }
+  ],
+  "libraries": [
+    {
+      "id": "segtree",
+      "file": "segtree.cpp",
+      "category": "data-structure",
+      "title": "Segment Tree",
+      "summary": "配列の 1 点更新と区間クエリを処理するデータ構造",
+      "complexity": "構築 O(N) / クエリ O(log N)",
+      "tags": ["monoid", "range-query", "point-update"],
+      "published": true,
+      "verified": []
+    },
+    {
+      "id": "dijkstra",
+      "file": "dijkstra.cpp",
+      "category": "graph",
+      "title": "Dijkstra",
+      "summary": "非負重みグラフの最短距離と最短経路を求めるアルゴリズム",
+      "complexity": "O((V + E) log V)",
+      "tags": ["shortest-path", "graph"],
+      "published": true,
+      "verified": []
+    },
+    {
+      "id": "hld",
+      "file": "hld.cpp",
+      "category": "tree",
+      "title": "Heavy-Light Decomposition (HLD)",
+      "summary": "木上のパス・部分木クエリ、LCA、距離計算を行うデータ構造（頂点属性・辺属性両対応）",
+      "complexity": "構築 O(N) / パスクエリ O(log^2 N)",
+      "tags": ["tree", "lca", "path-query", "subtree-query"],
+      "published": true,
+      "verified": []
+    }
+  ]
+}
