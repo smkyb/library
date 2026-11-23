@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { extractLeadingComments, stripCppComments } from './stripCppComments.ts';
+import { compactCppCode, extractLeadingComments, stripCppComments } from './stripCppComments.ts';
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, '..', '..');
@@ -106,5 +106,88 @@ describe('extractLeadingComments', () => {
     ].join('\n');
 
     assert.deepEqual(extractLeadingComments(input), ['注意: line 1', 'line 2']);
+  });
+});
+
+describe('compactCppCode', () => {
+  it('removes comments and excess whitespace while preserving token boundaries', () => {
+    const input = [
+      '// leading comment',
+      'template<typename T>',
+      'T add(const T& a, const T& b) {',
+      '    return a + b; // trailing',
+      '}',
+    ].join('\n');
+
+    assert.equal(
+      compactCppCode(input),
+      'template<typename T>T add(const T&a,const T&b){return a+b;}',
+    );
+  });
+
+  it('keeps preprocessor directives on their own lines including continuations', () => {
+    const input = [
+      '#include <bits/stdc++.h>',
+      '#define FOO(x) \\',
+      '    ((x) + 1)',
+      'int f(int a) {',
+      '    #ifdef DEBUG',
+      '    return FOO(a);',
+      '    #else',
+      '    return a;',
+      '    #endif',
+      '}',
+    ].join('\n');
+
+    const expected = [
+      '#include <bits/stdc++.h>',
+      '#define FOO(x) \\',
+      '    ((x) + 1)',
+      'int f(int a){',
+      '#ifdef DEBUG',
+      'return FOO(a);',
+      '#else',
+      'return a;',
+      '#endif',
+      '}',
+    ].join('\n');
+
+    assert.equal(compactCppCode(input), expected);
+  });
+
+  it('prevents dangerous token pasting and preserves attributes, numbers, and literals', () => {
+    const input = [
+      'int x = a + +b - -c;',
+      'int y = d / *p;',
+      'if (x < ::g) [[likely]] {',
+      '    double z = 1e-9 + 1\'000\'000 + .5;',
+      '    const char* s = "a + b // keep";',
+      '    const char* r = R"d(line1\n// line2)d";',
+      '    int v = arr[ [&]{ return 0; }() ];',
+      '}',
+    ].join('\n');
+
+    const compacted = compactCppCode(input, 500, 600);
+    assert.ok(compacted.includes('a+ +b- -c'));
+    assert.ok(compacted.includes('d/ *p'));
+    assert.ok(compacted.includes('x< ::g'));
+    assert.ok(compacted.includes('[[likely]]'));
+    assert.ok(compacted.includes("1e-9+1'000'000+.5"));
+    assert.ok(compacted.includes('"a + b // keep"'));
+    assert.ok(compacted.includes('R"d(line1\n// line2)d"'));
+    assert.ok(compacted.includes('arr[ [&]{return 0;}()]'));
+  });
+
+  it('inserts moderate line breaks on large files like sortable_segtree.cpp', () => {
+    const raw = fs.readFileSync(path.join(repoRoot, 'libraries', 'sortable_segtree.cpp'), 'utf8');
+    const rawLines = raw.replace(/\r\n/g, '\n').split('\n').length;
+    const compacted = compactCppCode(raw);
+    const compactLines = compacted.split('\n');
+
+    assert.ok(compactLines.length > 20, 'should keep multiple moderate lines');
+    assert.ok(compactLines.length < rawLines / 4, 'should significantly reduce line count');
+    for (const line of compactLines) {
+      assert.ok(line.length <= 320, `line too long: ${line.length}`);
+    }
   });
 });

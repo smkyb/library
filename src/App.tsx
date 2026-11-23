@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useLocation, useMatch } from 'react-router-dom';
 import { categories, libraries, site } from 'virtual:libraries';
-import { Header } from './components/Header.tsx';
 import { Sidebar } from './components/Sidebar.tsx';
 import { SearchDialog } from './components/SearchDialog.tsx';
 import { TableOfContents } from './components/TableOfContents.tsx';
@@ -21,9 +20,8 @@ function isEditableElement(target: EventTarget | null): boolean {
 }
 
 export function App() {
-  const { resolvedTheme, toggleTheme } = useTheme();
+  useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const location = useLocation();
   const libMatch = useMatch('/lib/:id');
@@ -81,22 +79,13 @@ export function App() {
 
   return (
     <div className="site-shell">
-      <Header
-        site={site}
-        resolvedTheme={resolvedTheme}
-        onToggleTheme={toggleTheme}
-        onOpenSearch={() => setSearchOpen(true)}
-        mobileNavOpen={mobileNavOpen}
-        onOpenMobileNav={() => setMobileNavOpen(true)}
-      />
-
       <div className={showToc ? 'workspace workspace--with-toc' : 'workspace'}>
         <Sidebar
           siteTitle={site.title}
           categories={categories}
           libraries={libraries}
-          mobileOpen={mobileNavOpen}
-          onCloseMobile={() => setMobileNavOpen(false)}
+          mobileOpen={false}
+          onCloseMobile={() => {}}
         />
 
         <main className="main-content">

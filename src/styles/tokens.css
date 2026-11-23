@@ -170,7 +170,7 @@
   --radius-pill: 9999px;
 
   /* Spacing & Layout */
-  --header-height: 56px;
+  --header-height: 0px;
   --sidebar-width: 248px;
   --toc-width: 212px;
   --layout-max-width: 1380px;

@@ -1,8 +1,62 @@
-## 概要
+## 例
 
-モノイド $(S, \text{op}, e)$ を乗せた配列に対して、**1 要素の更新**と**任意区間 $[l, r)$ の総積の取得**を高速に行うデータ構造です。
+長さ $N$ の一次関数の列 $f_0, f_1, \dots, f_{N-1}$ があり、最初 $f_i(x) = a_i x + b_i$ です。以下の $Q$ 個のクエリを順に処理してください。
 
-利用するには、要素の型 `S`、二項演算関数 `op(S a, S b)`、単位元を返す関数 `e()` の 3 つを定義して `segtree<S, op, e>` に渡します（C++20 以上が必要です）。
+- `0 p c d`: 関数 $f_p(x)$ を $c x + d$ に更新する。
+- `1 l r x`: $f_{r-1}(f_{r-2}(\dots f_l(x) \dots))$ を $998244353$ で割った余りを出力する。
+
+```cpp
+#include <bits/stdc++.h>
+#include <atcoder/modint>
+using namespace std;
+
+// ここに segtree.cpp を貼り付け
+
+using mint = atcoder::modint998244353;
+
+struct F {
+    mint a, b;
+};
+
+// f を適用した後に g を適用する合成関数 g(f(x))
+F op(F f, F g) {
+    return {g.a * f.a, g.a * f.b + g.b};
+}
+
+F e() {
+    return {1, 0};
+}
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    vector<F> init_f(n);
+    for (int i = 0; i < n; ++i) {
+        long long a, b;
+        cin >> a >> b;
+        init_f[i] = {a, b};
+    }
+
+    segtree<F, op, e> seg(init_f);
+
+    while (q--) {
+        int type;
+        cin >> type;
+        if (type == 0) {
+            int p;
+            long long c, d;
+            cin >> p >> c >> d;
+            seg.set(p, {c, d});
+        } else {
+            int l, r;
+            long long x;
+            cin >> l >> r >> x;
+            F res = seg.prod(l, r);
+            cout << (res.a * x + res.b).val() << '\n';
+        }
+    }
+}
+```
 
 ## 関数一覧
 
@@ -17,7 +71,7 @@
 | `prod(l, r)` | 半開区間 $[l, r)$ の総積を取得する |
 | `all_prod()` | 全要素の総積を取得する |
 
-## 各関数の説明
+## 関数の説明
 
 ### コンストラクタ
 
@@ -133,70 +187,3 @@ S seg.all_prod()
 **計算量**
 
 - $O(1)$
-
-## 具体例
-
-### 問題
-
-長さ $N$ の一次関数の列 $f_0, f_1, \dots, f_{N-1}$ があり、最初 $f_i(x) = a_i x + b_i$ です。以下の $Q$ 個のクエリを順に処理してください。
-
-- `0 p c d`: 関数 $f_p(x)$ を $c x + d$ に更新する。
-- `1 l r x`: $f_{r-1}(f_{r-2}(\dots f_l(x) \dots))$ を $998244353$ で割った余りを出力する。
-
-### 解答例
-
-```cpp
-#include <bits/stdc++.h>
-#include <atcoder/modint>
-using namespace std;
-
-// ここに segtree.cpp を貼り付け
-
-using mint = atcoder::modint998244353;
-
-struct F {
-    mint a, b;
-};
-
-// f を適用した後に g を適用する合成関数 g(f(x))
-F op(F f, F g) {
-    return {g.a * f.a, g.a * f.b + g.b};
-}
-
-F e() {
-    return {1, 0};
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, q;
-    cin >> n >> q;
-    vector<F> init_f(n);
-    for (int i = 0; i < n; ++i) {
-        long long a, b;
-        cin >> a >> b;
-        init_f[i] = {a, b};
-    }
-
-    segtree<F, op, e> seg(init_f);
-
-    while (q--) {
-        int type;
-        cin >> type;
-        if (type == 0) {
-            int p;
-            long long c, d;
-            cin >> p >> c >> d;
-            seg.set(p, {c, d});
-        } else {
-            int l, r;
-            long long x;
-            cin >> l >> r >> x;
-            F res = seg.prod(l, r);
-            cout << (res.a * x + res.b).val() << '\n';
-        }
-    }
-}
-```

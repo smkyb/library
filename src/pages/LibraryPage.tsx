@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ExternalLink, Info } from 'lucide-react';
+import { ArrowDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Info } from 'lucide-react';
 import { CodeViewer } from '../components/CodeViewer.tsx';
 import type { LibraryItem } from '../types.ts';
 
@@ -40,21 +40,16 @@ export function LibraryPage({ libraries }: LibraryPageProps) {
 
       <header className="lib-header">
         <h1 className="lib-title">{library.title}</h1>
-        {!library.hasDoc && library.summary && (
+        {library.summary && (
           <p className="lib-summary">{library.summary}</p>
         )}
 
-        <div className="lib-meta">
-          {library.complexity && (
-            <span className="meta-pill meta-pill--mono">{library.complexity}</span>
-          )}
-          <span className="meta-pill meta-pill--mono">{library.file}</span>
-          <span className="meta-pill">{library.lineCount} 行</span>
-          {library.tags.map((tag) => (
-            <span key={tag} className="tag-badge">
-              {tag}
-            </span>
-          ))}
+        <div className="lib-header__actions">
+          <a href="#source-code" className="source-jump-link">
+            <Code2 size={14} aria-hidden="true" />
+            <span>ソースコードへ</span>
+            <ArrowDown size={13} aria-hidden="true" />
+          </a>
         </div>
 
         {library.verified.length > 0 && (
@@ -99,7 +94,7 @@ export function LibraryPage({ libraries }: LibraryPageProps) {
 
       <section id="source-code" className="source-section">
         <h2 className="source-section__heading">ソースコード</h2>
-        <CodeViewer library={library} />
+        <CodeViewer key={library.id} library={library} />
       </section>
 
       {(prevLib || nextLib) && (

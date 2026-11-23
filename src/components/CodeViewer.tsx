@@ -1,15 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import { Check, Copy, ExternalLink } from 'lucide-react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Check, ChevronDown, ChevronRight, Copy, ExternalLink } from 'lucide-react';
 import type { LibraryItem } from '../types.ts';
+import { compactCppCode } from '../utils/stripCppComments.ts';
+
+type CopyMode = 'raw' | 'stripped' | 'compact';
 
 interface CodeViewerProps {
   library: LibraryItem;
 }
 
 export function CodeViewer({ library }: CodeViewerProps) {
-  const [stripComments, setStripComments] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [copyMode, setCopyMode] = useState<CopyMode>('raw');
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
   const [statusMessage, setStatusMessage] = useState('');
+  const bodyId = useId();
+
+  const compactCode = useMemo(() => compactCppCode(library.rawCode), [library.rawCode]);
+  const compactLineCount = useMemo(
+    () => (compactCode === '' ? 0 : compactCode.split('\n').length),
+    [compactCode],
+  );
 
   const timerRef = useRef<number | undefined>(undefined);
   const lastAnnouncementRef = useRef('');
@@ -22,16 +33,21 @@ export function CodeViewer({ library }: CodeViewerProps) {
     };
   }, []);
 
-  const showFeedback = (ok: boolean) => {
+  const showFeedback = (ok: boolean, mode: CopyMode) => {
     if (timerRef.current !== undefined) {
       window.clearTimeout(timerRef.current);
     }
 
-    let message = ok
-      ? stripComments
-        ? 'コメント抜きでコピーしました'
-        : 'コピーしました'
-      : 'コピーに失敗しました';
+    let message = 'コピーに失敗しました';
+    if (ok) {
+      if (mode === 'compact') {
+        message = `圧縮してコピーしました（${compactLineCount} 行）`;
+      } else if (mode === 'stripped') {
+        message = 'コメント抜きでコピーしました';
+      } else {
+        message = 'コピーしました';
+      }
+    }
 
     // Append NBSP when repeating the exact same message so VoiceOver announces it again
     if (message === lastAnnouncementRef.current) {
@@ -52,33 +68,73 @@ export function CodeViewer({ library }: CodeViewerProps) {
   };
 
   const handleCopy = async () => {
-    const text = stripComments ? library.strippedCode : library.rawCode;
+    const text =
+      copyMode === 'compact'
+        ? compactCode
+        : copyMode === 'stripped'
+          ? library.strippedCode
+          : library.rawCode;
     if (!text) return;
     try {
       await navigator.clipboard.writeText(text);
-      showFeedback(true);
+      showFeedback(true, copyMode);
     } catch {
-      showFeedback(false);
+      showFeedback(false, copyMode);
     }
   };
 
+  const copyAriaLabel =
+    copyMode === 'compact'
+      ? `${library.file} を圧縮してコピー（${compactLineCount} 行）`
+      : copyMode === 'stripped'
+        ? `${library.file} をコメント抜きでコピー`
+        : `${library.file} のコードをコピー`;
+
   return (
-    <div className="code-viewer">
+    <div className="code-viewer" data-expanded={isExpanded ? '' : undefined}>
       <div className="code-viewer__bar">
-        <div className="code-viewer__info">
+        <button
+          type="button"
+          className="code-viewer__toggle"
+          aria-expanded={isExpanded}
+          aria-controls={bodyId}
+          onClick={() => setIsExpanded((prev) => !prev)}
+        >
+          {isExpanded ? (
+            <ChevronDown size={15} className="code-viewer__chevron" aria-hidden="true" />
+          ) : (
+            <ChevronRight size={15} className="code-viewer__chevron" aria-hidden="true" />
+          )}
           <span className="code-viewer__filename">{library.file}</span>
-          <span className="code-viewer__lines">{library.lineCount} 行</span>
-        </div>
+          <span className="code-viewer__lines">
+            {copyMode === 'compact'
+              ? `${library.lineCount} 行（圧縮時 ${compactLineCount} 行）`
+              : `${library.lineCount} 行`}
+          </span>
+          <span className="code-viewer__toggle-hint">
+            {isExpanded ? '折りたたむ' : '展開'}
+          </span>
+        </button>
 
         <div className="code-viewer__controls">
           <button
             type="button"
             className="code-action-btn"
-            aria-pressed={stripComments}
+            aria-pressed={copyMode === 'stripped'}
             title="ON にするとコメントを除いてコピーします"
-            onClick={() => setStripComments((prev) => !prev)}
+            onClick={() => setCopyMode((prev) => (prev === 'stripped' ? 'raw' : 'stripped'))}
           >
             コメント抜き
+          </button>
+
+          <button
+            type="button"
+            className="code-action-btn"
+            aria-pressed={copyMode === 'compact'}
+            title={`ON にするとコメントを除き、適度に改行して圧縮コピーします（${compactLineCount} 行）`}
+            onClick={() => setCopyMode((prev) => (prev === 'compact' ? 'raw' : 'compact'))}
+          >
+            圧縮
           </button>
 
           <span className="copy-wrap">
@@ -87,11 +143,7 @@ export function CodeViewer({ library }: CodeViewerProps) {
               className="code-action-btn copy-action-btn"
               data-copied={copyState === 'copied' ? '' : undefined}
               data-failed={copyState === 'failed' ? '' : undefined}
-              aria-label={
-                stripComments
-                  ? `${library.file} をコメント抜きでコピー`
-                  : `${library.file} のコードをコピー`
-              }
+              aria-label={copyAriaLabel}
               onClick={() => {
                 void handleCopy();
               }}
@@ -121,10 +173,13 @@ export function CodeViewer({ library }: CodeViewerProps) {
         </div>
       </div>
 
-      <div
-        className="code-viewer__body scroller"
-        dangerouslySetInnerHTML={{ __html: library.highlightedCodeHtml }}
-      />
+      {isExpanded && (
+        <div
+          id={bodyId}
+          className="code-viewer__body scroller"
+          dangerouslySetInnerHTML={{ __html: library.highlightedCodeHtml }}
+        />
+      )}
     </div>
   );
 }

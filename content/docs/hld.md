@@ -1,13 +1,56 @@
-## 概要
+## 例
 
-木上の**パスに対する取得・更新**、**部分木に対する取得・更新**、**LCA（最小共通祖先）**、**2 頂点間の辺数**を高速に処理するデータ構造です。
+$N$ 頂点の木が与えられ、頂点 $i$ には最初整数 $a_i$ が書かれています。以下の $Q$ 個のクエリを処理してください。
 
-値を持たせる対象に応じて、以下の 2 つのエイリアスを使い分けます。
+- `0 u x`: 頂点 $u$ に書かれた整数に $x$ を加算する。
+- `1 u v`: 頂点 $u$ と頂点 $v$ を結ぶ単純パス上の頂点に書かれた整数の総和を出力する。
 
-- **頂点に値がある場合**: `hld_v<T, commutative>`
-- **辺に値がある場合**: `hld_e<T, commutative>`
+```cpp
+#include <bits/stdc++.h>
+#include <atcoder/segtree>
+using namespace std;
 
-`T` には `atcoder::segtree` / `atcoder::lazy_segtree` や自作の `segtree` などの区間データ構造を指定します。演算が可換（総和・min・max など）な場合は `commutative = true` を指定するとより高速に動作し、非可換（行列積・一次関数合成など）な場合は `false`（デフォルト）のまま使います。
+// ここに hld.cpp を貼り付け
+
+using S = long long;
+S op(S a, S b) { return a + b; }
+S e() { return 0; }
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    vector<S> a(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+    }
+
+    // 総和は可換なので commutative = true を指定できる
+    hld_v<atcoder::segtree<S, op, e>, true> tree(n);
+    for (int i = 0; i < n - 1; ++i) {
+        int u, v;
+        cin >> u >> v;
+        tree.add_edge(u, v);
+    }
+    tree.build(a);
+
+    while (q--) {
+        int type;
+        cin >> type;
+        if (type == 0) {
+            int u;
+            S x;
+            cin >> u >> x;
+            tree.set(u, tree.get(u) + x);
+        } else {
+            int u, v;
+            cin >> u >> v;
+            cout << tree.prod(u, v) << '\n';
+        }
+    }
+}
+```
+
+辺に値を持たせる問題の場合は、`hld_e<atcoder::segtree<S, op, e>, true> tree(n);` として `tree.add_edge(u, v, w);` と `tree.build();` に置き換えるだけで同じように扱えます。
 
 ## 関数一覧
 
@@ -26,7 +69,7 @@
 | `lca(u, v)` | 共通 | 2 頂点 `u, v` の最小共通祖先を返す |
 | `dist(u, v)` | 共通 | 2 頂点 `u, v` 間の**辺数**を返す |
 
-## 各関数の説明
+## 関数の説明
 
 ### コンストラクタ
 
@@ -240,64 +283,3 @@ int tree.dist(int u, int v)
 **計算量**
 
 - $O(\log n)$
-
-## 具体例
-
-### 問題
-
-$N$ 頂点の木が与えられ、頂点 $i$ には最初整数 $a_i$ が書かれています。以下の $Q$ 個のクエリを処理してください。
-
-- `0 u x`: 頂点 $u$ に書かれた整数に $x$ を加算する。
-- `1 u v`: 頂点 $u$ と頂点 $v$ を結ぶ単純パス上の頂点に書かれた整数の総和を出力する。
-
-### 解答例
-
-```cpp
-#include <bits/stdc++.h>
-#include <atcoder/segtree>
-using namespace std;
-
-// ここに hld.cpp を貼り付け
-
-using S = long long;
-S op(S a, S b) { return a + b; }
-S e() { return 0; }
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, q;
-    cin >> n >> q;
-    vector<S> a(n);
-    for (int i = 0; i < n; ++i) {
-        cin >> a[i];
-    }
-
-    // 総和は可換なので commutative = true を指定できる
-    hld_v<atcoder::segtree<S, op, e>, true> tree(n);
-    for (int i = 0; i < n - 1; ++i) {
-        int u, v;
-        cin >> u >> v;
-        tree.add_edge(u, v);
-    }
-    tree.build(a);
-
-    while (q--) {
-        int type;
-        cin >> type;
-        if (type == 0) {
-            int u;
-            S x;
-            cin >> u >> x;
-            tree.set(u, tree.get(u) + x);
-        } else {
-            int u, v;
-            cin >> u >> v;
-            cout << tree.prod(u, v) << '\n';
-        }
-    }
-}
-```
-
-辺に値を持たせる問題の場合は、`hld_e<atcoder::segtree<S, op, e>, true> tree(n);` として `tree.add_edge(u, v, w);` と `tree.build();` に置き換えるだけで同じように扱えます。
